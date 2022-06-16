@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav"
+    app:startDestination="@id/startFragment">
+
+    <fragment
+        android:id="@+id/startFragment"
+        android:name="ai.doma.miniappdemo.presentation.StartFragment"
+        android:label="StartFragment" >
+        <action
+            android:id="@+id/action_startFragment_to_miniappFragment"
+            app:destination="@id/miniappFragment"
+            app:enterAnim="@anim/activity_slide_in_right"
+            app:exitAnim="@anim/activity_slide_out_left"
+            app:popEnterAnim="@anim/activity_slide_in_left"
+            app:popExitAnim="@anim/activity_slide_out_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/miniappFragment"
+        android:name="ai.doma.feature_miniapps.presentation.view.MiniappFragment"
+        android:label="MiniappFragment" />
+</navigation>

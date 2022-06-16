@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?android:attr/colorControlHighlight">
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <solid android:color="#90ffffff" />
+            <corners android:radius="16dp" />
+        </shape>
+    </item>
+    <item android:width="34dp" android:height="34dp">
+        <inset
+            android:drawable="@drawable/ic_close_alter"
+            android:inset="0dp"/>
+    </item>
+</ripple>
