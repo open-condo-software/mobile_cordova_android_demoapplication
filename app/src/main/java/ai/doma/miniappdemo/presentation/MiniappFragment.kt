@@ -33,10 +33,14 @@ import ai.doma.miniappdemo.R
 import ai.doma.miniappdemo.collectAndTrace
 import ai.doma.miniappdemo.data.MiniappRepository
 import android.graphics.Color
+import android.webkit.CookieManager
+import android.webkit.WebView
 import androidx.core.view.isVisible
+import androidx.navigation.fragment.navArgs
 
 class MiniappFragment : BaseFragment() {
 
+    val args: MiniappFragmentArgs by navArgs()
     override val layout: Int
         get() = R.layout.fragment_flow_miniapp
     override val vb by viewBinding(FragmentFlowMiniappBinding::bind)
@@ -71,7 +75,7 @@ class MiniappFragment : BaseFragment() {
 
     override fun onViewInit(view: View) {
 
-        val miniappId = "test"
+        val miniappId = args.miniappId
 
         appView = makeWebView()
         appView.view.layoutParams = FrameLayout.LayoutParams(
@@ -142,7 +146,10 @@ class MiniappFragment : BaseFragment() {
     }
 
     private fun makeWebView(): CordovaWebView {
-        return CordovaWebViewImpl(makeWebViewEngine())
+        return CordovaWebViewImpl(makeWebViewEngine()).apply {
+            this.cookieManager.setCookiesEnabled(true)
+            CookieManager.getInstance().setAcceptThirdPartyCookies(this.view as WebView, true)
+        }
     }
 
     private fun makeWebViewEngine(): CordovaWebViewEngine? {
@@ -158,7 +165,7 @@ class MiniappFragment : BaseFragment() {
         }
     }
 
-    fun onMessage(id: String, data: Any): Any? {
+    fun onMessage(id: String, data: Any?): Any? {
         when (id) {
             "onReceivedError" -> {
                 val d = data as JSONObject

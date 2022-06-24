@@ -27,9 +27,7 @@ class MiniappFullAuthInterceptor(): Interceptor {
                     listeners[it]?.invoke(redirect.orEmpty())
                     listeners.remove(it)
                 }
-                response.newBuilder()
-                    .removeHeader("Location")
-                    .build()
+                response
             } ?: response
         }
     }

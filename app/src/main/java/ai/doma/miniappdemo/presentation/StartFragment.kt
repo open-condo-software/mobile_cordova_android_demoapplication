@@ -1,5 +1,7 @@
 package ai.doma.miniappdemo.presentation
 
+import ai.doma.feature_miniapps.domain.MINIAPP_SERVER_AUTH_BY_URL_ID
+import ai.doma.feature_miniapps.domain.MINIAPP_SERVER_AUTH_ID
 import ai.doma.miniappdemo.R
 import ai.doma.miniappdemo.databinding.FragmentStartBinding
 import ai.doma.miniappdemo.ext.viewBinding
@@ -9,6 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+
+
+
 
 class StartFragment: Fragment() {
 
@@ -21,8 +26,11 @@ class StartFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vb.button.setOnClickListener {
-            findNavController().navigate(StartFragmentDirections.actionStartFragmentToMiniappFragment())
+            findNavController().navigate(StartFragmentDirections.actionStartFragmentToMiniappFragment(MINIAPP_SERVER_AUTH_ID))
         }
 
+        vb.button2.setOnClickListener {
+            findNavController().navigate(StartFragmentDirections.actionStartFragmentToMiniappFragment(MINIAPP_SERVER_AUTH_BY_URL_ID))
+        }
     }
 }

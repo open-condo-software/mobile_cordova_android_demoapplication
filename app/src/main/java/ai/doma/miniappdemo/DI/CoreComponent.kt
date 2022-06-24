@@ -9,6 +9,7 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import android.webkit.CookieManager
 import com.franmontiel.persistentcookiejar.PersistentCookieJar
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
@@ -24,8 +25,6 @@ import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.net.CookieManager
-import java.net.CookiePolicy
 import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
@@ -115,6 +114,15 @@ class CoreModule(private val app: Application) {
             .followRedirects(true)
             .cookieJar(object: PersistentCookieJar(SetCookieCache(), SharedPrefsCookiePersistor(context)){
                 override fun loadForRequest(url: HttpUrl): List<Cookie> {
+                    val cookies = super.loadForRequest(url)
+
+//                    CookieManager.getInstance().acceptCookie()
+//                    cookies.forEach{
+//                        CookieManager.getInstance().setCookie("https://"+it.domain, it.toString())
+//                    }
+//                    CookieManager.getInstance().flush()
+                    //s%3AdGgqEe
+
                     return if (url.toString().contains("oidc/interaction")) {
                         super.loadForRequest(url) + listOf(Cookie.Builder()
                             .domain("condo.d.doma.ai")
@@ -127,11 +135,11 @@ class CoreModule(private val app: Application) {
                     } else if (url.toString().contains("oidc/")) {
                         super.loadForRequest(url)
                     } else {
-                        listOf()
+                        super.loadForRequest(url)
+                        //listOf()
                     }
                 }
             })
-            .addNetworkInterceptor(miniappInterceptor)
             .addInterceptor {
                 val interceptor =
                     it.proceed(

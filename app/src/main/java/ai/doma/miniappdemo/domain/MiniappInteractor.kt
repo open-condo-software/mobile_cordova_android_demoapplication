@@ -7,6 +7,10 @@ import com.dwsh.storonnik.DI.FeatureScope
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
+
+const val MINIAPP_SERVER_AUTH_ID = "serverAuthTest"
+const val MINIAPP_SERVER_AUTH_BY_URL_ID = "serverAuthByUrlTest"
+
 @FeatureScope
 class MiniappInteractor @Inject constructor(val context: Context, val miniappRepository: MiniappRepository) {
 

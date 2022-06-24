@@ -1,5 +1,7 @@
 package ai.doma.miniappdemo.data
 
+import ai.doma.feature_miniapps.domain.MINIAPP_SERVER_AUTH_BY_URL_ID
+import ai.doma.feature_miniapps.domain.MINIAPP_SERVER_AUTH_ID
 import ai.doma.miniappdemo.R
 import android.content.Context
 import com.dwsh.storonnik.DI.FeatureScope
@@ -46,7 +48,11 @@ class MiniappRepository @Inject constructor(
 
 
     suspend fun downloadMiniappFromUrl(miniappId: String, url: String): Boolean {
-        val stream = context.resources.openRawResource(R.raw.www)
+        val stream = when(miniappId){
+            MINIAPP_SERVER_AUTH_ID -> context.resources.openRawResource(R.raw.www)
+            MINIAPP_SERVER_AUTH_BY_URL_ID -> context.resources.openRawResource(R.raw.www_auth_by_url)
+            else -> throw Exception("only test id supported here")
+        }
         return unpackZip(miniappId, stream)
     }
 
@@ -62,6 +68,8 @@ class MiniappRepository @Inject constructor(
             var count: Int
             while (zis.nextEntry.also { ze = it } != null) {
                 filename = ze!!.name
+                if (filename.contains("__MACOSX"))
+                    continue
                 if (ze!!.isDirectory) {
                     val fmd = File(path, filename)
                     ensureZipPathSafety(fmd, path.path)

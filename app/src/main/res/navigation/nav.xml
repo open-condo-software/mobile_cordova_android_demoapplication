@@ -19,5 +19,9 @@
     <fragment
         android:id="@+id/miniappFragment"
         android:name="ai.doma.feature_miniapps.presentation.view.MiniappFragment"
-        android:label="MiniappFragment" />
+        android:label="MiniappFragment" >
+        <argument
+            android:name="miniappId"
+            app:argType="string" />
+    </fragment>
 </navigation>
