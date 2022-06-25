@@ -1,7 +1,6 @@
 package ai.doma.feature_miniapps.presentation.view
 
 import ai.doma.core.DI.CoreComponent
-import ai.doma.core.DI.InjectHelper
 import ai.doma.feature_miniapps.DI.DaggerMiniappsFeatureComponent
 import ai.doma.feature_miniapps.DI.MiniappsFeatureComponent
 import ai.doma.feature_miniapps.presentation.viewmodel.MiniappViewModel
@@ -321,6 +320,7 @@ class MiniappDialogFragment : BaseDialog() {
     override fun onDestroy() {
         super.onDestroy()
         appView.handleDestroy()
+        model.releaseApp()
     }
 
 

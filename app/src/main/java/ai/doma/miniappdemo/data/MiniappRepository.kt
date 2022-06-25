@@ -3,7 +3,10 @@ package ai.doma.miniappdemo.data
 import ai.doma.feature_miniapps.domain.MINIAPP_SERVER_AUTH_BY_URL_ID
 import ai.doma.feature_miniapps.domain.MINIAPP_SERVER_AUTH_ID
 import ai.doma.miniappdemo.R
+import ai.doma.miniappdemo.ext.getSerializable
 import android.content.Context
+import android.content.SharedPreferences
+import androidx.annotation.Keep
 import com.dwsh.storonnik.DI.FeatureScope
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.flow
@@ -20,26 +23,26 @@ import javax.inject.Singleton
 const val TEST_MINIAPP_URL = "https://dl.dropboxusercontent.com/s/51aocd9cqoh1s8l/www.zip"
 const val MINIAPPS_PATH = "miniapps"
 
+
 @Singleton
 class MiniappRepository @Inject constructor(
     val api: RetrofitApi,
     val context: Context
 ) {
-
     suspend fun preloadMiniapp(miniappId: String, url: String): String {
         downloadMiniappFromUrl(miniappId, url)
         val rootFile = getMiniapp(context, miniappId)
 
         // for test
         run {
-            val file1 = File(rootFile,"www1")
-            if(file1.exists()) file1.renameTo(File(rootFile,"www"))
-            val file2 = File(rootFile,"www2")
-            if(file2.exists()) file2.renameTo(File(rootFile,"www"))
+            val file1 = File(rootFile, "www1")
+            if (file1.exists()) file1.renameTo(File(rootFile, "www"))
+            val file2 = File(rootFile, "www2")
+            if (file2.exists()) file2.renameTo(File(rootFile, "www"))
         }
 
-        val meta = File(rootFile, "www"+ File.separator + "native_config.json")
-        if (meta.exists()){
+        val meta = File(rootFile, "www" + File.separator + "native_config.json")
+        if (meta.exists()) {
             val json = JSONObject(meta.readText())
             return json.getString("presentation-style")
         }
@@ -48,7 +51,7 @@ class MiniappRepository @Inject constructor(
 
 
     suspend fun downloadMiniappFromUrl(miniappId: String, url: String): Boolean {
-        val stream = when(miniappId){
+        val stream = when (miniappId) {
             MINIAPP_SERVER_AUTH_ID -> context.resources.openRawResource(R.raw.www)
             MINIAPP_SERVER_AUTH_BY_URL_ID -> context.resources.openRawResource(R.raw.www_auth_by_url)
             else -> throw Exception("only test id supported here")

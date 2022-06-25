@@ -1,5 +1,6 @@
 package ai.doma.feature_miniapps.domain
 
+import ai.doma.miniappdemo.data.MiniappCookieContextRepository
 import ai.doma.miniappdemo.data.MiniappRepository
 import ai.doma.miniappdemo.data.TEST_MINIAPP_URL
 import android.content.Context
@@ -12,7 +13,13 @@ const val MINIAPP_SERVER_AUTH_ID = "serverAuthTest"
 const val MINIAPP_SERVER_AUTH_BY_URL_ID = "serverAuthByUrlTest"
 
 @FeatureScope
-class MiniappInteractor @Inject constructor(val context: Context, val miniappRepository: MiniappRepository) {
+class MiniappInteractor @Inject constructor(
+    val context: Context,
+    val miniappRepository: MiniappRepository,
+    val miniappCookieContextRepository: MiniappCookieContextRepository
+    ) {
+
+    fun getCookies(miniappId: String) = miniappCookieContextRepository.getCookies(miniappId)
 
     fun getOrDownloadMiniapp(miniappId: String) = flow {
         val localAppFile = MiniappRepository.getMiniapp(context, miniappId)

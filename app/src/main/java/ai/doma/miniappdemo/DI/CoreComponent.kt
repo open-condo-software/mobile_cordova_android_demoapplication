@@ -1,13 +1,11 @@
 package ai.doma.core.DI
 
 import ai.doma.miniappdemo.BuildConfig
-import ai.doma.miniappdemo.data.MiniappFullAuthInterceptor
 import ai.doma.miniappdemo.data.MiniappRepository
+import ai.doma.miniappdemo.data.MiniappCookieContextRepository
 import ai.doma.miniappdemo.data.RetrofitApi
-import ai.doma.miniappdemo.ext.logD
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import android.webkit.CookieManager
 import com.franmontiel.persistentcookiejar.PersistentCookieJar
@@ -35,9 +33,9 @@ const val KEY_LOCAL_PREFERENCES = "localPrefs"
 @Component(modules = [CoreModule::class])
 @Singleton
 abstract class CoreComponent {
-    abstract val miniappInterceptor: MiniappFullAuthInterceptor
     abstract val retrofitApi: RetrofitApi
     abstract val miniappRepository: MiniappRepository
+    abstract val miniappCookieContextRepository: MiniappCookieContextRepository
     abstract val context: Context
 
     init {
@@ -82,7 +80,8 @@ class CoreModule(private val app: Application) {
 
     companion object {
         // этот токен под которым авторизован реальный пользователь в приложении домов
-        var access_token: String = "OdPG-9FKBlZcxBkjewrB0qT3miQwPo05.6wAf7q0/lbwDbl20a1AyBdebKTVnlV9mCjQRWruGyLE"
+        var access_token: String =
+            "OdPG-9FKBlZcxBkjewrB0qT3miQwPo05.6wAf7q0/lbwDbl20a1AyBdebKTVnlV9mCjQRWruGyLE"
 
         const val API_URL_DEBUG = "https://condo.d.doma.ai/"
 
@@ -98,40 +97,47 @@ class CoreModule(private val app: Application) {
             .client(okHttp)
             .build().create(RetrofitApi::class.java)
 
-    @Provides
-    @Singleton
-    internal fun provideMiniappInterceptor(): MiniappFullAuthInterceptor = MiniappFullAuthInterceptor()
-
 
     @Provides
     @Singleton
-    internal fun provideOkHttpClient(context: Context, prefs: SharedPreferences, miniappInterceptor: MiniappFullAuthInterceptor): OkHttpClient {
+    internal fun provideOkHttpClient(
+        context: Context,
+        miniappCookieContext: MiniappCookieContextRepository
+    ): OkHttpClient {
 
         val client = OkHttpClient.Builder()
             .readTimeout(60, TimeUnit.SECONDS)
             .connectTimeout(60, TimeUnit.SECONDS)
             //.authenticator(TokenAuthenticator { api })
             .followRedirects(true)
-            .cookieJar(object: PersistentCookieJar(SetCookieCache(), SharedPrefsCookiePersistor(context)){
-                override fun loadForRequest(url: HttpUrl): List<Cookie> {
+            .cookieJar(object :
+                PersistentCookieJar(SetCookieCache(), SharedPrefsCookiePersistor(context)) {
+                override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
+                    super.saveFromResponse(url, cookies)
                     val cookies = super.loadForRequest(url)
+                    CookieManager.getInstance().acceptCookie()
+                    cookies.forEach {
+                        if (it.domain.contains("condo") && !it.domain.contains("miniapp")) return@forEach
+                        CookieManager.getInstance()
+                            .setCookie("https://" + it.domain, "$it; SameSite=None")
 
-//                    CookieManager.getInstance().acceptCookie()
-//                    cookies.forEach{
-//                        CookieManager.getInstance().setCookie("https://"+it.domain, it.toString())
-//                    }
-//                    CookieManager.getInstance().flush()
-                    //s%3AdGgqEe
+                        miniappCookieContext.appendCookie(it)
+                    }
+                    CookieManager.getInstance().flush()
+                }
 
+                override fun loadForRequest(url: HttpUrl): List<Cookie> {
                     return if (url.toString().contains("oidc/interaction")) {
-                        super.loadForRequest(url) + listOf(Cookie.Builder()
-                            .domain("condo.d.doma.ai")
-                            .path("/")
-                            .name("keystone.sid")
-                            .value(URLEncoder.encode("s:${access_token}", "UTF-8"))
-                            .secure()
-                            .httpOnly()
-                            .build())
+                        super.loadForRequest(url) + listOf(
+                            Cookie.Builder()
+                                .domain("condo.d.doma.ai")
+                                .path("/")
+                                .name("keystone.sid")
+                                .value(URLEncoder.encode("s:${access_token}", "UTF-8"))
+                                .secure()
+                                .httpOnly()
+                                .build()
+                        )
                     } else if (url.toString().contains("oidc/")) {
                         super.loadForRequest(url)
                     } else {

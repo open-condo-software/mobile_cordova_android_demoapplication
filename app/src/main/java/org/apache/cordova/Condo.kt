@@ -3,7 +3,6 @@ package org.apache.cordova
 import ai.doma.core.DI.CoreComponent
 import ai.doma.core.DI.CoreModule
 import ai.doma.miniappdemo.collectAndTrace
-import ai.doma.miniappdemo.data.MiniappFullAuthInterceptor
 import ai.doma.miniappdemo.data.RetrofitApi
 import ai.doma.miniappdemo.ext.logD
 import kotlinx.coroutines.CoroutineScope
@@ -25,10 +24,8 @@ class Condo : CordovaPlugin() {
     private var authState: String? = null
 
     var api: RetrofitApi? = null
-    var miniappInterceptor: MiniappFullAuthInterceptor? = null
     init {
         api = CoreComponent.get()?.retrofitApi
-        miniappInterceptor = CoreComponent.get()?.miniappInterceptor
         logD { "CondoPlugin init api: $api" }
     }
 
