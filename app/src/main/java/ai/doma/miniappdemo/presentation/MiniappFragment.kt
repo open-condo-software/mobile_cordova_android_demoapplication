@@ -33,7 +33,9 @@ import ai.doma.miniappdemo.collectAndTrace
 import ai.doma.miniappdemo.data.MiniappRepository
 import android.graphics.Color
 import android.webkit.CookieManager
+import android.webkit.WebSettings
 import android.webkit.WebView
+import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.navArgs
 
@@ -102,14 +104,14 @@ class MiniappFragment : BaseFragment() {
                 savedInstanceState?.let { return@collectAndTrace }
                 appView.preferences.set("AndroidInsecureFileModeEnabled", true)
 
-                appView.loadUrlIntoView(it.path + "/www/index.html",true)
+                appView.loadUrlIntoView(it.toUri().toString() + "/www/index.html",true)
             }
         }
         savedInstanceState?.let {
             MiniappRepository.getMiniapp(requireContext(), model.miniappId)?.let {
                 init()
                 appView.preferences.set("AndroidInsecureFileModeEnabled", true)
-                appView.loadUrlIntoView(it.path + "/www/index.html",false)
+                appView.loadUrlIntoView(it.toUri().toString() + "/www/index.html",false)
             }
         }
 
@@ -157,7 +159,7 @@ class MiniappFragment : BaseFragment() {
 
     private fun makeCordovaInterface(): CordovaFragmentInterfaceImpl {
         return object : CordovaFragmentInterfaceImpl(requireActivity() as AppCompatActivity, this) {
-            override fun onMessage(id: String, data: Any): Any? {
+            override fun onMessage(id: String, data: Any?): Any? {
                 // Plumb this to CordovaActivity.onMessage for backwards compatibility
                 return this@MiniappFragment.onMessage(id, data)
             }
