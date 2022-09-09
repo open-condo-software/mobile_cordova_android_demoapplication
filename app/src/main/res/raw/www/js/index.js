@@ -90,9 +90,6 @@ function onDeviceReady() {
     // 1) запрашиваем у основного приложения авторизацию по клиент айди и секрет и получаем токен и рефреш токен
     // 2) при необходимости просим обновить
 
-    // const miniappServerRedirectUri = 'https://doma-miniapp.hiplabs.dev/oidc/callback';
-    // const authorizationComplitionRedirectUri = 'https://doma2-miniapp.hiplabs.dev/';
-    // const mClientId = 'baglansariev-dev-app';
 
     // cordova.plugins.condo.requestServerAuthorization(mClientId, miniappServerRedirectUri, authorizationComplitionRedirectUri, function(response) {
     //     console.log(response);
@@ -131,13 +128,18 @@ function onDeviceReady() {
             // {"data":{"authenticatedUser":null}}
             if (res.data.authenticatedUser) {
                 console.log('authentificated => ', JSON.stringify(res.data.authenticatedUser));
+                cordova.plugins.condo.getCurrentResident(function(response) {
+                    console.log("current resident\address => ", JSON.stringify(response));
+                }, function(error) {
+                    console.log(error);
+                })
             } else {
                 console.log('authentification missing => ', JSON.stringify(res));
                 cordova.plugins.condo.requestServerAuthorizationByUrl('https://miniapp.d.doma.ai/oidc/auth', {}, function(response) {
                     console.log(response);
-                    console.log('recive authorication result => ', JSON.stringify(response));
+                    console.log('recive authorization result => ', JSON.stringify(response));
                     console.log('reloading');
-                    //window.location.reload();
+                    window.location.reload();
                 }, function(error) {
                     console.log(error);
                 });
