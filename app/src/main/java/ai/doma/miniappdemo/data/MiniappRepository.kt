@@ -3,17 +3,9 @@ package ai.doma.miniappdemo.data
 import ai.doma.feature_miniapps.domain.MINIAPP_SERVER_AUTH_BY_URL_ID
 import ai.doma.feature_miniapps.domain.MINIAPP_SERVER_AUTH_ID
 import ai.doma.miniappdemo.R
-import ai.doma.miniappdemo.ext.getSerializable
 import android.content.Context
-import android.content.SharedPreferences
-import androidx.annotation.Keep
-import com.dwsh.storonnik.DI.FeatureScope
-import com.google.gson.Gson
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import org.json.JSONObject
 import java.io.*
-import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import javax.inject.Inject
@@ -22,6 +14,7 @@ import javax.inject.Singleton
 
 const val TEST_MINIAPP_URL = "https://dl.dropboxusercontent.com/s/51aocd9cqoh1s8l/www.zip"
 const val MINIAPPS_PATH = "miniapps"
+const val VERSION_META_FILE_NAME = "android.version.meta"
 
 
 @Singleton
@@ -44,7 +37,9 @@ class MiniappRepository @Inject constructor(
         val meta = File(rootFile, "www" + File.separator + "native_config.json")
         if (meta.exists()) {
             val json = JSONObject(meta.readText())
-            return json.getString("presentation-style")
+            return json.optString("presentationStyle").ifEmpty { null }
+                ?: json.optString("presentation-style").ifEmpty { null }
+                ?: "push_with_navigation"
         }
         return "push_with_navigation"
     }
@@ -52,8 +47,8 @@ class MiniappRepository @Inject constructor(
 
     suspend fun downloadMiniappFromUrl(miniappId: String, url: String): Boolean {
         val stream = when (miniappId) {
-            MINIAPP_SERVER_AUTH_ID -> context.resources.openRawResource(R.raw.www)
-            MINIAPP_SERVER_AUTH_BY_URL_ID -> context.resources.openRawResource(R.raw.www_auth_by_url)
+            MINIAPP_SERVER_AUTH_ID -> context.resources.openRawResource(R.raw.www_auth_by_id)
+            MINIAPP_SERVER_AUTH_BY_URL_ID -> context.resources.openRawResource(R.raw.www)
             else -> throw Exception("only test id supported here")
         }
         return unpackZip(miniappId, stream)
@@ -91,6 +86,65 @@ class MiniappRepository @Inject constructor(
             e.printStackTrace()
             return false
         }
+
+        val dir = File(path, "www")
+        if (dir.isDirectory && dir.exists()) {
+            val versionMetaFile = File(dir, VERSION_META_FILE_NAME)
+            if (versionMetaFile.exists()) {
+                versionMetaFile.delete()
+            }
+            versionMetaFile.createNewFile()
+            versionMetaFile.writeText("1.0.0")
+
+
+            //меняем файлы кордовы на свои собственные
+            val cordovajsFile = File(dir, "cordova.js")
+            if(cordovajsFile.exists()){
+                cordovajsFile.delete()
+            }
+            cordovajsFile.createNewFile()
+            cordovajsFile.writeBytes(context.resources.openRawResource(R.raw.cordova).readBytes())
+
+            val cordova_pluginsjsFile = File(dir, "cordova_plugins.js")
+            if(cordova_pluginsjsFile.exists()){
+                cordova_pluginsjsFile.delete()
+            }
+            cordova_pluginsjsFile.createNewFile()
+            cordova_pluginsjsFile.writeBytes(context.resources.openRawResource(R.raw.cordova_plugins).readBytes())
+
+            val cordovaJsSrcDir = File(dir, "cordova-js-src")
+            if(cordovaJsSrcDir.exists() && cordovaJsSrcDir.isDirectory){
+                cordovaJsSrcDir.deleteRecursively()
+            }
+            cordovaJsSrcDir.mkdir()
+            val cordovaJsSrcDirAndroid = File(cordovaJsSrcDir, "android")
+            cordovaJsSrcDirAndroid.mkdir()
+            val cordovaJsSrcDirPlugin = File(cordovaJsSrcDir, "plugin")
+            cordovaJsSrcDirPlugin.mkdir()
+            val cordovaJsSrcDirPluginAndroid = File(cordovaJsSrcDirPlugin, "android")
+            cordovaJsSrcDirPluginAndroid.mkdir()
+
+            val execFile = File(cordovaJsSrcDir, "exec.js")
+            execFile.createNewFile()
+            execFile.writeBytes(context.resources.openRawResource(R.raw.exec).readBytes())
+
+            val platformFile = File(cordovaJsSrcDir, "platform.js")
+            platformFile.createNewFile()
+            platformFile.writeBytes(context.resources.openRawResource(R.raw.platform).readBytes())
+
+            val nativeapiproviderFile = File(cordovaJsSrcDirAndroid, "nativeapiprovider.js")
+            nativeapiproviderFile.createNewFile()
+            nativeapiproviderFile.writeBytes(context.resources.openRawResource(R.raw.nativeapiprovider).readBytes())
+
+            val promptbasednativeapiFile = File(cordovaJsSrcDirAndroid, "promptbasednativeapi.js")
+            promptbasednativeapiFile.createNewFile()
+            promptbasednativeapiFile.writeBytes(context.resources.openRawResource(R.raw.promptbasednativeapi).readBytes())
+
+            val appFile = File(cordovaJsSrcDirPluginAndroid, "app.js")
+            appFile.createNewFile()
+            appFile.writeBytes(context.resources.openRawResource(R.raw.app).readBytes())
+        }
+
         return true
     }
 

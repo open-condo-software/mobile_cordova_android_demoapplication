@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 
@@ -25,6 +26,7 @@ class StartFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        vb.button.isVisible = false
         vb.button.setOnClickListener {
             findNavController().navigate(StartFragmentDirections.actionStartFragmentToMiniappFragment(MINIAPP_SERVER_AUTH_ID))
         }
