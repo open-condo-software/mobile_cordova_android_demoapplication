@@ -13,6 +13,14 @@ exports.requestServerAuthorization = function (arg0, arg1, arg2, success, error)
     exec(success, error, 'Condo', 'requestServerAuthorization', [arg0, arg1, arg2]);
 };
 
+exports.requestServerAuthorizationByUrl = function (arg0, arg1, success, error) {
+    exec(success, error, 'Condo', 'requestServerAuthorizationByUrl', [arg0, arg1]);
+};
+
+exports.getCurrentResident = function (success, error) {
+    exec(success, error, 'Condo', 'getCurrentResident', []);
+};
+
 exports.closeApplication = function (success, error) {
     exec(success, error, 'Condo', 'closeApplication', []);
 };
