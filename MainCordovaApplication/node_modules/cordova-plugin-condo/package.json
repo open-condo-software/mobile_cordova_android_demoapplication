@@ -1,0 +1,50 @@
+{
+  "_from": "git+https://github.com/open-condo-software/mobile_cordova_plugin_condo.git",
+  "_id": "cordova-plugin-condo@0.0.1",
+  "_inBundle": false,
+  "_integrity": "",
+  "_location": "/cordova-plugin-condo",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "https://github.com/open-condo-software/mobile_cordova_plugin_condo.git",
+    "rawSpec": "https://github.com/open-condo-software/mobile_cordova_plugin_condo.git",
+    "saveSpec": "git+https://github.com/open-condo-software/mobile_cordova_plugin_condo.git",
+    "fetchSpec": "https://github.com/open-condo-software/mobile_cordova_plugin_condo.git",
+    "gitCommittish": null
+  },
+  "_requiredBy": [
+    "#DEV:/",
+    "#USER"
+  ],
+  "_resolved": "git+https://github.com/open-condo-software/mobile_cordova_plugin_condo.git#d96fc51f529916df3efc94a45cbc4b32ed49ebcb",
+  "_spec": "https://github.com/open-condo-software/mobile_cordova_plugin_condo.git",
+  "_where": "/Users/svedo/CordovaDemoApp/MainCordovaApplication",
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/open-condo-software/mobile_cordova_authorization_plugin/issues"
+  },
+  "bundleDependencies": false,
+  "cordova": {
+    "id": "cordova-plugin-condo",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "deprecated": false,
+  "description": "",
+  "homepage": "https://github.com/open-condo-software/mobile_cordova_authorization_plugin#readme",
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "license": "ISC",
+  "name": "cordova-plugin-condo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/open-condo-software/mobile_cordova_authorization_plugin.git"
+  },
+  "version": "0.0.1"
+}

@@ -1,0 +1,1 @@
+# mobile_cordova_authorization_plugin

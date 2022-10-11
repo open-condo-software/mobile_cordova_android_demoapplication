@@ -62,3 +62,38 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:2.4.1"
     implementation "androidx.navigation:navigation-ui-ktx:2.4.1"
 }
+
+task updateCordovaProjectToDemo {
+    doFirst {
+        println "updateCordovaProjectToDemo start!"
+        exec {
+            workingDir "../MainCordovaApplication"
+            if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+                commandLine 'wsl', 'cordova', 'prepare', 'ios'
+            } else {
+                commandLine 'cordova', 'prepare', 'ios'
+            }
+        }
+        exec {
+            workingDir "../MainCordovaApplication/platforms/ios"
+            if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+                commandLine 'wsl', 'zip', '-r' , 'www.zip', 'www'
+            } else {
+                commandLine 'zip', '-r', 'www.zip', 'www'
+            }
+        }
+
+        exec {
+            workingDir "../MainCordovaApplication/platforms/ios"
+            if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+                commandLine 'wsl', 'ln', 'www.zip', '../../../app/src/main/res/raw/www.zip'
+            } else {
+                commandLine 'cp', 'www.zip', '../../../app/src/main/res/raw/www.zip'
+            }
+        }
+        println "updateCordovaProjectToDemo"
+    }
+
+}
+
+preBuild.dependsOn updateCordovaProjectToDemo
