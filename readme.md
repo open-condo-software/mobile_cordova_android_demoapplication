@@ -2,7 +2,7 @@
 
 This is a Condo Miniapps playground for Android, it is still under development, but already allows you to feel the real process of interaction with the application.
 
-You can find the cordova app itself in the 'MainCordovaApplication' folder, where in the www folder there is an example of interaction with the native api and you can develop something of your own.
+You can find the cordova app itself in the `MainCordovaApplication` folder, where in the www folder there is an example of interaction with the native api and you can develop something of your own.
 
 
 ___
@@ -45,7 +45,7 @@ ___
 
 2. Editing the application
 
-- open the project directory and go to the '/MainCordovaApplication/www' subdirectory
+- open the project directory and go to the `/MainCordovaApplication/www` subdirectory
 
   it will contain your application code, edit it freely
 
@@ -64,48 +64,48 @@ accept license agreements by:
         cd ~/Library/Android/sdk/tools/bin/
         ./sdkmanager --licenses
 
-- 'updateCordovaProjectToDemo' subtask runs during project build (file 'app/build.gradle', 66 line), this subtask automatically builds final cordova app file 'www.zip' ('MainCordovaApplication/platforms/ios/www.zip') and copies it into 'app/src/main/res/raw/www.zip' to use it by android app
+- `updateCordovaProjectToDemo` subtask runs during project build (file `app/build.gradle`, 66 line), this subtask automatically builds final cordova app file `www.zip` (`MainCordovaApplication/platforms/ios/www.zip`) and copies it into `app/src/main/res/raw/www.zip` to use it by android app
 
  ---
 # Common methods <a name="common_methods"></a>
 - authorization
 
 
-'function requestServerAuthorizationByUrl(miniapp_server_init_auth_url, custom_params_reserver_for_future_use, success, error)'
+`function requestServerAuthorizationByUrl(miniapp_server_init_auth_url, custom_params_reserver_for_future_use, success, error)`
 
 example:
 
-'''javascript  
+```javascript  
             cordova.plugins.condo.requestServerAuthorizationByUrl('https://miniapp.d.doma.ai/oidc/auth', {}, function(response) {
                 console.log('recive authorication result => ', JSON.stringify(response));
                 window.location.reload();
             }, function(error) {
                 console.log(error);
             });
-'''
+```
 
 - obtaining a current resident/address
 
-  'function getCurrentResident(success, error)'
+  `function getCurrentResident(success, error)`
 
   example:
-'''javascript  
+```javascript  
             cordova.plugins.condo.getCurrentResident(function(response) {
                 console.log("current resident\address => ", JSON.stringify(response));
             }, function(error) {
                 console.log(error);
             });
-'''
+```
 
 
 - application closing
 
-  'function closeApplication(success, error)'
+  `function closeApplication(success, error)`
 
   example:
-'''javascript  
+```javascript  
             cordova.plugins.condo.closeApplication(function(response) {}, function(error) {});
-'''
+```
 
 ---
 
@@ -113,7 +113,7 @@ example:
 
 ## Demo environment  <a name="testing-demo"></a>
 
-1. Open Chrome and enter into url field 'chrome://inspect/#devices'
+1. Open Chrome and enter into url field `chrome://inspect/#devices`
 Choose WebView in ai.doma.miniappdemo and lick "inspect"
 
    ![inspect](./screenshots/inspect.png)
@@ -124,7 +124,7 @@ Choose WebView in ai.doma.miniappdemo and lick "inspect"
 
 ## Production environment  <a name="testing-production"></a>
 
-1. Take www.zip archive:
+1. Take `www.zip` archive:
 
         MainCordovaApplication/platforms/ios/www.zip
 
@@ -145,5 +145,5 @@ If it doesn't exist create it from folder:
 
 ---
 # Publishing <a name="publishing"></a>
-To publish the mini-application, send the 'www.zip' archive you received during the testing phase to the people at Doma with whom you interact.   
+To publish the mini-application, send the `www.zip` archive you received during the testing phase to the people at Doma with whom you interact.   
         
