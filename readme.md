@@ -99,12 +99,12 @@ ___
 - cordova installation:
 
         npm install -g cordova
-- open Android Studio, choose project folder to open, then open sdk manager\n
-          ![SDK manager](./screenshots/sdk_mgr.png)
+- open Android Studio, choose project folder to open, then open sdk manager
+![SDK manager](./screenshots/sdk_mgr.png)
 
-- project is running under android 12 (api level 32), install required dependenies\n
-          ![SDK manager](./screenshots/sdk_mgr1.png)
-          ![SDK manager](./screenshots/sdk_mgr2.png)
+- project is running under android 12 (api level 32), install required dependenies
+![SDK manager](./screenshots/sdk_mgr1.png)
+![SDK manager](./screenshots/sdk_mgr2.png)
 
 2. Editing the application
 
@@ -114,14 +114,20 @@ ___
 
 3. Launching and testing the application
 
-- open project folder with Android Studio, wait until indexing is complete, then choose real or virtual device and click "run app"\n
-          ![Run app](./screenshots/run_app.png)
+- open project folder with Android Studio, wait until indexing is complete, then choose real or virtual device and click "run app"
+![Run app](./screenshots/run_app.png)
 
 - "updateCordovaProjectToDemo" subtask runs during project build (file app/build.gradle, 66 line), this subtask automatically builds final cordova app file 'www.zip' (MainCordovaApplication/platforms/ios/www.zip) and copies it into app/src/main/res/raw/www.zip to use it by android app
 
+- if you have this error
+![Run app](./screenshots/license.png)
+accept license agreements by:
+
+        cd ~/Library/Android/sdk/tools/bin/
+        ./sdkmanager --licenses
 
  ---
-# Common methods. <a name="common_methods"></a>
+# Common methods <a name="common_methods"></a>
 - authorization
 
   function requestServerAuthorizationByUrl(miniapp_server_init_auth_url, custom_params_reserver_for_future_use, success, error)
