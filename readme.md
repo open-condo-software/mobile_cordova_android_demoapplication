@@ -1,11 +1,11 @@
-# Hello!
+# Hello
 
 This is a Condo Miniapps playground for Android, it is still under development, but already allows you to feel the real process of interaction with the application.
 
 You can find the cordova app itself in the `MainCordovaApplication` folder, where in the www folder there is an example of interaction with the native api and you can develop something of your own.
 
 
-___
+
 # Content
 1. [Getting started](#getting_started)
 2. [Common methods.](#common_methods)
@@ -17,7 +17,6 @@ ___
 4. [Publishing.](#publishing)
 
 
----
 # Getting started <a name="getting_started"></a>
 
 1. Installing the necessary dependencies:
@@ -66,7 +65,7 @@ accept license agreements by:
 
 - `updateCordovaProjectToDemo` subtask runs during project build (file `app/build.gradle`, 66 line), this subtask automatically builds final cordova app file `www.zip` (`MainCordovaApplication/platforms/ios/www.zip`) and copies it into `app/src/main/res/raw/www.zip` to use it by android app
 
- ---
+
 # Common methods <a name="common_methods"></a>
 - authorization
 
@@ -76,38 +75,38 @@ accept license agreements by:
 example:
 
 ```javascript  
-            cordova.plugins.condo.requestServerAuthorizationByUrl('https://miniapp.d.doma.ai/oidc/auth', {}, function(response) {
-                console.log('recive authorication result => ', JSON.stringify(response));
-                window.location.reload();
-            }, function(error) {
-                console.log(error);
-            });
+        cordova.plugins.condo.requestServerAuthorizationByUrl('https://miniapp.d.doma.ai/oidc/auth', {}, function(response) {
+            console.log('recive authorication result => ', JSON.stringify(response));
+            window.location.reload();
+        }, function(error) {
+            console.log(error);
+        });
 ```
 
 - obtaining a current resident/address
 
-  `function getCurrentResident(success, error)`
+`function getCurrentResident(success, error)`
 
   example:
 ```javascript  
-            cordova.plugins.condo.getCurrentResident(function(response) {
-                console.log("current resident\address => ", JSON.stringify(response));
-            }, function(error) {
-                console.log(error);
-            });
+        cordova.plugins.condo.getCurrentResident(function(response) {
+            console.log("current resident\address => ", JSON.stringify(response));
+        }, function(error) {
+            console.log(error);
+        });
 ```
 
 
 - application closing
 
-  `function closeApplication(success, error)`
+`function closeApplication(success, error)`
 
   example:
 ```javascript  
-            cordova.plugins.condo.closeApplication(function(response) {}, function(error) {});
+        cordova.plugins.condo.closeApplication(function(response) {}, function(error) {});
 ```
 
----
+
 
 # Testing  <a name="testing"></a>
 
@@ -128,7 +127,7 @@ Choose WebView in ai.doma.miniappdemo and lick "inspect"
 
         MainCordovaApplication/platforms/ios/www.zip
 
-If it doesn't exist create it from folder:
+    If it doesn't exist create it from folder:
 
         /MainCordovaApplication/platforms/ios/www
 
@@ -139,11 +138,11 @@ If it doesn't exist create it from folder:
 - [Click here to switch on](https://mobile.doma.ai/api/mobile/partners/miniapps/enable-local.html)
 - [Click here to switch off](https://mobile.doma.ai/api/mobile/partners/miniapps/disable-local.html)
 
-5. Now, on the main application screen in the list of mini-applications, the last button allows you to download or replace a previously downloaded mini-application from files. When you click on it, you need to select the previously taken www.zip archive.
+5. Now, on the main application screen in the list of mini-applications, the last button allows you to download or replace a previously downloaded mini-application from files. When you click on it, you need to select the previously taken `www.zip` archive.
 
 6. The application loaded in this way has a built-in js console, which is accessible by clicking on the button at the bottom right of the open mini-application and is able to show a lot of additional information, including various errors.
 
----
+
 # Publishing <a name="publishing"></a>
 To publish the mini-application, send the `www.zip` archive you received during the testing phase to the people at Doma with whom you interact.   
         
