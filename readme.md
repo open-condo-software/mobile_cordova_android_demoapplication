@@ -1,69 +1,3 @@
-[//]: # (Приветствуем! )
-
-[//]: # ()
-[//]: # (Это плейграунд Condo Miniapps для Android, он ещё в процессе разработки, но уже позволяет пощупать реальный процесс взаимодействия с приложением.)
-
-[//]: # ()
-[//]: # (Приложение миниаппа - это всегда архив с названием www.zip который лежит в app/src/main/res/raw/www.zip, замените его собственным )
-
-[//]: # (архивом с тем же названием чтобы тестировать собственное приложение.)
-
-[//]: # ()
-[//]: # (основные методы)
-
-[//]: # (- авторизация)
-
-[//]: # ()
-[//]: # (    function requestServerAuthorizationByUrl&#40;miniapp_server_init_auth_url, custom_params_reserver_for_future_use, success, error&#41; )
-
-[//]: # ()
-[//]: # (    пример:)
-
-[//]: # ()
-[//]: # (            cordova.plugins.condo.requestServerAuthorizationByUrl&#40;'https://miniapp.d.doma.ai/oidc/auth', {}, function&#40;response&#41; {)
-
-[//]: # (                console.log&#40;'recive authorication result => ', JSON.stringify&#40;response&#41;&#41;;)
-
-[//]: # (                window.location.reload&#40;&#41;;)
-
-[//]: # (            }, function&#40;error&#41; {)
-
-[//]: # (                console.log&#40;error&#41;;)
-
-[//]: # (            }&#41;;)
-
-[//]: # ()
-[//]: # (- получение текущего резидента\адреса)
-
-[//]: # ()
-[//]: # (    function getCurrentResident&#40;success, error&#41;)
-
-[//]: # ()
-[//]: # (    пример:)
-
-[//]: # ()
-[//]: # (            cordova.plugins.condo.getCurrentResident&#40;function&#40;response&#41; {)
-
-[//]: # (                console.log&#40;"current resident\address => ", JSON.stringify&#40;response&#41;&#41;;)
-
-[//]: # (            }, function&#40;error&#41; {)
-
-[//]: # (                console.log&#40;error&#41;;)
-
-[//]: # (            }&#41;;)
-
-[//]: # ()
-[//]: # (- закрытие приложения)
-
-[//]: # ()
-[//]: # (    function closeApplication&#40;success, error&#41;)
-
-[//]: # ()
-[//]: # (    пример:)
-
-[//]: # ()
-[//]: # (            cordova.plugins.condo.closeApplication&#40;function&#40;response&#41; {}, function&#40;error&#41; {}&#41;;)
-
 # Hello!
 
 This is a Condo Miniapps playground for Android, it is still under development, but already allows you to feel the real process of interaction with the application.
@@ -72,7 +6,7 @@ You can find the cordova app itself in the MainCordovaApplication folder, where 
 
 
 ___
-# Content.
+# Content
 1. [Getting started](#getting_started)
 2. [Common methods.](#common_methods)
 3. [Testing.](#testing)
@@ -84,7 +18,7 @@ ___
 
 
 ---
-# Getting started. <a name="getting_started"></a>
+# Getting started <a name="getting_started"></a>
 
 1. Installing the necessary dependencies:
 
@@ -121,8 +55,6 @@ ___
 
 ![Run app](./screenshots/run_app.png)
 
-- "updateCordovaProjectToDemo" subtask runs during project build (file app/build.gradle, 66 line), this subtask automatically builds final cordova app file 'www.zip' (MainCordovaApplication/platforms/ios/www.zip) and copies it into app/src/main/res/raw/www.zip to use it by android app
-
 - if you have this error
 
 ![Run app](./screenshots/license.png)
@@ -131,6 +63,8 @@ accept license agreements by:
 
         cd ~/Library/Android/sdk/tools/bin/
         ./sdkmanager --licenses
+
+- "updateCordovaProjectToDemo" subtask runs during project build (file app/build.gradle, 66 line), this subtask automatically builds final cordova app file 'www.zip' (MainCordovaApplication/platforms/ios/www.zip) and copies it into app/src/main/res/raw/www.zip to use it by android app
 
  ---
 # Common methods <a name="common_methods"></a>
@@ -168,71 +102,41 @@ accept license agreements by:
             cordova.plugins.condo.closeApplication(function(response) {}, function(error) {});
 
 
-[//]: # (---)
+---
 
-[//]: # (# Testing&#40;as of November 1, 2022&#41;.  <a name="testing"></a>)
+# Testing  <a name="testing"></a>
 
-[//]: # (## Demo environment  <a name="testing-demo"></a>)
+## Demo environment  <a name="testing-demo"></a>
 
-[//]: # (1. Open safari on the device running the simulator with your application inside the CordovaDemoApp)
+1. Open Chrome and enter into url field 'chrome://inspect/#devices'
+Choose WebView in ai.doma.miniappdemo and lick "inspect"
 
-[//]: # (2. Open safari settings)
+   ![inspect](./screenshots/inspect.png)
 
-[//]: # ()
-[//]: # (   ![Settings]&#40;./ReadmeImages/Testing/Demo/2.png&#41;)
+2. Yay! Standard Chrome debugging tools are connected to your mini-application
 
-[//]: # (3. Open the Advanced tab and activate the "Show Develop menu in menu bar" setting)
+   ![console](./screenshots/console.png)
 
-[//]: # (   ![ShowDeveloperMenu]&#40;./ReadmeImages/Testing/Demo/3.png&#41;)
+## Production environment  <a name="testing-production"></a>
 
-[//]: # (4. Open the Develop menu in Safari, find your simulator and select your mini-application there.)
+1. Take www.zip archive:
 
-[//]: # (   ![OpenDeveloperMenu]&#40;./ReadmeImages/Testing/Demo/4.png&#41;)
+        MainCordovaApplication/platforms/ios/www.zip
 
-[//]: # (5. The standard Safari debugging tools connected to your mini-application will open)
+If it doesn't exist create it from folder:
 
-[//]: # (   ![DebuggingToolsShowed]&#40;./ReadmeImages/Testing/Demo/5.png&#41;)
+        /MainCordovaApplication/platforms/ios/www
 
-[//]: # ()
-[//]: # (## Production environment  <a name="testing-production"></a>)
+2. [Install](https://play.google.com/store/apps/details?id=ai.doma.client) Doma app from Google Play
 
-[//]: # (1.  Open the project directory and navigate to the subdirectory)
+3. The app you downloaded has built-in functionality for debugging mini-applications. To turn it on & off, you can use these deeplinks:
 
-[//]: # ()
-[//]: # (        /MainCordovaApplication/platforms/ios/)
+- [Click here to switch on](https://mobile.doma.ai/api/mobile/partners/miniapps/enable-local.html)
+- [Click here to switch off](https://mobile.doma.ai/api/mobile/partners/miniapps/disable-local.html)
 
-[//]: # (    In it you will find the www directory.)
+5. Now, on the main application screen in the list of mini-applications, the last button allows you to download or replace a previously downloaded mini-application from files. When you click on it, you need to select the previously taken www.zip archive.
 
-[//]: # (    Create a zip archive from the www directory by right-clicking on the folder and selecting Compress "www".)
-
-[//]: # ()
-[//]: # (2. Place the resulting archive in the iCloud storage of the account connected to the device on which you will be testing the application.)
-
-[//]: # ()
-[//]: # (3. Install the Doma app from the AppStore and log in to it)
-
-[//]: # (   https://apps.apple.com/us/app/doma/id1573897686)
-
-[//]: # ()
-[//]: # (4. The app you downloaded has built-in functionality for debugging mini-applications. To turn it on and off, you use links to open it on your device:)
-
-[//]: # ()
-[//]: # (- Switching on:)
-
-[//]: # ()
-[//]: # (  ai.doma.client.service://miniapps/local/enable)
-
-[//]: # (- Switching off:)
-
-[//]: # ()
-[//]: # (  ai.doma.client.service://miniapps/local/disable)
-
-[//]: # ()
-[//]: # (5. Now, on the main application screen in the list of mini-applications, the last button allows you to download or replace a previously downloaded mini-application from files. When you click on it, you need to select the previously downloaded archive in iCloud.)
-
-[//]: # ()
-[//]: # (6. The application loaded in this way has a built-in js console, which is accessible by clicking on the button at the bottom right of the open mini-application and is able to show a lot of additional information, including various errors.)
-
+6. The application loaded in this way has a built-in js console, which is accessible by clicking on the button at the bottom right of the open mini-application and is able to show a lot of additional information, including various errors.
 
 ---
 # Publishing <a name="publishing"></a>
