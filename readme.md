@@ -113,7 +113,7 @@ example:
 ## Demo environment  <a name="testing-demo"></a>
 
 1. Open Chrome and enter into url field `chrome://inspect/#devices`
-Choose WebView in ai.doma.miniappdemo and lick "inspect"
+Choose WebView in ai.doma.miniappdemo and click "inspect"
 
    ![inspect](./screenshots/inspect.png)
 
