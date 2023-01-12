@@ -23,10 +23,6 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
 
 - make sure you have the latest version of Android Studio [installed](https://developer.android.com/studio/install)
 
-- for Windows systems, [install](https://learn.microsoft.com/en-us/windows/wsl/install) wsl subsystem, you need it to use linux commands from cmd like:
-
-        wsl <linux_command>
-
 - [install](https://github.com/nvm-sh/nvm#installing-and-updating) nvm, node and npm 
 
 - cordova installation:
@@ -49,6 +45,14 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
   it will contain your application code, edit it freely
 
 3. Launching and testing the application
+- Android app can work with miniapps builds for the iOS environment.
+
+- For linux and macOS: there is `updateCordovaProjectToDemo` subtask which runs during project build (file `app/build.gradle`, 66 line), this subtask automatically builds final cordova app file `www.zip` (`MainCordovaApplication/platforms/ios/www.zip`) and copies it into `app/src/main/res/raw/www.zip` to use it by android app.
+- For Windows: before each app build run these scripts:
+        
+        cordova prepare ios
+        tar -a -c -f www.zip www
+        copy /y  www.zip ..\..\..\app\src\main\res\raw\www.zip
 
 - open project folder with Android Studio, wait until indexing is complete, then choose real or virtual device and click play button
 
@@ -63,7 +67,6 @@ accept license agreements by:
         cd ~/Library/Android/sdk/tools/bin/
         ./sdkmanager --licenses
 
-- `updateCordovaProjectToDemo` subtask runs during project build (file `app/build.gradle`, 66 line), this subtask automatically builds final cordova app file `www.zip` (`MainCordovaApplication/platforms/ios/www.zip`) and copies it into `app/src/main/res/raw/www.zip` to use it by android app
 
 
 # Common methods <a name="common_methods"></a>
