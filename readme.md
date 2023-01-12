@@ -45,7 +45,7 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
   it will contain your application code, edit it freely
 
 3. Launching and testing the application
-- Android app can work with miniapps builds for the iOS environment.
+- Android app works with miniapps builds for the iOS environment from `MainCordovaApplication/platforms/ios`.
 
 - For linux and macOS: there is `updateCordovaProjectToDemo` subtask which runs during project build (file `app/build.gradle`, 66 line), this subtask automatically builds final cordova app file `www.zip` (`MainCordovaApplication/platforms/ios/www.zip`) and copies it into `app/src/main/res/raw/www.zip` to use it by android app.
 - For Windows: before each app build run these scripts:
