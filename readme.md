@@ -50,6 +50,7 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
 - For linux and macOS: there is `updateCordovaProjectToDemo` subtask which runs during project build (file `app/build.gradle`, 66 line), this subtask automatically builds final cordova app file `www.zip` (`MainCordovaApplication/platforms/ios/www.zip`) and copies it into `app/src/main/res/raw/www.zip` to use it by android app.
 - For Windows: before each app build run these scripts:
         
+        cd MainCordovaApplication
         cordova prepare ios
         tar -a -c -f www.zip www
         copy /y  www.zip ..\..\..\app\src\main\res\raw\www.zip
