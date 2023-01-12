@@ -126,7 +126,7 @@ Choose WebView in ai.doma.miniappdemo and click "inspect"
 
 ## Production environment  <a name="testing-production"></a>
 
-1. Take `www.zip` archive:
+1. Take `www.zip` archive built for ios environment (android can use it too):
 
         MainCordovaApplication/platforms/ios/www.zip
 
