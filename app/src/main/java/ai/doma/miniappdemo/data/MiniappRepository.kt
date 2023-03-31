@@ -45,6 +45,7 @@ class MiniappRepository @Inject constructor(
     }
 
 
+
     suspend fun downloadMiniappFromUrl(miniappId: String, url: String): Boolean {
         val stream = when (miniappId) {
             MINIAPP_SERVER_AUTH_BY_URL_ID -> context.resources.openRawResource(R.raw.www)

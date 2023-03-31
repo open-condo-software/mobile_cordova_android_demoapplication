@@ -1,6 +1,7 @@
 package ai.doma.feature_miniapps.presentation.view
 
 import ai.doma.core.DI.CoreComponent
+import ai.doma.core.system.permissions.requestPermissions
 import ai.doma.feature_miniapps.DI.DaggerMiniappsFeatureComponent
 import ai.doma.feature_miniapps.DI.MiniappsFeatureComponent
 import ai.doma.feature_miniapps.presentation.viewmodel.MiniappViewModel
@@ -37,6 +38,8 @@ import ai.doma.miniappdemo.data.MiniappRepository
 import ai.doma.miniappdemo.ext.logD
 import ai.doma.miniappdemo.getViewScope
 import android.graphics.Color
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 
 class MiniappDialogFragment : BaseDialog() {
 
@@ -112,7 +115,9 @@ class MiniappDialogFragment : BaseDialog() {
         model.loadApp()
 
         requireView().getViewScope().launch {
-            model.miniapp.collectAndTrace {
+            model.miniapp.flatMapLatest {(file, config) ->
+                requestPermissions(*config.requestedPermissions.toTypedArray()).map { file }
+            }.collectAndTrace {
                 savedInstanceState?.let { return@collectAndTrace }
                 appView.preferences.set("AndroidInsecureFileModeEnabled", true)
 

@@ -3,6 +3,7 @@ package ai.doma.feature_miniapps.presentation.viewmodel
 
 import ai.doma.feature_miniapps.domain.MiniappInteractor
 import ai.doma.miniappdemo.collectAndTrace
+import ai.doma.miniappdemo.domain.MiniappNativeConfig
 import android.webkit.CookieManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -30,7 +31,7 @@ class MiniappViewModel(
 ) : ViewModel() {
     lateinit var miniappId: String
 
-    val miniapp = MutableSharedFlow<File>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    val miniapp = MutableSharedFlow<Pair<File, MiniappNativeConfig>>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     fun loadApp(){
         CookieManager.getInstance().acceptCookie()
         miniappInteractor.getCookies(miniappId).cookies.forEach {
@@ -43,8 +44,9 @@ class MiniappViewModel(
                 .flowOn(Dispatchers.IO)
                 .collectAndTrace(onError = {
 
-                }) {
-                    miniapp.tryEmit(it)
+                }) { (file, config) ->
+
+                    miniapp.tryEmit(file to config)
                 }
         }
     }

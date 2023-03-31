@@ -1,6 +1,7 @@
 package ai.doma.feature_miniapps.presentation.view
 
 import ai.doma.core.DI.InjectHelper
+import ai.doma.core.system.permissions.requestPermissions
 import ai.doma.feature_miniapps.DI.DaggerMiniappsFeatureComponent
 import ai.doma.feature_miniapps.DI.MiniappsFeatureComponent
 import ai.doma.feature_miniapps.presentation.viewmodel.MiniappViewModel
@@ -38,6 +39,8 @@ import android.webkit.WebView
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.navArgs
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 
 class MiniappFragment : BaseFragment() {
 
@@ -100,7 +103,9 @@ class MiniappFragment : BaseFragment() {
         model.loadApp()
 
         viewScope.launch {
-            model.miniapp.collectAndTrace {
+            model.miniapp.flatMapLatest {(file, config) ->
+                requestPermissions(*config.requestedPermissions.toTypedArray()).map { file }
+            }.collectAndTrace {
                 savedInstanceState?.let { return@collectAndTrace }
                 appView.preferences.set("AndroidInsecureFileModeEnabled", true)
 
