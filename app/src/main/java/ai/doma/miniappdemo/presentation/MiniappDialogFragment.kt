@@ -38,6 +38,8 @@ import ai.doma.miniappdemo.data.MiniappRepository
 import ai.doma.miniappdemo.ext.logD
 import ai.doma.miniappdemo.getViewScope
 import android.graphics.Color
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
@@ -97,9 +99,9 @@ class MiniappDialogFragment : BaseDialog() {
         //dialog?.window?.setWindowAnimations(R.style.DialogAnimation)
 
         appView = makeWebView()
-        appView.view.layoutParams = FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
+        appView.view.layoutParams = ConstraintLayout.LayoutParams(
+            ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
+            ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
         )
         vb.root.addView( appView.view, 0)
         appView.view.requestFocusFromTouch()
@@ -135,7 +137,38 @@ class MiniappDialogFragment : BaseDialog() {
         vb.pbWait.indeterminateTintList = ColorStateList.valueOf(Color.parseColor("#000000"))
         vb.pbWait.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#82879F"))
 
-        vb.ivClose2.isVisible =  presentationStyle in listOf("push_fullscreen_with_navigation", "present_fullscreen_with_navigation")
+        vb.ivClose2.isVisible = presentationStyle in listOf("push_fullscreen_with_navigation", "present_fullscreen_with_navigation")
+
+        val set = ConstraintSet()
+        set.clone(vb.root)
+        set.connect(
+            appView.view.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP,
+            if (vb.ivClose2.isVisible) {
+                (requireContext().resources.displayMetrics.density * 60 + 0.5f).toInt()
+            } else 0
+        )
+        set.connect(
+            appView.view.id,
+            ConstraintSet.BOTTOM,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.BOTTOM,
+            0
+        )
+        set.connect(
+            appView.view.id,
+            ConstraintSet.START,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.START,
+            0
+        )
+        set.connect(
+            appView.view.id,
+            ConstraintSet.END,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.END,
+            0
+        )
+        set.applyTo(vb.root)
 
         vb.ivClose2.setOnClickListener {
             dismiss()

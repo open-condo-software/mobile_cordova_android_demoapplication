@@ -4,6 +4,7 @@ import ai.doma.feature_miniapps.domain.MINIAPP_SERVER_AUTH_BY_URL_ID
 import ai.doma.feature_miniapps.domain.MINIAPP_SERVER_AUTH_ID
 import ai.doma.miniappdemo.R
 import android.content.Context
+import androidx.annotation.Keep
 import org.json.JSONObject
 import java.io.*
 import java.util.zip.ZipEntry
@@ -110,7 +111,9 @@ class MiniappRepository @Inject constructor(
                 cordova_pluginsjsFile.delete()
             }
             cordova_pluginsjsFile.createNewFile()
-            cordova_pluginsjsFile.writeBytes(context.resources.openRawResource(R.raw.cordova_plugins).readBytes())
+            cordova_pluginsjsFile.writeBytes(
+                makePluginConfig(dir).encodeToByteArray()
+            )
 
             val cordovaJsSrcDir = File(dir, "cordova-js-src")
             if(cordovaJsSrcDir.exists() && cordovaJsSrcDir.isDirectory){
@@ -162,9 +165,46 @@ class MiniappRepository @Inject constructor(
         }
     }
 
+    private fun makePluginConfig(wwwFile: File): String {
+        val foundPlugins = MiniappPlugin.values().filter {
+            File(wwwFile, "plugins" + File.separator + it.dir).exists()
+        }
+
+        return """
+            cordova.define('cordova/plugin_list', function(require, exports, module) {
+              module.exports = [
+                ${foundPlugins.mapNotNull { it.configJson }.joinToString(separator = ",\n") { it }}
+              ];
+              module.exports.metadata = {
+                ${foundPlugins.mapNotNull { it.meta }.joinToString(separator = ",\n") { it }}
+              };
+            });
+        """.trimIndent()
+    }
+
     companion object {
         fun getMiniapp(context: Context, miniappId: String): File {
             return File(context.filesDir.path + File.separator + MINIAPPS_PATH + File.separator + miniappId)
+        }
+
+        @Keep
+        enum class MiniappPlugin(val dir: String, val meta: String, val configJson: String?) {
+            CONDO(
+                "cordova-plugin-condo",
+                "\"cordova-plugin-condo\": \"0.0.2\"",
+                "{\"id\": \"cordova-plugin-condo.Condo\", \"file\": \"plugins/cordova-plugin-condo/www/condo.js\", \"pluginId\": \"cordova-plugin-condo\", \"clobbers\": [ \"cordova.plugins.condo\" ]}"
+            ),
+            BLE(
+                "cordova-plugin-ble-central",
+                "\"cordova-plugin-ble-central\": \"1.5.0\"",
+                "{\"id\": \"cordova-plugin-ble-central.ble\", \"file\": \"plugins/cordova-plugin-ble-central/www/ble.js\", \"pluginId\": \"cordova-plugin-ble-central\", \"clobbers\": [ \"ble\" ]}"
+            ),
+            DEVICE(
+                "cordova-plugin-device",
+                "\"cordova-plugin-device\": \"2.1.0\"",
+                "{\"id\": \"cordova-plugin-device.device\", \"file\": \"plugins/cordova-plugin-device/www/device.js\", \"pluginId\": \"cordova-plugin-device\", \"clobbers\": [ \"device\" ]}"
+            ),
+            WHITELIST("cordova-plugin-whitelist", "\"cordova-plugin-whitelist\": \"1.3.5\"", null)
         }
     }
 

@@ -15,6 +15,12 @@
     <feature name="Condo">
         <param name="android-package" value="org.apache.cordova.Condo" />
     </feature>
+    <feature name="BLE">
+        <param name="android-package" value="org.apache.cordova.bluetooth.BLECentralPlugin" />
+    </feature>
+    <feature name="Device">
+        <param name="android-package" value="org.apache.cordova.Device" />
+    </feature>
     <feature name="Whitelist">
         <param name="android-package" value="org.apache.cordova.WhitelistPlugin" />
         <param name="onload" value="true" />
