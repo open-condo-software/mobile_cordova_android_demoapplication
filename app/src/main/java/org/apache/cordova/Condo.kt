@@ -94,7 +94,7 @@ class Condo : CordovaPlugin() {
                         json.put("url", lastRedirect)
                         json.put("body", lastRedirectBody)
                         json.put("status", lastRedirectBody)
-                        callbackContext.success(json.toString())
+                        callbackContext.success(json)
                     } else {
                         callbackContext.sendPluginResult(PluginResult(PluginResult.Status.ERROR))
                     }
