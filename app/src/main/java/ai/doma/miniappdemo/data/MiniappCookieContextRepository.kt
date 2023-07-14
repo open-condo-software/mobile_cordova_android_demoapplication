@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import androidx.annotation.Keep
 import androidx.core.content.edit
 import okhttp3.Cookie
+import okhttp3.HttpUrl
 import java.io.Serializable
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -47,4 +48,21 @@ class MiniappCookieContextRepository @Inject constructor(
         miniappCookies.cookies.add(MiniappCookie("https://" + cookie.domain, cookie.name, cookie.value, "$cookie; SameSite=None"))
         putCookies(miniappId, miniappCookies)
     }
+
+//    fun getCookiesForRedirect(url: HttpUrl): List<Cookie> {
+//        val miniappId = currentMiniappId ?: return listOf() // only when has active miniapp
+//        return getCookies(miniappId).cookies.map {cookie ->
+//            val okhttpCookie = Cookie.Builder()
+//                .name(cookie.name)
+//                .value(cookie.value)
+//                .expiresAt(cookie.expiresAt)
+//                .let { if(cookie.hostOnly) it.hostOnlyDomain(cookie.domain) else it.domain(cookie.domain) }
+//                .path(cookie.path)
+//                .let { if(cookie.secure) it.secure() else it }
+//                .let { if(cookie.httpOnly) it.httpOnly() else it }
+//                .build()
+//
+//            okhttpCookie
+//        }.filter { it.matches(url) }
+//    }
 }
