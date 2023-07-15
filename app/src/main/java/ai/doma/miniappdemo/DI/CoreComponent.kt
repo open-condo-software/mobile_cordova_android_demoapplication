@@ -81,7 +81,7 @@ class CoreModule(private val app: Application) {
     companion object {
         // этот токен под которым авторизован реальный пользователь в приложении домов
         var access_token: String =
-            "OdPG-9FKBlZcxBkjewrB0qT3miQwPo05.6wAf7q0/lbwDbl20a1AyBdebKTVnlV9mCjQRWruGyLE"
+            "nSRloP9ZLZg0KX1dyIpO8YUs22c92FRZ.1iA5j1hsl+NfHVIFh1u61c2kEk70bFbMZAnsB5Suioo"
 
         const val API_URL_DEBUG = "https://condo.d.doma.ai/"
 
@@ -113,19 +113,6 @@ class CoreModule(private val app: Application) {
             .cookieJar(object :
                 PersistentCookieJar(SetCookieCache(), SharedPrefsCookiePersistor(context)) {
                 override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-                    super.saveFromResponse(url, cookies)
-//                    val cookies = super.loadForRequest(url)
-//                    CookieManager.getInstance().acceptCookie()
-//                    cookies.forEach {
-//                        if (it.domain.contains("condo") && !it.domain.contains("miniapp")) return@forEach
-//                        CookieManager.getInstance()
-//                            .setCookie("https://" + it.domain, "$it; SameSite=None")
-//
-//                        miniappCookieContext.appendCookie(it)
-//                    }
-//                    CookieManager.getInstance().flush()
-
-                    //
                     CookieManager.getInstance().acceptCookie()
                     cookies.forEach {
                         CookieManager.getInstance()
@@ -136,30 +123,14 @@ class CoreModule(private val app: Application) {
                 }
 
                 override fun loadForRequest(url: HttpUrl): List<Cookie> {
-//                    return if (url.toString().contains("oidc/interaction")) {
-//                        super.loadForRequest(url) + listOf(
-//                            Cookie.Builder()
-//                                .domain("condo.d.doma.ai")
-//                                .path("/")
-//                                .name("keystone.sid")
-//                                .value(URLEncoder.encode("s:${access_token}", "UTF-8"))
-//                                .secure()
-//                                .httpOnly()
-//                                .build()
-//                        )
-//                    } else if (url.toString().contains("oidc/")) {
-//                        super.loadForRequest(url)
-//                    } else {
-//                        super.loadForRequest(url)
-//                        //listOf()
-//                    }
 
-                    val currentDomain = API_URL_DEBUG.substringAfter("://").replace("/admin/api", "")
+
+                    val currentDomain = API_URL_DEBUG.substringAfter("://").replace("/", "")
 
                     return if (url.toString().contains("$API_URL_DEBUG/admin/api")) {
                         listOf()
                     } else if (url.toString().contains("$currentDomain")) {
-                        super.loadForRequest(url) + listOf(
+                        miniappCookieContext.getCookiesForRedirect(url) + listOf(
                             Cookie.Builder()
                                 .domain(currentDomain)
                                 .path("/")
