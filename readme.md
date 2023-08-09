@@ -9,12 +9,13 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
 # Content
 1. [Getting started](#getting_started)
 2. [Common methods.](#common_methods)
-3. [Testing.](#testing)
+3. [Important differences.](#important_differences)
+4. [Testing.](#testing)
 
-   3.1 [Testing in Demo environment](#testing-demo)
+   4.1 [Testing in Demo environment](#testing-demo)
 
-   3.2 [Testing in Production environment](#testing-production)
-4. [Publishing.](#publishing)
+   4.2 [Testing in Production environment](#testing-production)
+5. [Publishing.](#publishing)
 
 
 # Getting started <a name="getting_started"></a>
@@ -109,6 +110,16 @@ example:
 ```javascript  
         cordova.plugins.condo.closeApplication(function(response) {}, function(error) {});
 ```
+
+
+
+# Important differences. <a name="important_differences"></a>
+Unlike the standard Cordova, our application uses an additional configuration file, which must be located in the www directory and named **native_config.json**
+
+This file is a json file and may contain the following fields:
+
+1. presentationStyle - application display type, required, should be set to **present_fullscreen**
+2. mobile_permissions - An array of strings describing the necessary permissions for the application to work. the array can contain the following values: **record_audio**, **camera**, **audio_settings**
 
 
 
