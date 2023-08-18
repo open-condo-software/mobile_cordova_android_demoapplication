@@ -7,7 +7,6 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
 
 # Important! Known issues.
 1. only version 10 of Cordova is currently supported
-2. Ant.design components do not work
 
 
 # Content
