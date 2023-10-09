@@ -46,6 +46,7 @@ import ai.doma.miniappdemo.ext.show
 import ai.doma.miniappdemo.ext.showFragment
 import ai.doma.miniappdemo.ext.updatePadding
 import ai.doma.miniappdemo.getViewScope
+import android.app.Dialog
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -57,6 +58,7 @@ import android.graphics.drawable.RippleDrawable
 import android.webkit.ValueCallback
 import android.webkit.WebStorage
 import android.webkit.WebView
+import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.math.MathUtils
@@ -272,6 +274,24 @@ class MiniappDialogFragment : BaseDialog() {
                 vb.ivBack.isVisible = it.isNotEmpty()
                 logD { """stack: ${it.joinToString(separator = "\n") { it.toString() }}""" }
                 vb.tvTitleColapsed.text = it.lastOrNull()?.name
+            }
+        }
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return object : Dialog(requireContext(), theme) {
+            override fun onBackPressed() {
+                if(presentationStyle != "native" || MiniappBackStack.backstack.value.isEmpty()){
+                    dismiss()
+                } else {
+                    appView.engine.evaluateJavascript(
+                        """cordova.fireDocumentEvent('backbutton');""",
+                        ValueCallback {
+                            logD { it }
+                        })
+                    MiniappBackStack.pop()
+                    sendHistoryStateToJs()
+                }
             }
         }
     }
