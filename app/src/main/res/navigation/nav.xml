@@ -21,7 +21,15 @@
         android:name="ai.doma.feature_miniapps.presentation.view.MiniappFragment"
         android:label="MiniappFragment" >
         <argument
-            android:name="miniappId"
+            android:name="miniappEntity"
+            app:argType="ai.doma.miniappdemo.domain.MiniappEntity" />
+        <argument
+            android:name="presentationStyle"
             app:argType="string" />
+        <argument
+            android:name="payload"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
 </navigation>

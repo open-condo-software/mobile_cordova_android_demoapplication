@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?android:attr/colorControlHighlight">
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <solid android:color="#90ffffff" />
+            <corners android:radius="16dp" />
+        </shape>
+    </item>
+    <item
+        android:width="32dp"
+        android:height="32dp">
+        <layer-list>
+            <item>
+                <shape android:shape="oval">
+                    <solid android:color="@android:color/white" />
+                </shape>
+            </item>
+            <item
+                android:width="32dp"
+                android:height="32dp">
+                <vector xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:width="32dp"
+                    android:height="32dp"
+                    android:viewportWidth="24"
+                    android:viewportHeight="24">
+                    <path
+                        android:fillColor="#000000"
+                        android:pathData="M8.6059,7.1917L16.8083,15.3941A0.2,0.2 90,0 1,16.8083 15.6769L15.677,16.8083A0.2,0.2 0,0 1,15.3941 16.8083L7.1917,8.6059A0.2,0.2 0,0 1,7.1917 8.323L8.3231,7.1917A0.2,0.2 90,0 1,8.6059 7.1917z" />
+                    <path
+                        android:fillColor="#000000"
+                        android:pathData="M7.1917,15.3941L15.3941,7.1916A0.2,0.2 0,0 1,15.677 7.1916L16.8083,8.323A0.2,0.2 0,0 1,16.8083 8.6059L8.6059,16.8083A0.2,0.2 90,0 1,8.3231 16.8083L7.1917,15.6769A0.2,0.2 0,0 1,7.1917 15.3941z" />
+                </vector>
+            </item>
+        </layer-list>
+    </item>
+</ripple>

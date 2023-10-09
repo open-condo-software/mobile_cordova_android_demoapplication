@@ -4,7 +4,10 @@ import ai.doma.core.DI.CoreComponent
 import ai.doma.core.DI.CoreModule
 import ai.doma.miniappdemo.collectAndTrace
 import ai.doma.miniappdemo.data.RetrofitApi
+import ai.doma.miniappdemo.domain.MiniappBackStack
+import ai.doma.miniappdemo.domain.MiniappBackStackEntry
 import ai.doma.miniappdemo.ext.logD
+import android.webkit.ValueCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -19,7 +22,9 @@ import org.json.JSONObject
 import java.net.URLEncoder
 import java.nio.Buffer
 import java.util.*
-
+object CondoPluginState {
+    var payload: String? = null
+}
 class Condo : CordovaPlugin() {
     private var authState: String? = null
 
@@ -114,6 +119,34 @@ class Condo : CordovaPlugin() {
             this.cordova.onMessage(ACTION_CLOSE_MINIAPP, Unit)
         }
 
+        if (action == ACTION_GET_LAUNCH_CONTEXT) {
+            callbackContext.success(CondoPluginState.payload.orEmpty())
+        }
+        if (action == ACTION_NOTIFY_CALL_ENDED) {
+            callbackContext.success()
+        }
+        if (action == ACTION_HISTORY_PUSH_STATE) {
+            MiniappBackStack.push(MiniappBackStackEntry(args.getString(1), args.get(0)))
+
+            sendHistoryStateToJs()
+            callbackContext.success()
+        }
+        if (action == ACTION_HISTORY_BACK) {
+            MiniappBackStack.pop()
+            sendHistoryStateToJs()
+            callbackContext.success()
+        }
+        if (action == ACTION_HISTORY_GO) {
+            MiniappBackStack.pop(args.getLong(0))
+            sendHistoryStateToJs()
+            callbackContext.success()
+        }
+        if (action == ACTION_HISTORY_REPLACE_STATE) {
+            MiniappBackStack.replace(MiniappBackStackEntry(args.getString(1), args.get(0)))
+            sendHistoryStateToJs()
+            callbackContext.success()
+        }
+
         logD { "CondoPlugin execute: action: ${action} args: ${args.toString()}" }
         return true
     }
@@ -169,6 +202,19 @@ class Condo : CordovaPlugin() {
         emit(api?.miniappRequestFullAuth(url, cookie) ?: throw Exception("no retrofit instance found"))
     }
 
+    fun sendHistoryStateToJs(){
+        val state = MiniappBackStack.backstack.value.lastOrNull()?.state
+        val stateStr = if (state is String){
+            """"$state""""
+        } else state.toString()
+        scope.launch(Dispatchers.Main) {
+
+            this@Condo.webView.engine.evaluateJavascript("""window.dispatchEvent(new PopStateEvent('condoPopstate', { 'state': $stateStr}));""", ValueCallback {
+                logD { it }
+            })
+        }
+    }
+
 
     companion object {
         private const val ACTION_REQUEST_AUTH_CODE = "requestAuthorizationCode"
@@ -176,6 +222,14 @@ class Condo : CordovaPlugin() {
         private const val ACTION_REQUEST_SERVER_AUTH = "requestServerAuthorization"
         private const val ACTION_REQUEST_SERVER_AUTH_BY_URL = "requestServerAuthorizationByUrl"
         private const val ACTION_GET_CURRENT_RESIDENT = "getCurrentResident"
+        private const val ACTION_GET_LAUNCH_CONTEXT = "getLaunchContext"
+        private const val ACTION_NOTIFY_CALL_ENDED = "notifyCallEnded"
+
+
+        private const val ACTION_HISTORY_PUSH_STATE = "historyPushState"
+        private const val ACTION_HISTORY_BACK = "historyBack"
+        private const val ACTION_HISTORY_REPLACE_STATE = "historyReplaceState"
+        private const val ACTION_HISTORY_GO = "historyGo"
 
         const val ACTION_CLOSE_MINIAPP = "closeApplication"
     }

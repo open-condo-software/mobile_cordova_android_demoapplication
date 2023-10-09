@@ -1,9 +1,11 @@
 package ai.doma.core.DI
 
+import ai.doma.feature_miniapps.domain.MiniappInteractor
 import ai.doma.miniappdemo.BuildConfig
 import ai.doma.miniappdemo.data.MiniappRepository
 import ai.doma.miniappdemo.data.MiniappCookieContextRepository
 import ai.doma.miniappdemo.data.RetrofitApi
+import ai.doma.miniappdemo.presentation.StartFragment
 import android.app.Application
 import android.content.Context
 import android.util.Log
@@ -33,9 +35,12 @@ const val KEY_LOCAL_PREFERENCES = "localPrefs"
 @Component(modules = [CoreModule::class])
 @Singleton
 abstract class CoreComponent {
+    abstract fun inject(startFragment: StartFragment)
+
     abstract val retrofitApi: RetrofitApi
     abstract val miniappRepository: MiniappRepository
     abstract val miniappCookieContextRepository: MiniappCookieContextRepository
+    abstract val miniappInteractor: MiniappInteractor
     abstract val context: Context
 
     init {
@@ -117,7 +122,7 @@ class CoreModule(private val app: Application) {
                     cookies.forEach {
                         CookieManager.getInstance()
                             .setCookie("https://" + it.domain, "$it; SameSite=None")
-                        miniappCookieContext.appendCookie(it)
+                        miniappCookieContext.appendCookie(it, true)
                     }
                     CookieManager.getInstance().flush()
                 }

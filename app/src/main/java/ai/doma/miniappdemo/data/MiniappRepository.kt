@@ -146,6 +146,15 @@ class MiniappRepository @Inject constructor(
             val appFile = File(cordovaJsSrcDirPluginAndroid, "app.js")
             appFile.createNewFile()
             appFile.writeBytes(context.resources.openRawResource(R.raw.app).readBytes())
+
+
+            val condoPluginFile = File(dir, "plugins/cordova-plugin-condo/www/condo.js")
+            if(condoPluginFile.exists()){
+                condoPluginFile.delete()
+            }
+            condoPluginFile.createNewFile()
+            condoPluginFile.writeBytes(context.resources.openRawResource(R.raw.condo_plugin).readBytes())
+
         }
 
         return true

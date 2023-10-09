@@ -33,9 +33,9 @@
     <Button
         android:id="@+id/button2"
         android:layout_width="206dp"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:layout_marginTop="16dp"
-        android:text="open miniapp with server auth by url"
+        android:text="Open miniapp!"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/button"
         app:layout_constraintHorizontal_bias="0.5"

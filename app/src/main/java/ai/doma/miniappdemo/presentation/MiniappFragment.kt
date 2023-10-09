@@ -32,19 +32,27 @@ import javax.inject.Inject
 import ai.doma.miniappdemo.R
 import ai.doma.miniappdemo.collectAndTrace
 import ai.doma.miniappdemo.data.MiniappRepository
+import ai.doma.miniappdemo.domain.JavaScriptInterface
+import ai.doma.miniappdemo.domain.MiniappEntity
+import ai.doma.miniappdemo.ext.gone
+import ai.doma.miniappdemo.getViewScope
 import android.graphics.Color
 import android.webkit.CookieManager
 import android.webkit.WebSettings
+import android.webkit.WebStorage
 import android.webkit.WebView
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.navArgs
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.isActive
+import org.intellij.lang.annotations.Language
 
 class MiniappFragment : BaseFragment() {
 
-    val args: MiniappFragmentArgs by navArgs()
     override val layout: Int
         get() = R.layout.fragment_flow_miniapp
     override val vb by viewBinding(FragmentFlowMiniappBinding::bind)
@@ -62,6 +70,7 @@ class MiniappFragment : BaseFragment() {
     private lateinit var miniappFeatureComponent: MiniappsFeatureComponent
 
     private var keepRunning = true
+    lateinit var miniappEntity: MiniappEntity
 
     var savedInstanceState: Bundle? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,18 +85,18 @@ class MiniappFragment : BaseFragment() {
         this.savedInstanceState = savedInstanceState
 
     }
-
     override fun onViewInit(view: View) {
 
-        val miniappId = args.miniappId
+        miniappEntity = arguments?.getSerializable("miniappEntity") as? MiniappEntity ?: return
+        val style = arguments?.getString("presentationStyle") ?: return
 
         appView = makeWebView()
         appView.view.layoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
         )
-        vb.root.addView( appView.view, 0)
         appView.view.requestFocusFromTouch()
+        vb.webViewContainer.addView(appView.view, 0)
         cordovaInterface = makeCordovaInterface()
         savedInstanceState?.let {
             cordovaInterface?.restoreInstanceState(it)
@@ -96,34 +105,65 @@ class MiniappFragment : BaseFragment() {
 
         logD { "CORDOVA ${savedInstanceState.toString()}" }
 
+
+
         init()
 
 
-        model.miniappId = miniappId
+        model.miniappName = miniappEntity.name.orEmpty()
+        model.miniappId = miniappEntity.id
+        model.version = miniappEntity.version
         model.loadApp()
 
         viewScope.launch {
             model.miniapp.flatMapLatest {(file, config) ->
-                requestPermissions(*config.requestedPermissions.toTypedArray()).map { file }
+                if(config.requestedPermissions.isNotEmpty()){
+                    requestPermissions(*config.requestedPermissions.toTypedArray()).map { file }
+                } else {
+                    flowOf(file)
+                }
             }.collectAndTrace {
                 savedInstanceState?.let { return@collectAndTrace }
                 appView.preferences.set("AndroidInsecureFileModeEnabled", true)
 
-                appView.loadUrlIntoView(it.toUri().toString() + "/www/index.html",true)
+                inflateLocalStorage(it.toUri().toString() + model.indexFilePath) {
+                    appView.loadUrlIntoView(it.toUri().toString() + model.indexFilePath, true)
+                }
             }
         }
         savedInstanceState?.let {
             MiniappRepository.getMiniapp(requireContext(), model.miniappId)?.let {
                 init()
                 appView.preferences.set("AndroidInsecureFileModeEnabled", true)
-                appView.loadUrlIntoView(it.toUri().toString() + "/www/index.html",false)
+                inflateLocalStorage(it.toUri().toString() + model.indexFilePath) {
+                    appView.loadUrlIntoView(it.toUri().toString() + model.indexFilePath, false)
+                }
             }
         }
 
-        vb.pbWait.indeterminateTintList = ColorStateList.valueOf(Color.parseColor("#000000"))
-        vb.pbWait.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#82879F"))
+        vb.pbWait.indeterminateTintList = ColorStateList.valueOf(Color.WHITE)
+        vb.pbWait.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E6E8F1"))
 
-        vb.ivClose2.isVisible = false
+        vb.ivClose.isVisible = style in listOf("push_fullscreen_with_navigation", "present_fullscreen_with_navigation")
+
+        //example
+
+//        requireView().postDelayed({
+//            val am = requireContext().getSystemService(AUDIO_SERVICE) as AudioManager
+//            am.mode = AudioManager.MODE_IN_COMMUNICATION
+//            val audioDevices: List<AudioDeviceInfo> =
+//                am.availableCommunicationDevices
+//
+//            var calmSpeakerAudioDevice: AudioDeviceInfo? = null
+//            for (audioDevice in audioDevices) {
+//                if (audioDevice.type == AudioDeviceInfo.TYPE_BUILTIN_EARPIECE) {
+//                    calmSpeakerAudioDevice = audioDevice
+//                }
+//            }
+//            am.setCommunicationDevice(calmSpeakerAudioDevice!!)
+//            am.isSpeakerphoneOn=false
+//        }, 20_000L)
+
     }
 
 
@@ -142,6 +182,7 @@ class MiniappFragment : BaseFragment() {
     }
 
     private fun loadConfig() {
+        CondoPluginState.payload = arguments?.getString("payload")
         val parser = ConfigXmlParser()
         parser.parse(requireContext())
         preferences = parser.preferences;
@@ -151,10 +192,63 @@ class MiniappFragment : BaseFragment() {
         //Config.parser = parser
     }
 
+    private fun inflateLocalStorage(url: String, onInflated: () -> Unit) {
+        view?.getViewScope()?.launch {
+            val inflateJs = model.inflateLocalStorage(miniappEntity.id)?.let { map ->
+                map.map {
+
+                    "window.localStorage.setItem(\"${it.key}\", ${
+                        it.value.let {
+                            if (it.getOrNull(0) in listOf(
+                                    '\'', '"', '{', '['
+                                ) || it.toFloatOrNull() != null
+                            ) "JSON.stringify($it)" else "\"$it\""
+                        }
+                    });"
+                }
+            }?.joinToString(separator = "") { it }
+                ?.let { it + "console.log(\"injected token!!\");" }
+
+            inflateJs?.let {
+                logD { "localStorage test restore: $it" }
+                val mimeType = "text/html"
+                val encoding = "utf-8"
+                val injection = "<script type='text/javascript'>$it </script>"
+                model.awaitLocalStorageInflate = true
+                (appView.view as? WebView)?.loadDataWithBaseURL(
+                    url,
+                    injection,
+                    mimeType,
+                    encoding,
+                    null
+                )
+                while (isActive && model.awaitLocalStorageInflate) {
+                    delay(50)
+                }
+            }
+
+            model.awaitMiniappFirstLoad = true
+            view?.post(onInflated)
+        }
+
+    }
+
     private fun makeWebView(): CordovaWebView {
-        return CordovaWebViewImpl(makeWebViewEngine()).apply {
-            this.cookieManager.setCookiesEnabled(true)
-            CookieManager.getInstance().setAcceptThirdPartyCookies(this.view as WebView, true)
+        val engine = makeWebViewEngine()
+        return CordovaWebViewImpl(engine).apply {
+            val webview = (this.getView() as? WebView)
+            webview?.webViewClient = object: org.apache.cordova.engine.SystemWebViewClient(engine!! as org.apache.cordova.engine.SystemWebViewEngine) {
+                override fun onLoadResource(view: WebView?, url: String?) {
+                    super.onLoadResource(view, url)
+                    if (url != null) {
+                        model.onResourceLoadUrls.add(url)
+                    }
+                }
+            }
+            webview?.addJavascriptInterface(
+                JavaScriptInterface(model.miniappInteractor),
+                "jsInterface"
+            )
         }
     }
 
@@ -189,7 +283,15 @@ class MiniappFragment : BaseFragment() {
                 findNavController().popBackStack()
             }
             "onPageFinished" -> {
-                vb.pbWait.isVisible = false
+                if (model.awaitLocalStorageInflate) {
+                    model.awaitLocalStorageInflate = false
+                } else {
+                    if (model.awaitMiniappFirstLoad) {
+                        model.awaitMiniappFirstLoad = false
+                        appView.clearHistory()
+                    }
+                    vb.pbWait.gone()
+                }
                 logD { "CORDOVA onPageFinished" }
             }
             Condo.ACTION_CLOSE_MINIAPP -> {
@@ -244,6 +346,7 @@ class MiniappFragment : BaseFragment() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun startActivityForResult(intent: Intent?, requestCode: Int, options: Bundle?) {
 
         // Capture requestCode here so that it is captured in the setActivityResultCallback() case.
@@ -252,12 +355,14 @@ class MiniappFragment : BaseFragment() {
         super.startActivityForResult(intent, requestCode, options)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         logD { "CORDOVA onActivityResult $requestCode $resultCode" }
         cordovaInterface?.onActivityResult(requestCode, resultCode, data)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -312,6 +417,27 @@ class MiniappFragment : BaseFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        @Language("js")
+        val js = """
+            function allStorage() {
+
+                var values = [],
+                    keys = Object.keys(window.localStorage),
+                    i = keys.length;
+
+                while ( i-- ) {
+                    values.push( keys[i] + "--+++===+++-->>" +  window.localStorage.getItem(keys[i])  );
+                }
+
+                return values;
+            }
+            allStorage();
+        """.trimIndent()
+        (appView.view as? WebView)?.evaluateJavascript(js) {
+            logD { "localStorage test: $it" }
+            model.saveLocalStorage(it)
+            WebStorage.getInstance().deleteAllData()
+        }
         appView.handleDestroy()
         model.releaseApp()
     }

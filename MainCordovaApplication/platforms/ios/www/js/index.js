@@ -85,7 +85,7 @@ function onDeviceReady() {
                 // вот она
                 cordova.plugins.condo.requestServerAuthorizationByUrl('https://miniapp.d.doma.ai/oidc/auth', {}, function(response) {
                     console.log(response);
-                    console.log('recive authorication result => ', JSON.stringify(response));
+                    console.log('receive authorization result => ', JSON.stringify(response));
                     console.log('reloading');
                     window.location.reload();
                 }, function(error) {
@@ -95,6 +95,5 @@ function onDeviceReady() {
         })
         .catch(err => console.error(err));
 
-    document.getElementById("CloseButton").addEventListener("click", closeApplication);
 
 }

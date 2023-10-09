@@ -5,6 +5,7 @@ import ai.doma.core.DI.CoreComponentProvider
 import ai.doma.core.DI.CoreModule
 import ai.doma.core.DI.DaggerCoreComponent
 import android.app.Application
+import androidx.appcompat.app.AppCompatDelegate
 
 class App: Application(), CoreComponentProvider {
     override val appBundleId: String
@@ -20,5 +21,11 @@ class App: Application(), CoreComponentProvider {
                 .build()
         }
         return coreComponent
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
     }
 }
