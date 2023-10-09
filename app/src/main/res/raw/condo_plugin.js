@@ -54,7 +54,7 @@ cordova.define("cordova-plugin-condo.Condo", function (require, exports, module)
     }
 
     exports.hostApplication.baseURL = function () {
-        return jsInterface.condoHostApplicationBaseURL() || 'https://v1.doma.ai';
+        return jsInterface.condoHostApplicationBaseURL() || 'https://condo.d.doma.ai';
     }
 
     exports.hostApplication.installationID = function () {
