@@ -55,6 +55,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.RippleDrawable
+import android.view.KeyEvent
 import android.webkit.ValueCallback
 import android.webkit.WebStorage
 import android.webkit.WebView
@@ -276,12 +277,13 @@ class MiniappDialogFragment : BaseDialog() {
                 vb.tvTitleColapsed.text = it.lastOrNull()?.name
             }
         }
-    }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return object : Dialog(requireContext(), theme) {
-            override fun onBackPressed() {
-                if(presentationStyle != "native" || MiniappBackStack.backstack.value.isEmpty()){
+        dialog?.setOnKeyListener { dialog, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK &&
+                event.action == KeyEvent.ACTION_UP &&
+                !event.isCanceled
+            ) {
+                if(presentationStyle != "native" ) return@setOnKeyListener false
+                if (MiniappBackStack.backstack.value.isEmpty()) {
                     dismiss()
                 } else {
                     appView.engine.evaluateJavascript(
@@ -292,9 +294,13 @@ class MiniappDialogFragment : BaseDialog() {
                     MiniappBackStack.pop()
                     sendHistoryStateToJs()
                 }
-            }
+                true
+            } else if (keyCode == KeyEvent.KEYCODE_BACK) {
+                presentationStyle == "native"
+            } else false
         }
     }
+
 
     private fun initNativeNavigationUI() {
         vb.ivClose2.show()
