@@ -4,6 +4,10 @@ exports.requestAuthorization = function (arg0, arg1, success, error) {
     exec(success, error, 'Condo', 'requestAuthorization', [arg0, arg1]);
 };
 
+exports.requestServerAuthorization = function (arg0, arg1, success, error) {
+    exec(success, error, 'Condo', 'requestServerAuthorization', [arg0, arg1]);
+};
+
 exports.requestServerAuthorizationByUrl = function (arg0, arg1, success, error) {
     exec(success, error, 'Condo', 'requestServerAuthorizationByUrl', [arg0, arg1]);
 };

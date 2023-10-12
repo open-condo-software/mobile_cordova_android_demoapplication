@@ -210,7 +210,12 @@ class MiniappDialogFragment : BaseDialog() {
         set.clone(vb.root)
         set.connect(
             vb.webViewContainer.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP,
-            if (vb.ivClose.isVisible || presentationStyle == "native") {
+            if (presentationStyle in listOf(
+                    "push_fullscreen_with_navigation",
+                    "present_fullscreen_with_navigation",
+                    "native"
+                )
+            ) {
                 requireContext().pixels(DEFAULT_NAV_BAR_HEIGHT_DP)
             } else 0
         )
@@ -266,17 +271,18 @@ class MiniappDialogFragment : BaseDialog() {
 
         if (presentationStyle == "native") {
             initNativeNavigationUI()
+            view.getViewScope().launch {
+                MiniappBackStack.backstack.collectAndTrace {
+                    vb.ivClose2.isVisible = it.isEmpty()
+                    vb.ivBack.isVisible = it.isNotEmpty()
+                    logD { """stack: ${it.joinToString(separator = "\n") { it.toString() }}""" }
+                    vb.tvTitleColapsed.text = it.lastOrNull()?.name
+                }
+            }
         }
         vb.tvTitleColapsed.setTextColor(Color.parseColor("#222222"))
 
-        view.getViewScope().launch {
-            MiniappBackStack.backstack.collectAndTrace {
-                vb.ivClose2.isVisible = it.isEmpty()
-                vb.ivBack.isVisible = it.isNotEmpty()
-                logD { """stack: ${it.joinToString(separator = "\n") { it.toString() }}""" }
-                vb.tvTitleColapsed.text = it.lastOrNull()?.name
-            }
-        }
+
         dialog?.setOnKeyListener { dialog, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_BACK &&
                 event.action == KeyEvent.ACTION_UP &&
@@ -304,6 +310,7 @@ class MiniappDialogFragment : BaseDialog() {
 
     private fun initNativeNavigationUI() {
         vb.ivClose2.show()
+        vb.shadowBar.show()
         (appView.view as? WebView)?.apply {
             //appView.view.setBackgroundResource(R.drawable.shape_white_bg)
             val scrollDistanceMax = requireContext().pixels(20).toFloat()
