@@ -60,7 +60,7 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
         cd MainCordovaApplication
         cordova prepare ios
         tar -a -c -f www.zip www
-        copy /y  www.zip ..\..\..\app\src\main\res\raw\www.zip
+        copy /y  www.zip ..\app\src\main\res\raw\www.zip
 
 - open project folder with Android Studio, wait until indexing is complete, then choose real or virtual device and click play button
 
