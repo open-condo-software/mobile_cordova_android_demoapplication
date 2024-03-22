@@ -23,7 +23,14 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
 
 - make sure you have the latest version of Android Studio [installed](https://developer.android.com/studio/install)
 
-- [install](https://github.com/nvm-sh/nvm#installing-and-updating) nvm, node and npm 
+- install node and npm
+    - method 1:
+      [install](https://github.com/nvm-sh/nvm#installing-and-updating) nvm
+      launch in terminal:
+
+          nvm install node
+    - method 2 (for windows):
+      [install node](https://nodejs.org/en/download)
 
 - cordova installation:
 
@@ -49,7 +56,7 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
 
 - For linux and macOS: there is `updateCordovaProjectToDemo` subtask which runs during project build (file `app/build.gradle`, 66 line), this subtask automatically builds final cordova app file `www.zip` (`MainCordovaApplication/platforms/ios/www.zip`) and copies it into `app/src/main/res/raw/www.zip` to use it by android app.
 - For Windows: before each app build run these scripts:
-        
+
         cd MainCordovaApplication
         cordova prepare ios
         tar -a -c -f www.zip www
@@ -91,7 +98,7 @@ example:
 
 `function getCurrentResident(success, error)`
 
-  example:
+example:
 ```javascript  
         cordova.plugins.condo.getCurrentResident(function(response) {
             console.log("current resident\address => ", JSON.stringify(response));
@@ -105,7 +112,7 @@ example:
 
 `function closeApplication(success, error)`
 
-  example:
+example:
 ```javascript  
         cordova.plugins.condo.closeApplication(function(response) {}, function(error) {});
 ```
@@ -127,7 +134,7 @@ This file is a json file and may contain the following fields:
 ## Demo environment  <a name="testing-demo"></a>
 
 1. Open Chrome and enter into url field `chrome://inspect/#devices`
-Choose WebView in ai.doma.miniappdemo and click "inspect"
+   Choose WebView in ai.doma.miniappdemo and click "inspect"
 
    ![inspect](./screenshots/inspect.png)
 
@@ -141,7 +148,7 @@ Choose WebView in ai.doma.miniappdemo and click "inspect"
 
         MainCordovaApplication/platforms/ios/www.zip
 
-    If it doesn't exist create it from folder:
+   If it doesn't exist create it from folder:
 
         /MainCordovaApplication/platforms/ios/www
 
