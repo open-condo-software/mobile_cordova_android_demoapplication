@@ -25,14 +25,12 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
 
 - install node and npm
     - method 1:
-      [install](https://github.com/nvm-sh/nvm#installing-and-updating) nvm
-  
-      launch in terminal:
+        - [install](https://github.com/nvm-sh/nvm#installing-and-updating) nvm
+        - and next launch in terminal:
 
-          nvm install node
-  
+              nvm install node
     - method 2 (for windows):
-      [install node](https://nodejs.org/en/download)
+      just [install node](https://nodejs.org/en/download)
 
 - cordova installation:
 
