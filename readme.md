@@ -171,7 +171,7 @@ But we **strongly recommend** to do otherwise. You can control what the system n
 
 **Note**: you can make the titles on your side big and beautiful and always pass the title blank to the methods above.
 
-In addition, you need to recognize when a user has pressed the system back button. This is achieved by subscribing to the already existing Cordova backbutton event https://cordova.apache.org/docs/en/12.x/cordova/events/events.html#backbutton This event is called for the system button on iOS as well.
+In addition, you need to recognize when a user has pressed the system back button. This is achieved by subscribing to the already existing Cordova backbutton event https://cordova.apache.org/docs/en/12.x/cordova/events/events.html#backbutton This event is called for the system button as well.
 
 ```
 document.addEventListener("backbutton", onBackKeyDown, false);
