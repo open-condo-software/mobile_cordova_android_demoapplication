@@ -9,12 +9,14 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
 1. [Getting started](#getting_started)
 2. [Common methods.](#common_methods)
 3. [Important differences.](#important_differences)
-4. [Testing.](#testing)
+4. [Navigation system.](#navigation_system)
+5. [Environment.](#environment)
+6. [Testing.](#testing)
 
-   4.1 [Testing in Demo environment](#testing-demo)
-
-   4.2 [Testing in Production environment](#testing-production)
-5. [Publishing.](#publishing)
+   6.1 [Testing in Demo environment](#testing-demo)
+   
+   6.2 [Testing in Production environment](#testing-production)
+7. [Publishing.](#publishing)
 
 
 # Getting started <a name="getting_started"></a>
@@ -117,6 +119,128 @@ example:
         cordova.plugins.condo.closeApplication(function(response) {}, function(error) {});
 ```
 
+
+
+# Navigation system. <a name="navigation_system"></a>
+
+We provide native navigation for your minapps with js code side control. Each miniapp launches with a system navigation bar and a close button on it. In general, you can implement everything else on your side, make an additional panel or controls for nested navigation and work with them.
+
+But we **strongly recommend** to do otherwise. You can control what the system navigation bar shows on your side. This is achieved by using the following methods on history object inside condo plugin:
+
+- Add a new item to the navigation stack:
+
+    `function pushState(state, title)`
+
+    example:
+
+    ```
+    cordova.plugins.condo.history.pushState({"StateKey": "StateValue"}, "Title for navigation bar");
+    ```
+
+- Replace the current item in the navigation stack:
+
+    `function replaceState(state, title)`
+
+    example:
+
+    ```
+    cordova.plugins.condo.history.replaceState({"StateKey": "StateValue"}, "Title for navigation bar");
+    ```
+
+- Take a step back:
+
+    `function back()`
+
+    example:
+
+    ```
+    cordova.plugins.condo.history.back();
+    ```
+
+- Take a few steps back:
+
+    `function go(amount)`
+
+    example:
+
+    ```
+    cordova.plugins.condo.history.go(-1);
+    ```
+
+    Note that unlike the system history object, the parameter passed here is always negative and can only lead backwards. We have no possibility to go forward to the place we came back from.
+
+**Note**: you can make the titles on your side big and beautiful and always pass the title blank to the methods above.
+
+In addition, you need to recognize when a user has pressed the system back button. This is achieved by subscribing to the already existing Cordova backbutton event https://cordova.apache.org/docs/en/12.x/cordova/events/events.html#backbutton This event is called for the system button on iOS as well.
+
+```
+document.addEventListener("backbutton", onBackKeyDown, false);
+
+function onBackKeyDown() {
+    // Handle the back button
+}
+```
+
+And of course after all these changes you can get the State that is now showing on the navigation bar. This is done similarly to the standard system method - by subscribing to the condoPopstate event:
+```
+addEventListener("condoPopstate", (event) => {console.log("condoPopstate => ", JSON.stringify(event.state));});
+```
+
+
+
+# Environment. <a name="environment"></a>
+
+The plugin provides a **hostApplication** object that can synchronously output information about the current environment in which the mini-app is running.
+
+- Find out whether the application is looking at the production server or not:
+
+    `function isDemoEnvironment()`
+
+    example:
+
+    ```
+    console.log(cordova.plugins.condo.hostApplication.isDemoEnvironment());
+    ```
+
+- The base address of the current server:
+
+    `function baseURL()`
+
+    example:
+
+    ```
+    console.log(cordova.plugins.condo.hostApplication.baseURL());
+    ```
+
+- Main application installation ID:
+
+    `function installationID()`
+
+    example:
+
+    ```
+    console.log(cordova.plugins.condo.hostApplication.installationID());
+    ```
+
+- Device ID:
+
+    `function deviceID()`
+
+    example:
+
+    ```
+    console.log(cordova.plugins.condo.hostApplication.deviceID());
+    ```
+
+- Application locale:
+
+    `function locale()`
+
+    example:
+
+    ```
+    console.log(cordova.plugins.condo.hostApplication.locale());
+    ```
 
 
 # Important differences. <a name="important_differences"></a>
