@@ -22,4 +22,24 @@
         <item name="android:windowEnterAnimation">@anim/activity_slide_in_right</item>
         <item name="android:windowExitAnimation">@anim/activity_slide_out_right</item>
     </style>
+
+    <style name="MediaFullscreenTheme" parent="Theme.MaterialComponents">
+
+        <item name="windowNoTitle">true</item>
+
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:fitsSystemWindows">false</item>
+        <item name="android:windowActionBar">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+
+        <item name="android:windowContentOverlay">@null</item>
+
+        <item name="android:backgroundDimEnabled">false</item>
+
+
+    </style>
 </resources>

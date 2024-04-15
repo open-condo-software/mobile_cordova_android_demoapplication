@@ -65,6 +65,9 @@ dependencies {
     implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
     implementation "androidx.navigation:navigation-fragment-ktx:2.4.1"
     implementation "androidx.navigation:navigation-ui-ktx:2.4.1"
+    implementation "com.pdfview:pdfview-android:1.0.0"
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    kapt 'com.github.bumptech.glide:compiler:4.11.0'
 }
 
 task updateCordovaProjectToDemo {
@@ -73,6 +76,24 @@ task updateCordovaProjectToDemo {
             return
         }
         println "updateCordovaProjectToDemo start!"
+
+        //update platforms/ios entirely
+        exec {
+            workingDir "../MainCordovaApplication"
+            if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+                commandLine 'cordova', 'platform' ,'remove', 'ios'
+            } else {
+                commandLine 'cordova', 'platform' , 'remove', 'ios'
+            }
+        }
+        exec {
+            workingDir "../MainCordovaApplication"
+            if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+                commandLine 'cordova', 'platform', 'add', 'ios'
+            } else {
+                commandLine 'cordova', 'platform', 'add', 'ios'
+            }
+        }
         exec {
             workingDir "../MainCordovaApplication"
             if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {

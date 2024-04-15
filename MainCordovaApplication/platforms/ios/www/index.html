@@ -32,8 +32,8 @@
         <!-- DOMA!
             Ниже в meta теге необходимо указать сервера, с которыми предстоит взаимодействовать по примеру https://v1.doma.ai
         -->
-        <meta http-equiv="Content-Security-Policy" content="default-src * 'self' https://v1.doma.ai data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
-
+<!--        <meta http-equiv="Content-Security-Policy" content="default-src * 'self' https://v1.doma.ai data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">-->
+        <meta https-equiv="Content-Security-Policy" content="default-src *;" />
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
@@ -48,6 +48,8 @@
                 <p class="event listening">Connecting to Device</p>
                 <p class="event received">Device is Ready</p>
             </div>
+            <a href="#" onclick="window.open('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', '_blank', 'fullscreen=yes'); return false;">MyPDF</a>
+
         </div>
         <script src="cordova.js"></script>
         <script src="js/index.js"></script>

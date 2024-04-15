@@ -1,7 +1,6 @@
 package ai.doma.feature_miniapps.presentation.view
 
 import ai.doma.core.DI.CoreComponent
-import ai.doma.core.DI.InjectHelper
 import ai.doma.core.system.permissions.requestPermissions
 import ai.doma.feature_miniapps.DI.DaggerMiniappsFeatureComponent
 import ai.doma.feature_miniapps.DI.MiniappsFeatureComponent
@@ -46,7 +45,8 @@ import ai.doma.miniappdemo.ext.show
 import ai.doma.miniappdemo.ext.showFragment
 import ai.doma.miniappdemo.ext.updatePadding
 import ai.doma.miniappdemo.getViewScope
-import android.app.Dialog
+import ai.doma.miniappdemo.presentation.PdfItem
+import ai.doma.miniappdemo.presentation.SimplePDFViewActivity
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -57,9 +57,9 @@ import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.RippleDrawable
 import android.view.KeyEvent
 import android.webkit.ValueCallback
+import android.webkit.WebResourceRequest
 import android.webkit.WebStorage
 import android.webkit.WebView
-import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.math.MathUtils
@@ -319,7 +319,7 @@ class MiniappDialogFragment : BaseDialog() {
                     MathUtils.clamp(this.scrollY / scrollDistanceMax, 0.0f, 1.0f)
                 vb.shadowBar.elevation = requireContext().pixels(8).toFloat() * transitionProgress
 
-                logD { "${System.currentTimeMillis()}  shadowBar.update()" }
+//                logD { "${System.currentTimeMillis()}  shadowBar.update()" }
                 true
             }
 
@@ -402,6 +402,21 @@ class MiniappDialogFragment : BaseDialog() {
             val webview = (this.getView() as? WebView)
             webview?.webViewClient = object :
                 org.apache.cordova.engine.SystemWebViewClient(engine!! as SystemWebViewEngine) {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView?,
+                    request: WebResourceRequest?
+                ): Boolean {
+                    request?.let {
+                        if (it.url.lastPathSegment?.endsWith(".pdf") == true) {
+                            SimplePDFViewActivity.openViewer(
+                                requireActivity(),
+                                PdfItem("0", it.url.lastPathSegment.toString(), it.url.toString(), isDownloadable = true)
+                            )
+                        }
+                    }
+                    return super.shouldOverrideUrlLoading(view, request)
+                }
+
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                     super.onPageStarted(view, url, favicon)
                 }
