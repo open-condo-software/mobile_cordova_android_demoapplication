@@ -8,8 +8,8 @@
     <content src="index.html" />
 <!--    <allow-intent href="http://*/*" />-->
 <!--    <allow-intent href="https://*/*" />-->
-    <allow-intent href="https://activation.sber.ru/canvas-deeplink/*" />
-    <allow-intent href="https://aa.esmart.ru/*" />
+    <allow-intent href="https://activation.sber.ru/canvas-deeplink*" />
+    <allow-intent href="https://aa.esmart.ru*" />
 
     <preference name="loglevel" value="DEBUG" />
     <feature name="Camera">
