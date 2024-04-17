@@ -10,6 +10,8 @@
 <!--    <allow-intent href="https://*/*" />-->
     <allow-intent href="https://activation.sber.ru/canvas-deeplink*" />
     <allow-intent href="https://aa.esmart.ru*" />
+    <allow-intent href="https://redirect.appmetrica.yandex.com/serve/99886805188442016" />
+    <allow-intent href="https://redirect.appmetrica.yandex.com/serve/604272426313869290" />
 
     <preference name="loglevel" value="DEBUG" />
     <feature name="Camera">

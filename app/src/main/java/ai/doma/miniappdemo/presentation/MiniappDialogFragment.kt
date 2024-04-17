@@ -406,8 +406,9 @@ class MiniappDialogFragment : BaseDialog() {
                     view: WebView?,
                     request: WebResourceRequest?
                 ): Boolean {
+
                     request?.let {
-                        if (it.url.lastPathSegment?.endsWith(".pdf") == true) {
+                        if (it.url.lastPathSegment?.endsWith(".pdf") == true && it.hasGesture()) {
                             SimplePDFViewActivity.openViewer(
                                 requireActivity(),
                                 PdfItem("0", it.url.lastPathSegment.toString(), it.url.toString(), isDownloadable = true)
