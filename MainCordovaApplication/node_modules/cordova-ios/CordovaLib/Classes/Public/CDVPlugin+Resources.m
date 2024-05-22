@@ -17,7 +17,7 @@
  under the License.
  */
 
-#import <Cordova/CDVPlugin+Resources.h>
+#import "CDVPlugin+Resources.h"
 
 @implementation CDVPlugin (CDVPluginResources)
 

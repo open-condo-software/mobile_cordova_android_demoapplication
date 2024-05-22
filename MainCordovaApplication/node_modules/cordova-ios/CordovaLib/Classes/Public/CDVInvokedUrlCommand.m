@@ -17,7 +17,7 @@
  under the License.
  */
 
-#import <Cordova/CDVInvokedUrlCommand.h>
+#import "CDVInvokedUrlCommand.h"
 #import "CDVJSON_private.h"
 
 @implementation CDVInvokedUrlCommand

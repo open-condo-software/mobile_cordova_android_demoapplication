@@ -17,10 +17,10 @@
  under the License.
  */
 
-#import <Cordova/CDVPlugin.h>
+#import "CDVPlugin.h"
 #import "CDVPlugin+Private.h"
-#import <Cordova/CDVPlugin+Resources.h>
-#import <Cordova/CDVViewController.h>
+#import "CDVPlugin+Resources.h"
+#import "CDVViewController.h"
 #include <objc/message.h>
 
 @implementation UIView (org_apache_cordova_UIView_Extension)
@@ -66,7 +66,7 @@ NSString* const CDVViewWillTransitionToSizeNotification = @"CDVViewWillTransitio
 // Do not override these methods. Use pluginInitialize instead.
 - (instancetype)initWithWebViewEngine:(id <CDVWebViewEngineProtocol>)theWebViewEngine
 {
-    self = [self init];
+    self = [super init];
     if (self) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onAppTerminate) name:UIApplicationWillTerminateNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onMemoryWarning) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
