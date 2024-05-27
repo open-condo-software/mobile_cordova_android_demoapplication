@@ -10,13 +10,14 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
 2. [Common methods.](#common_methods)
 3. [Important differences.](#important_differences)
 4. [Navigation system.](#navigation_system)
-5. [Environment.](#environment)
-6. [Testing.](#testing)
+5. [Working with user input.](#working_with_user_input)
+6. [Environment.](#environment)
+7. [Testing.](#testing)
 
    6.1 [Testing in Demo environment](#testing-demo)
    
    6.2 [Testing in Production environment](#testing-production)
-7. [Publishing.](#publishing)
+8. [Publishing.](#publishing)
 
 
 # Getting started <a name="getting_started"></a>
