@@ -35,6 +35,18 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTop"
             android:theme="@style/MediaFullscreenTheme" />
+
+        <provider
+            android:name="org.apache.cordova.camera.FileProvider"
+            android:authorities="org.apache.cordova.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/camera_provider_paths" />
+
+        </provider>
     </application>
 
 </manifest>

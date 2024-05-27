@@ -40,6 +40,22 @@
         <meta name="color-scheme" content="light dark">
         <link rel="stylesheet" href="css/index.css">
         <title>Hello World</title>
+
+        <script>
+           function shareSomeDocument() {
+               fetch('https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Cat_August_2010-4.jpg/2880px-Cat_August_2010-4.jpg')
+                  .then(function(response) {
+                       return response.blob()
+                   })
+                   .then(function(blob) {
+                      var file = new File([blob], "document.jpg", {type: blob.type});
+                      var filesArray = [file];
+                         navigator.share({
+                         files: filesArray
+                      });
+                   });
+               }
+    </script>
     </head>
     <body style="overflow: hidden;">
         <div class="app">
@@ -49,6 +65,8 @@
                 <p class="event received">Device is Ready</p>
             </div>
             <a href="#" onclick="window.open('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', '_blank', 'fullscreen=yes'); return false;">MyPDF</a>
+
+            <a href="#" onclick="shareSomeDocument()">MyPDF</a>
 
         </div>
         <script src="cordova.js"></script>

@@ -213,7 +213,13 @@ class MiniappRepository @Inject constructor(
                 "\"cordova-plugin-device\": \"2.1.0\"",
                 "{\"id\": \"cordova-plugin-device.device\", \"file\": \"plugins/cordova-plugin-device/www/device.js\", \"pluginId\": \"cordova-plugin-device\", \"clobbers\": [ \"device\" ]}"
             ),
-            WHITELIST("cordova-plugin-whitelist", "\"cordova-plugin-whitelist\": \"1.3.5\"", null)
+            WHITELIST("cordova-plugin-whitelist", "\"cordova-plugin-whitelist\": \"1.3.5\"", null),
+            SHARE(
+                "nl.madebymark.share",
+                "\"cordova-plugin-share\": \"0.1.3\"",
+                "{ \"id\": \"nl.madebymark.share.Share\",\"file\": \"plugins/nl.madebymark.share/www/share.js\",\"pluginId\": \"nl.madebymark.share\",\"clobbers\": [\"window.navigator.share\" ]}"
+            ),
+
         }
     }
 
