@@ -188,6 +188,34 @@ addEventListener("condoPopstate", (event) => {console.log("condoPopstate => ", J
 
 
 
+# Working with user input. <a name="working_with_user_input"></a>
+
+## Sharing files. <a name="sharing_files"></a>
+
+Original Documentation: [**WEB File API**](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share)
+### Example for sharing local document:
+```html
+    <script>
+       function shareSomeDocument() {
+           fetch('images.com/some_image.png')
+              .then(function(response) {
+                   return response.blob()
+               })
+               .then(function(blob) {
+                  var file = new File([blob], "image.png", {type: blob.type});
+                  var filesArray = [file];
+                     navigator.share({
+                     files: filesArray
+                  });
+               });
+           }
+    </script>
+```
+
+> [!CAUTION]
+> On iOS calls to `navigator.share` with `files` argument **must** be called in responce to user interaction (button tap, or alike).
+> Otherwise it throws an error
+
 # Environment. <a name="environment"></a>
 
 The plugin provides a **hostApplication** object that can synchronously output information about the current environment in which the mini-app is running.
