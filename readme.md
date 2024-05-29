@@ -217,6 +217,22 @@ Original Documentation: [**WEB File API**](https://developer.mozilla.org/en-US/d
 > On iOS calls to `navigator.share` with `files` argument **must** be called in responce to user interaction (button tap, or alike).
 > Otherwise it throws an error
 
+## 3.2 Importing Files. <a name="import_files"></a>
+Original Documentation: [**Using files from web applications**](https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications)
+### Importing images:
+Button opens camera:
+```html
+<input type="file" accept="image/*" capture>
+```
+Button opens image picker (select one image):
+```html
+<input type="file" accept="image/*">
+```
+Button opens image picker (select multiple images):
+```html
+<input type="file" accept="image/*" multiple>
+```
+
 # Environment. <a name="environment"></a>
 
 The plugin provides a **hostApplication** object that can synchronously output information about the current environment in which the mini-app is running.
