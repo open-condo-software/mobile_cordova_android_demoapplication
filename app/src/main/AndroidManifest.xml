@@ -6,11 +6,12 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:allowBackup="false"
         android:name=".App"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -37,7 +38,7 @@
             android:theme="@style/MediaFullscreenTheme" />
 
         <provider
-            android:name="org.apache.cordova.camera.FileProvider"
+            android:name="org.apache.cordova.FileProvider"
             android:authorities="org.apache.cordova.provider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -47,6 +48,19 @@
                 android:resource="@xml/camera_provider_paths" />
 
         </provider>
+
+        <provider
+            android:name="org.apache.cordova.camera.FileProvider"
+            android:authorities="ai.doma.miniappdemo.cordova.plugin.camera.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/camera_provider_paths" />
+        </provider>
+
+
+
     </application>
 
 </manifest>

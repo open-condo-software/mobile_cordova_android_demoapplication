@@ -1902,3 +1902,72 @@ window.cordova = require('cordova');
 require('cordova/init');
 
 })();
+
+
+document.addEventListener("deviceready", onDeviceReady2, false);
+
+var target = document.body
+// создаем новый экземпляр наблюдателя
+var observer = new MutationObserver(function(mutations) {
+    if (mutations == undefined) return
+
+    mutations.forEach(function (mutation) {
+        mutation.addedNodes.forEach((node) => {
+            if (typeof node.hasAttribute === 'function' && node.hasAttribute('capture') && node.type === 'file') {
+                node.onclick = function(e) {
+                    onClickInput(node)
+
+                    return false
+                }
+            } else {
+                console.log(2)
+            }
+        })
+    })
+});
+
+// создаем конфигурации для наблюдателя
+var config = { attributes: true, childList: true, characterData: true };
+
+// запускаем механизм наблюдения
+observer.observe(target,  config);
+
+function onClickInput(v) {
+    navigator.camera.getPicture(
+        function(imageData) {
+            fetch(`data:image/jpeg;base64,${imageData}`).then((v2) => {
+                return v2.blob()
+            }).then((blob) => {
+                let currDate = new Date()
+                var file = new File([blob], `capture_${currDate.valueOf()}.jpg`, {type: blob.type});
+
+                var dt  = new DataTransfer();
+                dt.items.add(file);
+                var file_list = dt.files;
+
+                v.files = file_list
+            });
+
+        },
+        cameraErrorCallback,
+        {
+            quality: 50,
+            destinationType: Camera.DestinationType.DATA_URL,
+            encodingType: Camera.EncodingType.JPEG
+        }
+    )
+}
+
+function onDeviceReady2() {
+    document.querySelectorAll('input[type="file"][accept="image/*"][capture]').forEach(function(v, i) {
+        v.onclick = function(e) {
+            onClickInput(v)
+
+            return false
+        }
+    })
+}
+
+function cameraErrorCallback(message) {
+    console.log(message)
+}

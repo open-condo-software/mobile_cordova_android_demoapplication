@@ -219,7 +219,29 @@ class MiniappRepository @Inject constructor(
                 "\"cordova-plugin-share\": \"0.1.3\"",
                 "{ \"id\": \"nl.madebymark.share.Share\",\"file\": \"plugins/nl.madebymark.share/www/share.js\",\"pluginId\": \"nl.madebymark.share\",\"clobbers\": [\"window.navigator.share\" ]}"
             ),
+            CAMERA(
+                "cordova-plugin-camera",
+                "\"cordova-plugin-camera\": \"7.0.0\"",
+                "{ \"id\": \"cordova-plugin-camera.Camera\",\"file\": \"plugins/cordova-plugin-camera/www/CameraConstants.js\",\"pluginId\": \"cordova-plugin-camera\",\"clobbers\": [\"Camera\" ]}"
 
+            ),
+            CAMERA2(
+                "cordova-plugin-camera",
+                "\"cordova-plugin-camera\": \"7.0.0\"",
+                "{ \"id\": \"cordova-plugin-camera.CameraPopoverOptions\",\"file\": \"plugins/cordova-plugin-camera/www/CameraPopoverOptions.js\",\"pluginId\": \"cordova-plugin-camera\",\"clobbers\": [\"CameraPopoverOptions\" ]}"
+
+            ),
+            CAMERA3(
+                "cordova-plugin-camera",
+                "\"cordova-plugin-camera\": \"7.0.0\"",
+                "{ \"id\": \"cordova-plugin-camera.camera\",\"file\": \"plugins/cordova-plugin-camera/www/Camera.js\",\"pluginId\": \"cordova-plugin-camera\",\"clobbers\": [\"navigator.camera\" ]}"
+
+            ),
+            CAMERA4(
+                "cordova-plugin-camera",
+                "\"cordova-plugin-camera\": \"7.0.0\"",
+                "{ \"id\": \"cordova-plugin-camera.CameraPopoverHandle\",\"file\": \"plugins/cordova-plugin-camera/www/CameraPopoverHandle.js\",\"pluginId\": \"cordova-plugin-camera\",\"clobbers\": [\"CameraPopoverHandle\" ]}"
+            )
         }
     }
 
