@@ -15,6 +15,15 @@
     "cordova-plugin-condo": {
       "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
     },
+    "cordova-plugin-file": {
+      "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
+    },
+    "cordova-plugin-media-capture": {
+      "CAMERA_USAGE_DESCRIPTION": " ",
+      "MICROPHONE_USAGE_DESCRIPTION": " ",
+      "PHOTOLIBRARY_USAGE_DESCRIPTION": " ",
+      "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
+    },
     "cordova-plugin-whitelist": {
       "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
     },

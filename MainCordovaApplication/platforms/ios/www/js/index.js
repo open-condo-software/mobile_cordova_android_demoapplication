@@ -96,6 +96,100 @@ function onDeviceReady() {
         .catch(err => console.error(err));
 
 
+    var cordova = cordova.require('cordova'),
+        helpers = cordova.require('./helpers');
+
+    var SUCCESS_EVENT = "pendingcaptureresult";
+    var FAILURE_EVENT = "pendingcaptureerror";
+
+    var sChannel = cordova.addStickyDocumentEventHandler(SUCCESS_EVENT);
+    var fChannel = cordova.addStickyDocumentEventHandler(FAILURE_EVENT);
+
+    // We fire one of two events in the case where the activity gets killed while
+    // the user is capturing audio, image, video, etc. in a separate activity
+    document.addEventListener("resume", function(event) {
+        console.log('resume');
+        if (event.pendingResult && event.pendingResult.pluginServiceName === "Capture") {
+            if (event.pendingResult.pluginStatus === "OK") {
+                var mediaFiles = helpers.wrapMediaFiles(event.pendingResult.result);
+                sChannel.fire(mediaFiles);
+            } else {
+                fChannel.fire(event.pendingResult.result);
+            }
+        }
+    });
 }
 
 
+//document.getElementById('test_video').onclick = function(e) {
+//
+//    var captureSuccess = function(mediaFiles) {
+//        var i, path, len;
+//        for (i = 0, len = mediaFiles.length; i < len; i += 1) {
+//            path = mediaFiles[i].fullPath;
+//            // do something interesting with the file
+//        }
+//    };
+//
+//    // capture error callback
+//    var captureError = function(error) {
+//        navigator.notification.alert('Error code: ' + error.code, null, 'Capture Error');
+//    };
+//
+//    // start video capture
+//    navigator.device.capture.captureVideo(captureSuccess, captureError, { limit : 1 });
+//
+//    return false
+//}
+
+var videoBtnElement = document.getElementById('video')
+var videoElement = document.getElementsByTagName('video')[0]
+var videoInput = document.getElementById('test_video')
+
+//videoInput.onclick = function(e) {
+//    var captureSuccess = function(mediaFiles) {
+//        var i, path, len;
+//        for (i = 0, len = mediaFiles.length; i < len; i += 1) {
+//            console.log(mediaFiles[i])
+//            path = mediaFiles[i].fullPath;
+////                videoElement.src = path
+//            // do something interesting with the file
+//            var xhr = new XMLHttpRequest()
+//            xhr.open('GET', path)
+//            var index = i
+//            xhr.onload = function (r) {
+//                console.log(r)
+//                var content = xhr.response;
+//                var blob = new Blob([content]);
+//                console.log(blob);
+//                file = new File([blob], mediaFiles[index].name, { type: 'video/mp4' })
+//                file.end = mediaFiles[index].size
+//                console.log(file)
+//
+//                file.path2 = path
+//
+//                var dt  = new DataTransfer();
+//                dt.items.add(file);
+//                var file_list = dt.files;
+//
+//                videoInput.files = file_list
+//            }
+//            xhr.responseType = 'blob'
+//            xhr.send()
+//        }
+//    };
+//
+//    // capture error callback
+//    var captureError = function(error) {
+//        navigator.notification.alert('Error code: ' + error.code, null, 'Capture Error');
+//    };
+//
+//    // start video capture
+//    navigator.device.capture.captureVideo(captureSuccess, captureError, { limit : 1 });
+//    return false
+//}
+
+videoBtnElement.onclick = function(e) {
+    var files = [videoInput.files[0]]
+    navigator.share({files})
+}

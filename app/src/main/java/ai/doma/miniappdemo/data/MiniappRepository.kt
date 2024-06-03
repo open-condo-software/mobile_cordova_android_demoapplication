@@ -46,7 +46,6 @@ class MiniappRepository @Inject constructor(
     }
 
 
-
     suspend fun downloadMiniappFromUrl(miniappId: String, url: String): Boolean {
         val stream = when (miniappId) {
             MINIAPP_SERVER_AUTH_BY_URL_ID -> context.resources.openRawResource(R.raw.www)
@@ -100,14 +99,14 @@ class MiniappRepository @Inject constructor(
 
             //меняем файлы кордовы на свои собственные
             val cordovajsFile = File(dir, "cordova.js")
-            if(cordovajsFile.exists()){
+            if (cordovajsFile.exists()) {
                 cordovajsFile.delete()
             }
             cordovajsFile.createNewFile()
             cordovajsFile.writeBytes(context.resources.openRawResource(R.raw.cordova).readBytes())
 
             val cordova_pluginsjsFile = File(dir, "cordova_plugins.js")
-            if(cordova_pluginsjsFile.exists()){
+            if (cordova_pluginsjsFile.exists()) {
                 cordova_pluginsjsFile.delete()
             }
             cordova_pluginsjsFile.createNewFile()
@@ -116,7 +115,7 @@ class MiniappRepository @Inject constructor(
             )
 
             val cordovaJsSrcDir = File(dir, "cordova-js-src")
-            if(cordovaJsSrcDir.exists() && cordovaJsSrcDir.isDirectory){
+            if (cordovaJsSrcDir.exists() && cordovaJsSrcDir.isDirectory) {
                 cordovaJsSrcDir.deleteRecursively()
             }
             cordovaJsSrcDir.mkdir()
@@ -137,11 +136,15 @@ class MiniappRepository @Inject constructor(
 
             val nativeapiproviderFile = File(cordovaJsSrcDirAndroid, "nativeapiprovider.js")
             nativeapiproviderFile.createNewFile()
-            nativeapiproviderFile.writeBytes(context.resources.openRawResource(R.raw.nativeapiprovider).readBytes())
+            nativeapiproviderFile.writeBytes(
+                context.resources.openRawResource(R.raw.nativeapiprovider).readBytes()
+            )
 
             val promptbasednativeapiFile = File(cordovaJsSrcDirAndroid, "promptbasednativeapi.js")
             promptbasednativeapiFile.createNewFile()
-            promptbasednativeapiFile.writeBytes(context.resources.openRawResource(R.raw.promptbasednativeapi).readBytes())
+            promptbasednativeapiFile.writeBytes(
+                context.resources.openRawResource(R.raw.promptbasednativeapi).readBytes()
+            )
 
             val appFile = File(cordovaJsSrcDirPluginAndroid, "app.js")
             appFile.createNewFile()
@@ -149,11 +152,13 @@ class MiniappRepository @Inject constructor(
 
 
             val condoPluginFile = File(dir, "plugins/cordova-plugin-condo/www/condo.js")
-            if(condoPluginFile.exists()){
+            if (condoPluginFile.exists()) {
                 condoPluginFile.delete()
             }
             condoPluginFile.createNewFile()
-            condoPluginFile.writeBytes(context.resources.openRawResource(R.raw.condo_plugin).readBytes())
+            condoPluginFile.writeBytes(
+                context.resources.openRawResource(R.raw.condo_plugin).readBytes()
+            )
 
         }
 
@@ -185,7 +190,7 @@ class MiniappRepository @Inject constructor(
                 ${foundPlugins.mapNotNull { it.configJson }.joinToString(separator = ",\n") { it }}
               ];
               module.exports.metadata = {
-                ${foundPlugins.mapNotNull { it.meta }.joinToString(separator = ",\n") { it }}
+                ${foundPlugins.mapNotNull { it.meta }.toSet().joinToString(separator = ",\n") { it }}
               };
             });
         """.trimIndent()
@@ -241,7 +246,367 @@ class MiniappRepository @Inject constructor(
                 "cordova-plugin-camera",
                 "\"cordova-plugin-camera\": \"7.0.0\"",
                 "{ \"id\": \"cordova-plugin-camera.CameraPopoverHandle\",\"file\": \"plugins/cordova-plugin-camera/www/CameraPopoverHandle.js\",\"pluginId\": \"cordova-plugin-camera\",\"clobbers\": [\"CameraPopoverHandle\" ]}"
-            )
+            ),
+            MEDIA_CAPRUTE(
+                "cordova-plugin-media-capture",
+                "\"cordova-plugin-media-capture\": \"1.4.3\"",
+                "{\n" +
+                        "      \"id\": \"cordova-plugin-media-capture.capture\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-media-capture/www/capture.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-media-capture\",\n" +
+                        "      \"clobbers\": [\n" +
+                        "        \"navigator.device.capture\"\n" +
+                        "      ]\n" +
+                        "    }"
+            ),
+            MEDIA_CAPRUTE_HELPERS(
+                "cordova-plugin-media-capture",
+                "\"cordova-plugin-media-capture\": \"1.4.3\"",
+                "    {\n" +
+                        "      \"id\": \"cordova-plugin-media-capture.helpers\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-media-capture/www/helpers.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-media-capture\",\n" +
+                        "      \"runs\": true\n" +
+                        "    }"
+            ),
+            MEDIA_CAPRUTE_CAO(
+                "cordova-plugin-media-capture",
+                "\"cordova-plugin-media-capture\": \"1.4.3\"",
+                "{\n" +
+                        "      \"id\": \"cordova-plugin-media-capture.CaptureAudioOptions\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-media-capture/www/CaptureAudioOptions.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-media-capture\",\n" +
+                        "      \"clobbers\": [\n" +
+                        "        \"CaptureAudioOptions\"\n" +
+                        "      ]\n" +
+                        "    }"
+            ),
+            MEDIA_CAPRUTE_CIO(
+                "cordova-plugin-media-capture",
+                "\"cordova-plugin-media-capture\": \"1.4.3\"",
+                "{\n" +
+                        "      \"id\": \"cordova-plugin-media-capture.CaptureImageOptions\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-media-capture/www/CaptureImageOptions.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-media-capture\",\n" +
+                        "      \"clobbers\": [\n" +
+                        "        \"CaptureImageOptions\"\n" +
+                        "      ]\n" +
+                        "    }"
+            ),
+            MEDIA_CAPRUTE_CVO(
+                "cordova-plugin-media-capture",
+                "\"cordova-plugin-media-capture\": \"1.4.3\"",
+                "{\n" +
+                        "      \"id\": \"cordova-plugin-media-capture.CaptureVideoOptions\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-media-capture/www/CaptureVideoOptions.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-media-capture\",\n" +
+                        "      \"clobbers\": [\n" +
+                        "        \"CaptureVideoOptions\"\n" +
+                        "      ]\n" +
+                        "    }"
+            ),
+            MEDIA_CAPRUTE_ERROR(
+                "cordova-plugin-media-capture",
+                "\"cordova-plugin-media-capture\": \"1.4.3\"",
+                "{\n" +
+                        "      \"id\": \"cordova-plugin-media-capture.CaptureError\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-media-capture/www/CaptureError.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-media-capture\",\n" +
+                        "      \"clobbers\": [\n" +
+                        "        \"CaptureError\"\n" +
+                        "      ]\n" +
+                        "    }"
+            ),
+            MEDIA_CAPRUTE_MEDIA_FILE_DATA(
+                "cordova-plugin-media-capture",
+                "\"cordova-plugin-media-capture\": \"1.4.3\"",
+                "{\n" +
+                        "      \"id\": \"cordova-plugin-media-capture.MediaFileData\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-media-capture/www/MediaFileData.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-media-capture\",\n" +
+                        "      \"clobbers\": [\n" +
+                        "        \"MediaFileData\"\n" +
+                        "      ]\n" +
+                        "    }"
+            ),
+            MEDIA_CAPRUTE_MEDIA_FILE(
+                "cordova-plugin-media-capture",
+                "\"cordova-plugin-media-capture\": \"1.4.3\"",
+                "{\n" +
+                        "      \"id\": \"cordova-plugin-media-capture.MediaFile\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-media-capture/www/MediaFile.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-media-capture\",\n" +
+                        "      \"clobbers\": [\n" +
+                        "        \"MediaFile\"\n" +
+                        "      ]\n" +
+                        "    }"
+            ),
+
+
+
+            FILE_DIRECTORY_ENTRY(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "      \"id\": \"cordova-plugin-file.DirectoryEntry\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-file/www/DirectoryEntry.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "      \"clobbers\": [\n" +
+                        "        \"window.DirectoryEntry\"\n" +
+                        "      ]\n" +
+                        "    }"
+            ),
+            FILE_DIRECTORY_READER(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "      \"id\": \"cordova-plugin-file.DirectoryReader\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-file/www/DirectoryReader.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "      \"clobbers\": [\n" +
+                        "        \"window.DirectoryReader\"\n" +
+                        "      ]\n" +
+                        "    }"
+            ),
+            FILE_ENTRY(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "      \"id\": \"cordova-plugin-file.Entry\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-file/www/Entry.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "      \"clobbers\": [\n" +
+                        "        \"window.Entry\"\n" +
+                        "      ]\n" +
+                        "    }"
+            ),
+            FILE(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "      \"id\": \"cordova-plugin-file.File\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-file/www/File.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "      \"clobbers\": [\n" +
+                        "        \"window.File2\"\n" +
+                        "      ]\n" +
+                        "    }"
+            ),
+            FILE_FILE_ENTRY(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "      \"id\": \"cordova-plugin-file.FileEntry\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-file/www/FileEntry.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "      \"clobbers\": [\n" +
+                        "        \"window.FileEntry\"\n" +
+                        "      ]\n" +
+                        "    }"
+            ),
+            FILE_FILE_ERROR(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "      \"id\": \"cordova-plugin-file.FileError\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-file/www/FileError.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "      \"clobbers\": [\n" +
+                        "        \"window.FileError\"\n" +
+                        "      ]\n" +
+                        "    }"
+            ),
+//            FILE_READER(
+//                "cordova-plugin-file",
+//                "\"cordova-plugin-file\": \"4.3.3\"",
+//                "{\n" +
+//                        "      \"id\": \"cordova-plugin-file.FileReader\",\n" +
+//                        "      \"file\": \"plugins/cordova-plugin-file/www/FileReader.js\",\n" +
+//                        "      \"pluginId\": \"cordova-plugin-file\",\n" +
+//                        "      \"clobbers\": [\n" +
+//                        "        \"window.FileReader\"\n" +
+//                        "      ]\n" +
+//                        "    }"
+//            ),
+            FILE_SYSTEM(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "      \"id\": \"cordova-plugin-file.FileSystem\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-file/www/FileSystem.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "      \"clobbers\": [\n" +
+                        "        \"window.FileSystem\"\n" +
+                        "      ]\n" +
+                        "    }"
+            ),
+            FILE_UPLOAD_OPT(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "      \"id\": \"cordova-plugin-file.FileUploadOptions\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-file/www/FileUploadOptions.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "      \"clobbers\": [\n" +
+                        "        \"window.FileUploadOptions\"\n" +
+                        "      ]\n" +
+                        "    }"
+            ),
+            FILE_UPLOAD_RESULT(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "      \"id\": \"cordova-plugin-file.FileUploadResult\",\n" +
+                        "      \"file\": \"plugins/cordova-plugin-file/www/FileUploadResult.js\",\n" +
+                        "      \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "      \"clobbers\": [\n" +
+                        "        \"window.FileUploadResult\"\n" +
+                        "      ]\n" +
+                        "    }"
+            ),
+
+            FILE_WRITER(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "     \"id\": \"cordova-plugin-file.FileWriter\",\n" +
+                        "     \"file\": \"plugins/cordova-plugin-file/www/FileWriter.js\",\n" +
+                        "     \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "     \"clobbers\": [\n" +
+                        "     \"window.FileWriter\"\n" +
+                        "     ]\n" +
+                        "}"
+            ),
+            FILE_FLAGS(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "     \"id\": \"cordova-plugin-file.Flags\",\n" +
+                        "     \"file\": \"plugins/cordova-plugin-file/www/Flags.js\",\n" +
+                        "     \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "     \"clobbers\": [\n" +
+                        "     \"window.Flags\"\n" +
+                        "     ]\n" +
+                        "}"
+            ),
+            FILE_LFS(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "     \"id\": \"cordova-plugin-file.LocalFileSystem\",\n" +
+                        "     \"file\": \"plugins/cordova-plugin-file/www/LocalFileSystem.js\",\n" +
+                        "     \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "     \"clobbers\": [\n" +
+                        "     \"window.LocalFileSystem\"\n" +
+                        "     ],\n" +
+                        "     \"merges\": [\n" +
+                        "     \"window\"\n" +
+                        "     ]\n" +
+                        "}"
+            ),
+            FILE_META(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "     \"id\": \"cordova-plugin-file.Metadata\",\n" +
+                        "     \"file\": \"plugins/cordova-plugin-file/www/Metadata.js\",\n" +
+                        "     \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "     \"clobbers\": [\n" +
+                        "     \"window.Metadata\"\n" +
+                        "     ]\n" +
+                        "}"
+            ),
+            FILE_PROGRESS_EVENT(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "     \"id\": \"cordova-plugin-file.ProgressEvent\",\n" +
+                        "     \"file\": \"plugins/cordova-plugin-file/www/ProgressEvent.js\",\n" +
+                        "     \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "     \"clobbers\": [\n" +
+                        "     \"window.ProgressEvent\"\n" +
+                        "     ]\n" +
+                        "}"
+            ),
+            FILE_(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "     \"id\": \"cordova-plugin-file.fileSystems\",\n" +
+                        "     \"file\": \"plugins/cordova-plugin-file/www/fileSystems.js\",\n" +
+                        "     \"pluginId\": \"cordova-plugin-file\"\n" +
+                        "}"
+            ),
+            FILE_REQUEST_FILE_SYSTEM(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "     \"id\": \"cordova-plugin-file.requestFileSystem\",\n" +
+                        "     \"file\": \"plugins/cordova-plugin-file/www/requestFileSystem.js\",\n" +
+                        "     \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "     \"clobbers\": [\n" +
+                        "     \"window.requestFileSystem\"\n" +
+                        "     ]\n" +
+                        "}"
+            ),
+            FILE_W(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "     \"id\": \"cordova-plugin-file.resolveLocalFileSystemURI\",\n" +
+                        "     \"file\": \"plugins/cordova-plugin-file/www/resolveLocalFileSystemURI.js\",\n" +
+                        "     \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "     \"merges\": [\n" +
+                        "     \"window\"\n" +
+                        "     ]\n" +
+                        "}"
+            ),
+            FILE_IS_CHROME(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "     \"id\": \"cordova-plugin-file.isChrome\",\n" +
+                        "     \"file\": \"plugins/cordova-plugin-file/www/browser/isChrome.js\",\n" +
+                        "     \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "     \"runs\": true\n" +
+                        "}"
+            ),
+            FILE_FILE_SYSTEM(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "     \"id\": \"cordova-plugin-file.iosFileSystem\",\n" +
+                        "     \"file\": \"plugins/cordova-plugin-file/www/ios/FileSystem.js\",\n" +
+                        "     \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "     \"merges\": [\n" +
+                        "     \"FileSystem\"\n" +
+                        "     ]\n" +
+                        "}"
+            ),
+            FILE_FSR(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "     \"id\": \"cordova-plugin-file.fileSystems-roots\",\n" +
+                        "     \"file\": \"plugins/cordova-plugin-file/www/fileSystems-roots.js\",\n" +
+                        "     \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "     \"runs\": true\n" +
+                        "}"
+            ),
+            FILE_FSP(
+                "cordova-plugin-file",
+                "\"cordova-plugin-file\": \"4.3.3\"",
+                "{\n" +
+                        "     \"id\": \"cordova-plugin-file.fileSystemPaths\",\n" +
+                        "     \"file\": \"plugins/cordova-plugin-file/www/fileSystemPaths.js\",\n" +
+                        "     \"pluginId\": \"cordova-plugin-file\",\n" +
+                        "     \"merges\": [\n" +
+                        "     \"cordova\"\n" +
+                        "     ],\n" +
+                        "     \"runs\": true\n" +
+                        "}"
+            ),
+
         }
     }
 

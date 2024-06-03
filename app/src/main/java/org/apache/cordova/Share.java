@@ -3,6 +3,7 @@ package org.apache.cordova;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Base64;
+import android.util.Log;
 
 import org.apache.cordova.camera.FileProvider;
 import org.apache.cordova.engine.SystemWebChromeClient;
@@ -12,6 +13,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -61,7 +63,6 @@ public class Share extends CordovaPlugin {
 
                     }
 
-
                     this.shareFiles(filesToShare, text, title, mimetype, callbackContext);
                 } else {
                     this.share(text, title, mimetype, callbackContext);
@@ -72,7 +73,55 @@ public class Share extends CordovaPlugin {
 
             return true;
         }
+
+        if (action.equals("share_video")) {
+            String text = args.getString(0);
+            String title = args.getString(1);
+            String mimetype = args.getString(2);
+            String filePath = args.getString(3);
+
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        ArrayList<Uri> filesToShare = new ArrayList<>();
+                        String filename = new File(filePath).getName();
+                        File f = new File(getTempDirectoryPath(), filename);
+                        f.createNewFile();
+                        webView.getResourceApi().copyResource(Uri.parse(filePath), new FileOutputStream(f));
+
+                        Uri uri = FileProvider.getUriForFile(
+                                cordova.getContext(),
+                                "org.apache.cordova.provider",
+                                f
+                        );
+
+                        filesToShare.add(uri);
+
+                        shareFiles(filesToShare, text, title, mimetype, callbackContext);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+
+                }
+            };
+
+            this.cordova.getThreadPool().execute(r);
+        }
+
         return false;
+    }
+
+    private String getTempDirectoryPath() {
+        File cache = null;
+
+        // Use internal storage
+        cache = cordova.getActivity().getCacheDir();
+
+        // Create the cache directory if it doesn't exist
+        cache.mkdirs();
+        return cache.getAbsolutePath();
     }
 
     private void share(String text, String title, String mimetype, CallbackContext callbackContext) {

@@ -30,15 +30,24 @@
         var fileNames = []
         var filesToShare = []
 
+        var command = "share"
         if (files != undefined) {
             for (let index = 0; index < files.length; index++) {
 
-                let result_base64 = await readFileAsDataURL(files[index]);
-                fileNames[index] = files[index]
-                filesToShare[index] = {
-                    base64: result_base64,
-                    name: files[index].name
+                var file = files[index];
+                if (file.type === 'video/mp4') {
+                    command = "share_video"
+                    filesToShare = _impFiles.filter((v) => v.endsWith(file.name))[0]
+                } else {
+                    let result_base64 = await readFileAsDataURL(files[index]);
+                    fileNames[index] = files[index]
+                    filesToShare[index] = {
+                        base64: result_base64,
+                        name: files[index].name
+                    }
                 }
+
+
             }
         }
 
@@ -55,7 +64,8 @@
             mimetype = "text/plain";
         }
         text = (text + " " + url).trim()
-        cordova.exec(success,error,"Share","share",[text,title,mimetype, filesToShare]);
+
+        cordova.exec(success,error,"Share",command,[text,title,mimetype, filesToShare]);
     }
 
     async function readFileAsDataURL(file) {

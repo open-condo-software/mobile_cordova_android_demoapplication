@@ -66,11 +66,19 @@
             </div>
             <a href="#" onclick="window.open('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', '_blank', 'fullscreen=yes'); return false;">MyPDF</a>
 
-            <a href="#" onclick="shareSomeDocument()">MyPDF</a>
+            <a id='test' href="#" onclick="shareSomeDocument()">MyPDF</a>
 
             <input type="file" accept="image/*" capture/>
 
         </div>
+
+        <div id="videoCaptureApp"
+             class="app" > <!-- video capture app -->
+<!--            <video controls autoplay width="420"></video >-->
+            <button id="video">Capture video </button >
+            <input id="test_video" type="file" accept="video/*" capture>
+        </div >  <!-- video capture app-->  </div >
+
         <script src="cordova.js"></script>
         <script src="js/index.js"></script>
     </body>
