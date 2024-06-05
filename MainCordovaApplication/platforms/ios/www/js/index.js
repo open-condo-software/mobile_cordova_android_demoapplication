@@ -135,13 +135,22 @@ function onDeviceReady() {
 
 
 var videoBtnElement = document.getElementById('video')
-var videoElement = document.getElementsByTagName('video')[0]
-var videoInput = document.getElementById('test_video')
+var videoInput = document.getElementById('video_capture_input')
 
+var imageBtnElement = document.getElementById('image')
+var imageInput = document.getElementById('image_capture_input')
 
 videoBtnElement.onclick = function(e) {
     var files = [videoInput.files[0]]
     navigator.share({files})
 }
+
+imageBtnElement.onclick = function(e) {
+    var files = [imageInput.files[0]]
+    navigator.share({files})
+}
+
+videoInput.onclick = onClickVideoInput
+imageInput.onclick = onClickInput
 
 

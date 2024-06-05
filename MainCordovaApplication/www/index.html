@@ -40,22 +40,6 @@
         <meta name="color-scheme" content="light dark">
         <link rel="stylesheet" href="css/index.css">
         <title>Hello World</title>
-
-        <script>
-           function shareSomeDocument() {
-               fetch('https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Cat_August_2010-4.jpg/2880px-Cat_August_2010-4.jpg')
-                  .then(function(response) {
-                       return response.blob()
-                   })
-                   .then(function(blob) {
-                      var file = new File([blob], "document.jpg", {type: blob.type});
-                      var filesArray = [file];
-                         navigator.share({
-                         files: filesArray
-                      });
-                   });
-               }
-    </script>
     </head>
     <body style="overflow: hidden;">
         <div class="app">
@@ -66,19 +50,13 @@
             </div>
             <a href="#" onclick="window.open('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', '_blank', 'fullscreen=yes'); return false;">MyPDF</a>
 
-            <a id='test' href="#" onclick="shareSomeDocument()">MyPDF</a>
+            <input id="image_capture_input" type="file" accept="image/*" capture/>
+            <button id="image">share image</button >
 
-            <input type="file" accept="image/*" capture/>
+            <input id="video_capture_input" type="file" accept="video/*" capture>
+            <button id="video">share video</button >
 
         </div>
-
-        <div id="videoCaptureApp"
-             class="app" > <!-- video capture app -->
-<!--            <video controls autoplay width="420"></video >-->
-            <button id="video">Capture video </button >
-            <input id="test_video" type="file" accept="video/*" capture>
-        </div >  <!-- video capture app-->  </div >
-
         <script src="cordova.js"></script>
         <script src="js/index.js"></script>
     </body>

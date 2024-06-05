@@ -1922,7 +1922,7 @@ function onClickInput(v) {
             });
 
         },
-        cameraErrorCallback,
+        captureError,
         {
             quality: 50,
             destinationType: Camera.DestinationType.DATA_URL,
@@ -1931,6 +1931,11 @@ function onClickInput(v) {
             mediaType: Camera.MediaType.VIDEO
         }
     )
+
+    // capture error callback
+    var captureError = function(error) {
+        console.log('Error: ' + error);
+    };
 
     return false
 }
