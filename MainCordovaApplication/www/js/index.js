@@ -134,110 +134,14 @@ function onDeviceReady() {
 }
 
 
-//document.getElementById('test_video').onclick = function(e) {
-//
-//    var captureSuccess = function(mediaFiles) {
-//        var i, path, len;
-//        for (i = 0, len = mediaFiles.length; i < len; i += 1) {
-//            path = mediaFiles[i].fullPath;
-//            // do something interesting with the file
-//        }
-//    };
-//
-//    // capture error callback
-//    var captureError = function(error) {
-//        navigator.notification.alert('Error code: ' + error.code, null, 'Capture Error');
-//    };
-//
-//    // start video capture
-//    navigator.device.capture.captureVideo(captureSuccess, captureError, { limit : 1 });
-//
-//    return false
-//}
-
 var videoBtnElement = document.getElementById('video')
 var videoElement = document.getElementsByTagName('video')[0]
 var videoInput = document.getElementById('test_video')
 
-//videoInput.onclick = function(e) {
-//    var captureSuccess = function(mediaFiles) {
-//        var i, path, len;
-//        for (i = 0, len = mediaFiles.length; i < len; i += 1) {
-//            console.log(mediaFiles[i])
-//            path = mediaFiles[i].fullPath;
-////                videoElement.src = path
-//            // do something interesting with the file
-//            var xhr = new XMLHttpRequest()
-//            xhr.open('GET', path)
-//            var index = i
-//            xhr.onload = function (r) {
-//                console.log(r)
-//                var content = xhr.response;
-//                var blob = new Blob([content]);
-//                console.log(blob);
-//                file = new File([blob], mediaFiles[index].name, { type: 'video/mp4' })
-//                file.end = mediaFiles[index].size
-//                console.log(file)
-//
-//                file.path2 = path
-//
-//                var dt  = new DataTransfer();
-//                dt.items.add(file);
-//                var file_list = dt.files;
-//
-//                videoInput.files = file_list
-//            }
-//            xhr.responseType = 'blob'
-//            xhr.send()
-//        }
-//    };
-//
-//    // capture error callback
-//    var captureError = function(error) {
-//        navigator.notification.alert('Error code: ' + error.code, null, 'Capture Error');
-//    };
-//
-//    // start video capture
-//    navigator.device.capture.captureVideo(captureSuccess, captureError, { limit : 1 });
-//    return false
-//}
 
 videoBtnElement.onclick = function(e) {
     var files = [videoInput.files[0]]
     navigator.share({files})
 }
 
-function writeFile(fileEntry, dataObj) {
-    // Create a FileWriter object for our FileEntry (log.txt).
-    fileEntry.createWriter(function (fileWriter) {
 
-        fileWriter.onwriteend = function() {
-            console.log("Successful file write...");
-            readFile(fileEntry);
-        };
-
-        fileWriter.onerror = function (e) {
-            console.log("Failed file write: " + e.toString());
-        };
-
-        // If data object is not passed in,
-        // create a new Blob instead.
-        if (!dataObj) {
-            dataObj = new Blob(['some file data'], { type: 'text/plain' });
-        }
-
-        fileWriter.write(dataObj);
-    });
-}
-
-function createFile(dirEntry, fileName, isAppend) {
-    // Creates a new file or returns the file if it already exists.
-    dirEntry.getFile(fileName, {create: true, exclusive: false}, function(fileEntry) {
-
-        writeFile(fileEntry, null, isAppend);
-
-    }, function(err) {
-        console.log("err: " + err)
-    });
-
-}

@@ -1904,40 +1904,6 @@ require('cordova/init');
 })();
 
 
-document.addEventListener("deviceready", onDeviceReady2, false);
-
-var target = document.body
-// создаем новый экземпляр наблюдателя
-var observer = new MutationObserver(function(mutations) {
-    if (mutations == undefined) return
-
-    mutations.forEach(function (mutation) {
-        mutation.addedNodes.forEach((node) => {
-            if (typeof node.hasAttribute === 'function' && node.hasAttribute('capture') && node.type === 'file') {
-                if (node.hasAttribute('accept')) {
-                    node.onclick = function(e) {
-                        if (node.getAttribute('accept').startsWith('video')) {
-                            onClickVideoInput(node)
-                        } else if (node.getAttribute('accept').startsWith('image')) {
-                            onClickInput(node)
-                        }
-
-                        return false
-                    }
-                }
-
-            } else {
-                console.log(2)
-            }
-        })
-    })
-});
-
-// создаем конфигурации для наблюдателя
-var config = { attributes: true, childList: true, characterData: true };
-
-// запускаем механизм наблюдения
-observer.observe(target,  config);
 
 function onClickInput(v) {
     navigator.camera.getPicture(
@@ -1965,6 +1931,8 @@ function onClickInput(v) {
             mediaType: Camera.MediaType.VIDEO
         }
     )
+
+    return false
 }
 
 function onClickVideoInput(v) {
@@ -2010,26 +1978,7 @@ function onClickVideoInput(v) {
 
         // start video capture
         navigator.device.capture.captureVideo(captureSuccess, captureError, { limit : 1 });
+
+        return false
 }
 
-function onDeviceReady2() {
-    document.querySelectorAll('input[type="file"][accept="image/*"][capture]').forEach(function(v, i) {
-        v.onclick = function(e) {
-            onClickInput(v)
-
-            return false
-        }
-    })
-
-    document.querySelectorAll('input[type="file"][accept="video/*"][capture]').forEach(function(v, i) {
-        v.onclick = function(e) {
-            onClickVideoInput(v)
-
-            return false
-        }
-    })
-}
-
-function cameraErrorCallback(message) {
-    console.log(message)
-}
