@@ -26,6 +26,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Base64;
+import android.util.Log;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -182,10 +183,17 @@ public class FileUtils extends CordovaPlugin {
         String packageName = activity.getPackageName();
 
         String location = preferences.getString("androidpersistentfilelocation", "internal");
+        String miniappPath = ActiveMiniapp.INSTANCE.getMiniappId();
+        if (miniappPath == null) {
+            miniappPath = "";
+        } else {
+            miniappPath = miniappPath + "/";
+        }
 
-        tempRoot = activity.getCacheDir().getAbsolutePath();
+
+        tempRoot = new File(activity.getCacheDir(), miniappPath).getAbsolutePath();
         if ("internal".equalsIgnoreCase(location)) {
-            persistentRoot = activity.getFilesDir().getAbsolutePath() + "/files/";
+            persistentRoot = activity.getFilesDir().getAbsolutePath() + "/files/" + miniappPath;
             this.configured = true;
         } else if ("compatibility".equalsIgnoreCase(location)) {
             /*
@@ -195,10 +203,12 @@ public class FileUtils extends CordovaPlugin {
              *  plugin can continue to provide access to files stored under those
              *  versions.
              */
+
+
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                persistentRoot = Environment.getExternalStorageDirectory().getAbsolutePath();
+                persistentRoot = Environment.getExternalStorageDirectory().getAbsolutePath() + miniappPath;
                 tempRoot = Environment.getExternalStorageDirectory().getAbsolutePath() +
-                        "/Android/data/" + packageName + "/cache/";
+                        "/Android/data/" + packageName + "/cache/" + miniappPath;
             } else {
                 persistentRoot = "/data/data/" + packageName;
             }
@@ -952,7 +962,14 @@ public class FileUtils extends CordovaPlugin {
     }
 
     private static String toDirUrl(File f) {
-        return Uri.fromFile(f).toString() + '/';
+        String miniappPath = ActiveMiniapp.INSTANCE.getMiniappId();
+        if (miniappPath == null) {
+            miniappPath = "";
+        } else {
+            miniappPath = miniappPath + "/";
+        }
+
+        return Uri.fromFile(f).toString() + '/' + miniappPath;
     }
 
     private JSONObject requestAllPaths() throws JSONException {

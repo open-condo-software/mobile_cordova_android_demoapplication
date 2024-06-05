@@ -26,6 +26,14 @@ cordova.define('cordova/plugin_list', function(require, exports, module) {
     },
     {
       "id": "cordova-plugin-camera.CameraPopoverHandle",
+      "file": "plugins/cordova-plugin-camera/www/CameraPopoverHandle.js",
+      "pluginId": "cordova-plugin-camera",
+      "clobbers": [
+        "CameraPopoverHandle"
+      ]
+    },
+    {
+      "id": "cordova-plugin-camera.CameraPopoverHandle",
       "file": "plugins/cordova-plugin-camera/www/ios/CameraPopoverHandle.js",
       "pluginId": "cordova-plugin-camera",
       "clobbers": [

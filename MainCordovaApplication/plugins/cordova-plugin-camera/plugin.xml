@@ -46,6 +46,11 @@
         <clobbers target="navigator.camera" />
     </js-module>
 
+    <js-module src="www/CameraPopoverHandle.js" name="CameraPopoverHandle">
+        <clobbers target="CameraPopoverHandle" />
+    </js-module>
+
+
     <!-- firefoxos -->
     <platform name="firefoxos">
         <config-file target="config.xml" parent="/*">

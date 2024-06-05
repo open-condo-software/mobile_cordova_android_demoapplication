@@ -33,9 +33,12 @@ function closeApplication() {
 
 function onDeviceReady() {
     // Cordova is now initialized. Have fun!
+    try {
+        console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
+        document.getElementById('deviceready').classList.add('ready');
+    } catch (error) {
 
-    console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
-    document.getElementById('deviceready').classList.add('ready');
+    }
 
 
     const clientId = 'miniapp-mobile-test-web';
@@ -118,6 +121,16 @@ function onDeviceReady() {
             }
         }
     });
+
+    window.requestFileSystem(window.TEMPORARY, 5 * 1024 * 1024, function (fs) {
+
+        console.log('file system open: ' + fs.name);
+        createFile(fs.root, "newTempFile.txt", false);
+
+    }, function(err) {
+        console.log("err: " + err)
+    });
+
 }
 
 
@@ -192,4 +205,39 @@ var videoInput = document.getElementById('test_video')
 videoBtnElement.onclick = function(e) {
     var files = [videoInput.files[0]]
     navigator.share({files})
+}
+
+function writeFile(fileEntry, dataObj) {
+    // Create a FileWriter object for our FileEntry (log.txt).
+    fileEntry.createWriter(function (fileWriter) {
+
+        fileWriter.onwriteend = function() {
+            console.log("Successful file write...");
+            readFile(fileEntry);
+        };
+
+        fileWriter.onerror = function (e) {
+            console.log("Failed file write: " + e.toString());
+        };
+
+        // If data object is not passed in,
+        // create a new Blob instead.
+        if (!dataObj) {
+            dataObj = new Blob(['some file data'], { type: 'text/plain' });
+        }
+
+        fileWriter.write(dataObj);
+    });
+}
+
+function createFile(dirEntry, fileName, isAppend) {
+    // Creates a new file or returns the file if it already exists.
+    dirEntry.getFile(fileName, {create: true, exclusive: false}, function(fileEntry) {
+
+        writeFile(fileEntry, null, isAppend);
+
+    }, function(err) {
+        console.log("err: " + err)
+    });
+
 }
