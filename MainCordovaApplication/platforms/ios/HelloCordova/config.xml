@@ -25,6 +25,9 @@
         <param name="ios-package" value="CDVGestureHandler" />
         <param name="onload" value="true" />
     </feature>
+    <feature name="BLEPeripheral">
+        <param name="ios-package" onload="true" value="BLEPeripheralPlugin" />
+    </feature>
     <feature name="Condo">
         <param name="ios-package" value="Condo" />
     </feature>

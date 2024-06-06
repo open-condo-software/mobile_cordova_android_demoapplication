@@ -69,31 +69,72 @@ function onDeviceReady() {
         }
     }
 
-    // send post request
-    fetch('https://miniapp.d.doma.ai/admin/api', options)
-        .then(res => res.json())
-        .then((res) => {
-            if (res.data.authenticatedUser) {
-                console.log('authentificated => ', JSON.stringify(res.data.authenticatedUser));
-                cordova.plugins.condo.getCurrentResident(function(response) {
-                    console.log("current resident\address => ", JSON.stringify(response));
-                }, function(error) {
-                    console.log(error);
-                })
-            } else {
-                console.log('authentification missing => ', JSON.stringify(res));
-                // вот она
-                cordova.plugins.condo.requestServerAuthorizationByUrl('https://miniapp.d.doma.ai/oidc/auth', {}, function(response) {
-                    console.log(response);
-                    console.log('receive authorization result => ', JSON.stringify(response));
-                    console.log('reloading');
-                    window.location.reload();
-                }, function(error) {
-                    console.log(error);
-                });
-            }
-        })
-        .catch(err => console.error(err));
+//    // send post request
+//    fetch('https://miniapp.d.doma.ai/admin/api', options)
+//        .then(res => res.json())
+//        .then((res) => {
+//            if (res.data.authenticatedUser) {
+//                console.log('authentificated => ', JSON.stringify(res.data.authenticatedUser));
+//                cordova.plugins.condo.getCurrentResident(function(response) {
+//                    console.log("current resident\address => ", JSON.stringify(response));
+//                }, function(error) {
+//                    console.log(error);
+//                })
+//            } else {
+//                console.log('authentification missing => ', JSON.stringify(res));
+//                // вот она
+//                cordova.plugins.condo.requestServerAuthorizationByUrl('https://miniapp.d.doma.ai/oidc/auth', {}, function(response) {
+//                    console.log(response);
+//                    console.log('receive authorization result => ', JSON.stringify(response));
+//                    console.log('reloading');
+//                    window.location.reload();
+//                }, function(error) {
+//                    console.log(error);
+//                });
+//            }
+//        })
+//        .catch(err => console.error(err));
 
 
+    testBleStuff();
 }
+
+function testBleStuff() {
+    let SERVICE_UUID = 'a53438ce-e4bd-430f-a361-a22fe88b02bc';
+    let TX_UUID = '2ff481b3-72be-49e9-a766-5e6cea26932f';
+    let RX_UUID = '6d8c6a4d-9c96-4dde-8f13-7260b00f4785';
+
+    let permissions = blePeripheral.permissions;
+    let properties = blePeripheral.properties;
+
+    blePeripheral.stopAdvertising();
+    blePeripheral.removeAllServices();
+    blePeripheral.createService(SERVICE_UUID).then(() => {
+        console.log('t1');
+        blePeripheral.addCharacteristic(SERVICE_UUID, TX_UUID, properties.WRITE, permissions.WRITEABLE).then(() => {
+            console.log('t2');
+            blePeripheral.addCharacteristic(SERVICE_UUID, RX_UUID, properties.READ | properties.NOTIFY, permissions.READABLE).then(() => {
+                console.log('t3');
+                blePeripheral.publishService(SERVICE_UUID).then(() => {
+                    console.log('t4');
+                    blePeripheral.startAdvertising(SERVICE_UUID, 'UART').then(() => {
+                        console.log ('Created UART Service');
+                        blePeripheral.onReadRequest((service, characteristic) => {
+                            console.log('onReadRequest', 'service:', service, 'characteristic:', characteristic);
+                            var buffer = new ArrayBuffer(333);
+                            var int8 = new Int8Array(buffer);
+                            int8[0] = 1
+                            int8[2] = 2
+                            int8[3] = 63
+                            int8[4] = 64
+                            int8[5] = 127
+                            return buffer;
+                        });
+                    });
+                });
+            });
+        });
+    });
+}
+
+

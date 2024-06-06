@@ -30,6 +30,9 @@
         <param name="android-package" value="org.apache.cordova.WhitelistPlugin" />
         <param name="onload" value="true" />
     </feature>
+    <feature name="BLEPeripheral">
+        <param name="android-package" value="org.apache.cordova.ble_peripheral.BLEPeripheralPlugin"/>
+    </feature>
 
     <access origin="*" />
     <access origin="cdvfile://*" />

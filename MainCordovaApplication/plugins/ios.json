@@ -7,6 +7,9 @@
     "files": {}
   },
   "installed_plugins": {
+    "cordova-plugin-ble-peripheral": {
+      "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
+    },
     "cordova-plugin-condo": {
       "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
     },

@@ -213,7 +213,12 @@ class MiniappRepository @Inject constructor(
                 "\"cordova-plugin-device\": \"2.1.0\"",
                 "{\"id\": \"cordova-plugin-device.device\", \"file\": \"plugins/cordova-plugin-device/www/device.js\", \"pluginId\": \"cordova-plugin-device\", \"clobbers\": [ \"device\" ]}"
             ),
-            WHITELIST("cordova-plugin-whitelist", "\"cordova-plugin-whitelist\": \"1.3.5\"", null)
+            WHITELIST("cordova-plugin-whitelist", "\"cordova-plugin-whitelist\": \"1.3.5\"", null),
+            BLE_PERIPHERAL(
+                "cordova-plugin-ble-peripheral",
+                "\"cordova-plugin-ble-peripheral\": \"1.1.2\"",
+                "{\"id\": \"cordova-plugin-ble-peripheral.blePeripheral\",\"file\": \"plugins/cordova-plugin-ble-peripheral/www/blePeripheral.js\",\"pluginId\": \"cordova-plugin-ble-peripheral\",\"clobbers\": [\"blePeripheral\"]}"
+            )
         }
     }
 
