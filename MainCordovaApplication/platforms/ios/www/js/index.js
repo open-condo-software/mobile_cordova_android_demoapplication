@@ -121,14 +121,15 @@ function testBleStuff() {
                         console.log ('Created UART Service');
                         blePeripheral.onReadRequest((service, characteristic) => {
                             console.log('onReadRequest', 'service:', service, 'characteristic:', characteristic);
-                            var buffer = new ArrayBuffer(333);
-                            var int8 = new Int8Array(buffer);
-                            int8[0] = 1
-                            int8[2] = 2
-                            int8[3] = 63
-                            int8[4] = 64
-                            int8[5] = 127
-                            return buffer;
+//                            var buffer = new ArrayBuffer(333);
+//                            var int8 = new Int8Array(buffer);
+//                            int8[0] = 1
+//                            int8[2] = 2
+//                            int8[3] = 63
+//                            int8[4] = 64
+//                            int8[5] = 127
+//                            return buffer;
+                              return "place characteristic data you want to send here" 
                         });
                     });
                 });
