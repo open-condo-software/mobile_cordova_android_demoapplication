@@ -254,45 +254,54 @@ navigator.device.capture.captureImage(...)
 Example:
 ```javascript
 //	override default onclick listener
-input_capture_element.onclick = onClickInput
+input_element_image.onclick = onClickInput
+input_element_video.onclick = onClickVideoInput
 
-function onClickInput(v) {
-    var captureSuccess = function(mediaFiles) {
-        var i, path, len;
-        for (i = 0, len = mediaFiles.length; i < len; i += 1) {
-            console.log(mediaFiles[i])
-            path = mediaFiles[i].fullPath;
-
-            var xhr = new XMLHttpRequest()
-            xhr.open('GET', path)
-            var index = i
-            xhr.onload = function (r) {
-                var content = xhr.response;
-                var blob = new Blob([content]);
-                file = new File([blob], mediaFiles[index].name, { type: mediaFiles[index].type })
-
-                var dt  = new DataTransfer();
-                dt.items.add(file);
-                var file_list = dt.files;
-
-                // insert files to input element
-                v.target.files = file_list
-            }
-            xhr.responseType = 'blob'
-            xhr.send()
-        }
-    };
-
-    // capture error callback
-    var captureError = function(error) {
-        console.log('Error code: ' + error.code);
-    };
-
-    // start image capture
-    navigator.device.capture.captureImage(captureSuccess, captureError, { limit : 1 });
-
+function onClickInput(input_element) {
+    navigator.device.capture.captureImage(
+        { (files) => captureSuccess(files, input_element) }, captureError, { limit : 1 }
+    );
     return false
 }
+
+function onClickVideoInput(input_element) {
+    navigator.device.capture.captureVideo(
+        { (files) => captureSuccess(files, input_element) }, captureError, { limit : 1 }
+    );
+    return false
+}
+
+// capture error callback
+function captureError(error) {
+    console.log('Error code: ' + error.code);
+};
+
+// capture success callback
+function captureSuccess(mediaFiles, inputElement) {
+    var i, path, len;
+    for (i = 0, len = mediaFiles.length; i < len; i += 1) {
+        console.log(mediaFiles[i])
+        path = mediaFiles[i].fullPath;
+
+        var xhr = new XMLHttpRequest()
+        xhr.open('GET', path)
+        var index = i
+        xhr.onload = function (r) {
+            var content = xhr.response;
+            var blob = new Blob([content]);
+            file = new File([blob], mediaFiles[index].name, { type: mediaFiles[index].type })
+
+            var dt  = new DataTransfer();
+            dt.items.add(file);
+            var file_list = dt.files;
+
+            // insert files to input element
+            v.target.files = file_list
+        }
+        xhr.responseType = 'blob'
+        xhr.send()
+    }
+};
 
 ```
 
