@@ -72,9 +72,9 @@ dependencies {
 
 task updateCordovaProjectToDemo {
     doFirst {
-        if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')){
-            return
-        }
+//        if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')){
+//            return
+//        }
         println "updateCordovaProjectToDemo start!"
 
         //update platforms/ios entirely
