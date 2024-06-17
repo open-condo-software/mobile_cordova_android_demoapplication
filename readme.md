@@ -296,7 +296,7 @@ function captureSuccess(mediaFiles, inputElement) {
             var file_list = dt.files;
 
             // insert files to input element
-            v.target.files = file_list
+            inputElement.target.files = file_list
         }
         xhr.responseType = 'blob'
         xhr.send()
