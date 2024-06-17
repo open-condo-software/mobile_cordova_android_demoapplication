@@ -134,10 +134,6 @@ class MiniappRepository @Inject constructor(
             platformFile.createNewFile()
             platformFile.writeBytes(context.resources.openRawResource(R.raw.platform).readBytes())
 
-            val helperFile = File(cordovaJsSrcDir, "file_helpers.js")
-            helperFile.createNewFile()
-            helperFile.writeBytes(context.resources.openRawResource(R.raw.file_helpers).readBytes())
-
             val nativeapiproviderFile = File(cordovaJsSrcDirAndroid, "nativeapiprovider.js")
             nativeapiproviderFile.createNewFile()
             nativeapiproviderFile.writeBytes(

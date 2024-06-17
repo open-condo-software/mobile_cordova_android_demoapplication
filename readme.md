@@ -253,20 +253,20 @@ navigator.device.capture.captureImage(...)
 
 Example:
 ```javascript
-//	override default onclick listener
+// override default onclick listener
 input_element_image.onclick = onClickInput
 input_element_video.onclick = onClickVideoInput
 
 function onClickInput(input_element) {
     navigator.device.capture.captureImage(
-        { (files) => captureSuccess(files, input_element) }, captureError, { limit : 1 }
+        (files) => { captureSuccess(files, input_element) }, captureError, { limit : 1 }
     );
     return false
 }
 
 function onClickVideoInput(input_element) {
     navigator.device.capture.captureVideo(
-        { (files) => captureSuccess(files, input_element) }, captureError, { limit : 1 }
+        (files) => { captureSuccess(files, input_element) }, captureError, { limit : 1 }
     );
     return false
 }
