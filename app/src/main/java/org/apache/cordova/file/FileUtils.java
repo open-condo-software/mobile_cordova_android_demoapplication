@@ -88,6 +88,8 @@ public class FileUtils extends CordovaPlugin {
 
     private PendingRequests pendingRequests;
 
+    private boolean MEDIA_MOUNTED_FORCE_ENABLE = false;
+
 
 
     /*
@@ -157,7 +159,7 @@ public class FileUtils extends CordovaPlugin {
         availableFileSystems.put("documents", new File(context.getFilesDir(), "Documents").getAbsolutePath());
         availableFileSystems.put("cache", context.getCacheDir().getAbsolutePath());
         availableFileSystems.put("root", "/");
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && MEDIA_MOUNTED_FORCE_ENABLE) {
             try {
                 availableFileSystems.put("files-external", context.getExternalFilesDir(null).getAbsolutePath());
                 availableFileSystems.put("sdcard", Environment.getExternalStorageDirectory().getAbsolutePath());
@@ -205,7 +207,7 @@ public class FileUtils extends CordovaPlugin {
              */
 
 
-            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && MEDIA_MOUNTED_FORCE_ENABLE) {
                 persistentRoot = Environment.getExternalStorageDirectory().getAbsolutePath() + miniappPath;
                 tempRoot = Environment.getExternalStorageDirectory().getAbsolutePath() +
                         "/Android/data/" + packageName + "/cache/" + miniappPath;
@@ -979,7 +981,7 @@ public class FileUtils extends CordovaPlugin {
         ret.put("applicationStorageDirectory", toDirUrl(context.getFilesDir().getParentFile()));
         ret.put("dataDirectory", toDirUrl(context.getFilesDir()));
         ret.put("cacheDirectory", toDirUrl(context.getCacheDir()));
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) && MEDIA_MOUNTED_FORCE_ENABLE ) {
             try {
                 ret.put("externalApplicationStorageDirectory", toDirUrl(context.getExternalFilesDir(null).getParentFile()));
                 ret.put("externalDataDirectory", toDirUrl(context.getExternalFilesDir(null)));

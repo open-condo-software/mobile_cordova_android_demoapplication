@@ -32,6 +32,9 @@
     }
   },
   "dependent_plugins": {
+    "cordova-plugin-ble-peripheral": {
+      "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
+    },
     "cordova-plugin-compat": {
       "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
     }

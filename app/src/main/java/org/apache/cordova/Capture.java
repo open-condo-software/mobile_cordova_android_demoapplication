@@ -71,7 +71,7 @@ public class Capture extends CordovaPlugin {
     private static final String LOG_TAG = "Capture";
 
     private static final int CAPTURE_INTERNAL_ERR = 0;
-//    private static final int CAPTURE_APPLICATION_BUSY = 1;
+    //    private static final int CAPTURE_APPLICATION_BUSY = 1;
 //    private static final int CAPTURE_INVALID_ARGUMENT = 2;
     private static final int CAPTURE_NO_MEDIA_FILES = 3;
     private static final int CAPTURE_PERMISSION_DENIED = 4;
@@ -226,13 +226,13 @@ public class Capture extends CordovaPlugin {
      * Sets up an intent to capture audio.  Result handled by onActivityResult()
      */
     private void captureAudio(Request req) {
-      if (!PermissionHelper.hasPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-          PermissionHelper.requestPermission(this, req.requestCode, Manifest.permission.READ_EXTERNAL_STORAGE);
-      } else {
-          Intent intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
+        if (!PermissionHelper.hasPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            PermissionHelper.requestPermission(this, req.requestCode, Manifest.permission.READ_EXTERNAL_STORAGE);
+        } else {
+            Intent intent = new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
 
-          this.cordova.startActivityForResult((CordovaPlugin) this, intent, req.requestCode);
-      }
+            this.cordova.startActivityForResult((CordovaPlugin) this, intent, req.requestCode);
+        }
     }
 
     private String getTempDirectoryPath() {
@@ -250,11 +250,17 @@ public class Capture extends CordovaPlugin {
      * Sets up an intent to capture images.  Result handled by onActivityResult()
      */
     private void captureImage(Request req) {
-        boolean needExternalStoragePermission =
-            !PermissionHelper.hasPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+        boolean needExternalStoragePermission;
+        String imgPermission;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            imgPermission = Manifest.permission.READ_MEDIA_IMAGES;
+        } else {
+            imgPermission = Manifest.permission.READ_EXTERNAL_STORAGE;
+        }
 
+        needExternalStoragePermission = !PermissionHelper.hasPermission(this, imgPermission);
         boolean needCameraPermission = cameraPermissionInManifest &&
-            !PermissionHelper.hasPermission(this, Manifest.permission.CAMERA);
+                !PermissionHelper.hasPermission(this, Manifest.permission.CAMERA);
 
         if (needExternalStoragePermission || needCameraPermission) {
             if (needExternalStoragePermission && needCameraPermission) {
@@ -503,11 +509,11 @@ public class Capture extends CordovaPlugin {
      */
     private Cursor queryImgDB(Uri contentStore) {
         return this.cordova.getActivity().getContentResolver().query(
-            contentStore,
-            new String[] { MediaStore.Images.Media._ID },
-            null,
-            null,
-            null);
+                contentStore,
+                new String[] { MediaStore.Images.Media._ID },
+                null,
+                null,
+                null);
     }
 
     /**

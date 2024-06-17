@@ -1,4 +1,4 @@
-//cordova.define("nl.madebymark.share.Share", function(require, exports, module) {
+cordova.define("nl.madebymark.share.Share", function(require, exports, module) {
     module.exports = function(text,title,mimetype,success,error){
       if(typeof text !== "string") {
         text = "";
@@ -69,4 +69,4 @@
         console.log(result_base64);
         return result_base64;
     }
-//});
+});

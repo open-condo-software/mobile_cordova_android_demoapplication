@@ -7,6 +7,12 @@
     "files": {
       "config.xml": {
         "parents": {
+          "/widget": [
+            {
+              "xml": "<feature name=\"BLEPeripheral\"><param name=\"ios-package\" onload=\"true\" value=\"BLEPeripheralPlugin\" /></feature>",
+              "count": 1
+            }
+          ],
           "/*": [
             {
               "xml": "<feature name=\"Camera\"><param name=\"ios-package\" value=\"CDVCamera\" /></feature>",
@@ -66,6 +72,9 @@
     }
   },
   "installed_plugins": {
+    "cordova-plugin-ble-peripheral": {
+      "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
+    },
     "cordova-plugin-compat": {
       "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
     },
@@ -95,6 +104,14 @@
   },
   "dependent_plugins": {},
   "modules": [
+    {
+      "id": "cordova-plugin-ble-peripheral.blePeripheral",
+      "file": "plugins/cordova-plugin-ble-peripheral/www/blePeripheral.js",
+      "pluginId": "cordova-plugin-ble-peripheral",
+      "clobbers": [
+        "blePeripheral"
+      ]
+    },
     {
       "id": "cordova-plugin-camera.Camera",
       "file": "plugins/cordova-plugin-camera/www/CameraConstants.js",
@@ -388,6 +405,7 @@
     }
   ],
   "plugin_metadata": {
+    "cordova-plugin-ble-peripheral": "1.1.2",
     "cordova-plugin-compat": "1.2.0",
     "cordova-plugin-camera": "2.4.1",
     "cordova-plugin-condo": "0.0.1",

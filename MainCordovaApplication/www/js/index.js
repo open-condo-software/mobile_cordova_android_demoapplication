@@ -79,7 +79,7 @@ function onDeviceReady() {
             if (res.data.authenticatedUser) {
                 console.log('authentificated => ', JSON.stringify(res.data.authenticatedUser));
                 cordova.plugins.condo.getCurrentResident(function(response) {
-                    console.log("current resident\address => ", JSON.stringify(response));
+                    console.log("current resident address => ", JSON.stringify(response));
                 }, function(error) {
                     console.log(error);
                 })
@@ -99,37 +99,34 @@ function onDeviceReady() {
         .catch(err => console.error(err));
 
 
-    var cordova = cordova.require('cordova'),
-        helpers = cordova.require('./helpers');
-
-    var SUCCESS_EVENT = "pendingcaptureresult";
-    var FAILURE_EVENT = "pendingcaptureerror";
-
-    var sChannel = cordova.addStickyDocumentEventHandler(SUCCESS_EVENT);
-    var fChannel = cordova.addStickyDocumentEventHandler(FAILURE_EVENT);
-
-    // We fire one of two events in the case where the activity gets killed while
-    // the user is capturing audio, image, video, etc. in a separate activity
-    document.addEventListener("resume", function(event) {
-        console.log('resume');
-        if (event.pendingResult && event.pendingResult.pluginServiceName === "Capture") {
-            if (event.pendingResult.pluginStatus === "OK") {
-                var mediaFiles = helpers.wrapMediaFiles(event.pendingResult.result);
-                sChannel.fire(mediaFiles);
-            } else {
-                fChannel.fire(event.pendingResult.result);
-            }
-        }
-    });
-
-    window.requestFileSystem(window.TEMPORARY, 5 * 1024 * 1024, function (fs) {
-
-        console.log('file system open: ' + fs.name);
-        createFile(fs.root, "newTempFile.txt", false);
-
-    }, function(err) {
-        console.log("err: " + err)
-    });
+//    var SUCCESS_EVENT = "pendingcaptureresult";
+//    var FAILURE_EVENT = "pendingcaptureerror";
+//
+//    var sChannel = cordova.addStickyDocumentEventHandler(SUCCESS_EVENT);
+//    var fChannel = cordova.addStickyDocumentEventHandler(FAILURE_EVENT);
+//
+//    // We fire one of two events in the case where the activity gets killed while
+//    // the user is capturing audio, image, video, etc. in a separate activity
+//    document.addEventListener("resume", function(event) {
+//        console.log('resume');
+//        if (event.pendingResult && event.pendingResult.pluginServiceName === "Capture") {
+//            if (event.pendingResult.pluginStatus === "OK") {
+//                var mediaFiles = helpers.wrapMediaFiles(event.pendingResult.result);
+//                sChannel.fire(mediaFiles);
+//            } else {
+//                fChannel.fire(event.pendingResult.result);
+//            }
+//        }
+//    });
+//
+//    window.requestFileSystem(window.TEMPORARY, 5 * 1024 * 1024, function (fs) {
+//
+//        console.log('file system open: ' + fs.name);
+//        createFile(fs.root, "newTempFile.txt", false);
+//
+//    }, function(err) {
+//        console.log("err: " + err)
+//    });
 
 }
 
@@ -152,7 +149,5 @@ document.addEventListener('deviceready', function() {
 
     videoInput.onclick = onClickVideoInput
     imageInput.onclick = onClickInput
-
-
 
 }, false)

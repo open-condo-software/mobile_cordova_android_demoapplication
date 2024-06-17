@@ -1,6 +1,14 @@
 cordova.define('cordova/plugin_list', function(require, exports, module) {
   module.exports = [
     {
+      "id": "cordova-plugin-ble-peripheral.blePeripheral",
+      "file": "plugins/cordova-plugin-ble-peripheral/www/blePeripheral.js",
+      "pluginId": "cordova-plugin-ble-peripheral",
+      "clobbers": [
+        "blePeripheral"
+      ]
+    },
+    {
       "id": "cordova-plugin-camera.Camera",
       "file": "plugins/cordova-plugin-camera/www/CameraConstants.js",
       "pluginId": "cordova-plugin-camera",
@@ -293,6 +301,7 @@ cordova.define('cordova/plugin_list', function(require, exports, module) {
     }
   ];
   module.exports.metadata = {
+    "cordova-plugin-ble-peripheral": "1.1.2",
     "cordova-plugin-compat": "1.2.0",
     "cordova-plugin-camera": "2.4.1",
     "cordova-plugin-condo": "0.0.1",
