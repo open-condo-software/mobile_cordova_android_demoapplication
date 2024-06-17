@@ -197,19 +197,19 @@ Original Documentation: [**WEB File API**](https://developer.mozilla.org/en-US/d
 ### Example for sharing local document:
 ```html
     <script>
-       function shareSomeDocument() {
-           fetch('images.com/some_image.png')
-              .then(function(response) {
-                   return response.blob()
-               })
-               .then(function(blob) {
-                  var file = new File([blob], "image.png", {type: blob.type});
-                  var filesArray = [file];
-                     navigator.share({
-                     files: filesArray
-                  });
-               });
-           }
+        function shareSomeDocument() {
+            fetch('images.com/some_image.png')
+                .then(function(response) {
+                    return response.blob()
+                })
+                .then(function(blob) {
+                    var file = new File([blob], "image.png", {type: blob.type});
+                    var filesArray = [file];
+                        navigator.share({
+                        files: filesArray
+                    });
+                });
+            }
     </script>
 ```
 
@@ -219,11 +219,7 @@ Original Documentation: [**WEB File API**](https://developer.mozilla.org/en-US/d
 
 ## 3.2 Importing Files. <a name="import_files"></a>
 Original Documentation: [**Using files from web applications**](https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications)
-### Importing images:
-Button opens camera:
-```html
-<input type="file" accept="image/*" capture>
-```
+### Importing images and video:
 Button opens image picker (select one image):
 ```html
 <input type="file" accept="image/*">
@@ -232,6 +228,74 @@ Button opens image picker (select multiple images):
 ```html
 <input type="file" accept="image/*" multiple>
 ```
+Button opens video picker (select one video):
+```html
+<input type="file" accept="image/*">
+```
+Button opens video picker (select multiple videos):
+```html
+<input type="file" accept="image/*" multiple>
+```
+
+> [!CAUTION]
+> In miniapps on android, input tags don't support getting a file from the camera.
+
+By default, these inputs run the file selector from the device. To get image/video from the camera, a corresponding plugin was added to our project: [cordova-plugin-media-capture](https://github.com/apache/cordova-plugin-media-capture)
+
+To get image/video from camera use:
+```javascript
+// get image from camera
+navigator.device.capture.captureImage(...)
+
+// get video from camera
+navigator.device.capture.captureImage(...)
+```
+
+Example:
+```javascript
+//	override default onclick listener
+input_capture_element.onclick = onClickInput
+
+function onClickInput(v) {
+    var captureSuccess = function(mediaFiles) {
+        var i, path, len;
+        for (i = 0, len = mediaFiles.length; i < len; i += 1) {
+            console.log(mediaFiles[i])
+            path = mediaFiles[i].fullPath;
+
+            var xhr = new XMLHttpRequest()
+            xhr.open('GET', path)
+            var index = i
+            xhr.onload = function (r) {
+                var content = xhr.response;
+                var blob = new Blob([content]);
+                file = new File([blob], mediaFiles[index].name, { type: mediaFiles[index].type })
+
+                var dt  = new DataTransfer();
+                dt.items.add(file);
+                var file_list = dt.files;
+
+                // insert files to input element
+                v.target.files = file_list
+            }
+            xhr.responseType = 'blob'
+            xhr.send()
+        }
+    };
+
+    // capture error callback
+    var captureError = function(error) {
+        console.log('Error code: ' + error.code);
+    };
+
+    // start image capture
+    navigator.device.capture.captureImage(captureSuccess, captureError, { limit : 1 });
+
+    return false
+}
+
+```
+
 
 # Environment. <a name="environment"></a>
 
