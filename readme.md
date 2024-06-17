@@ -14,9 +14,9 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
 6. [Environment.](#environment)
 7. [Testing.](#testing)
 
-   6.1 [Testing in Demo environment](#testing-demo)
+   7.1 [Testing in Demo environment](#testing-demo)
    
-   6.2 [Testing in Production environment](#testing-production)
+   7.2 [Testing in Production environment](#testing-production)
 8. [Publishing.](#publishing)
 
 

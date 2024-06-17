@@ -290,14 +290,6 @@ cordova.define('cordova/plugin_list', function(require, exports, module) {
       "clobbers": [
         "navigator.device.capture"
       ]
-    },
-    {
-      "id": "nl.madebymark.share.Share",
-      "file": "plugins/nl.madebymark.share/www/share.js",
-      "pluginId": "nl.madebymark.share",
-      "clobbers": [
-        "window.navigator.share"
-      ]
     }
   ];
   module.exports.metadata = {
@@ -307,7 +299,6 @@ cordova.define('cordova/plugin_list', function(require, exports, module) {
     "cordova-plugin-condo": "0.0.1",
     "cordova-plugin-file": "4.3.3",
     "cordova-plugin-media-capture": "1.4.3",
-    "cordova-plugin-whitelist": "1.3.5",
-    "nl.madebymark.share": "0.1.1"
+    "cordova-plugin-whitelist": "1.3.5"
   };
 });

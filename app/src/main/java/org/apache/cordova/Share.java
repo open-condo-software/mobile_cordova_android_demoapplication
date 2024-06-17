@@ -54,9 +54,10 @@ public class Share extends CordovaPlugin {
                         fos.flush();
                         fos.close();
 
+                        String applicationId = cordova.getActivity().getPackageName();
                         Uri uri = FileProvider.getUriForFile(
                                 cordova.getContext(),
-                                "org.apache.cordova.provider",
+                                applicationId + ".cordova.plugin.camera.provider",
                                 file
                         );
                         filesToShare.add(uri);
@@ -90,9 +91,10 @@ public class Share extends CordovaPlugin {
                         f.createNewFile();
                         webView.getResourceApi().copyResource(Uri.parse(filePath), new FileOutputStream(f));
 
+                        String applicationId = cordova.getActivity().getPackageName();
                         Uri uri = FileProvider.getUriForFile(
                                 cordova.getContext(),
-                                "org.apache.cordova.provider",
+                                applicationId + ".cordova.plugin.camera.provider",
                                 f
                         );
 

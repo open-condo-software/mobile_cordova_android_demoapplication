@@ -15,14 +15,6 @@
     "is_top_level": true,
     "variables": {}
   },
-  "nl.madebymark.share": {
-    "source": {
-      "type": "registry",
-      "id": "cordova-plugin-share"
-    },
-    "is_top_level": true,
-    "variables": {}
-  },
   "cordova-plugin-camera": {
     "source": {
       "type": "registry",

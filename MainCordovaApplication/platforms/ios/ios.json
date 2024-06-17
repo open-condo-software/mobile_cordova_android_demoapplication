@@ -33,10 +33,6 @@
             {
               "xml": "<feature name=\"Capture\"><param name=\"ios-package\" value=\"CDVCapture\" /></feature>",
               "count": 1
-            },
-            {
-              "xml": "<feature name=\"Share\"><param name=\"ios-package\" value=\"MMShare\" /></feature>",
-              "count": 1
             }
           ]
         }
@@ -96,9 +92,6 @@
       "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
     },
     "cordova-plugin-whitelist": {
-      "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
-    },
-    "nl.madebymark.share": {
       "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
     }
   },
@@ -394,14 +387,6 @@
       "clobbers": [
         "navigator.device.capture"
       ]
-    },
-    {
-      "id": "nl.madebymark.share.Share",
-      "file": "plugins/nl.madebymark.share/www/share.js",
-      "pluginId": "nl.madebymark.share",
-      "clobbers": [
-        "window.navigator.share"
-      ]
     }
   ],
   "plugin_metadata": {
@@ -411,7 +396,6 @@
     "cordova-plugin-condo": "0.0.1",
     "cordova-plugin-file": "4.3.3",
     "cordova-plugin-media-capture": "1.4.3",
-    "cordova-plugin-whitelist": "1.3.5",
-    "nl.madebymark.share": "0.1.1"
+    "cordova-plugin-whitelist": "1.3.5"
   }
 }

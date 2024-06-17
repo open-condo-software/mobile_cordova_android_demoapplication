@@ -1897,10 +1897,8 @@ utils.alert = function (msg) {
 
 });
 
-
 window.cordova = require('cordova');
 // file: src/scripts/bootstrap.js
 require('cordova/init');
 
-cordova.require('cordova/pluginloader').injectScript('cordova-js-src/file_helpers.js')
 })();
