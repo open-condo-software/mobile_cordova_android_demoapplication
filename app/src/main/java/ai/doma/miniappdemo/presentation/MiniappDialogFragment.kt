@@ -70,6 +70,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import org.apache.cordova.engine.SystemWebViewEngine
+import org.apache.cordova.file.ActiveMiniapp
 import org.intellij.lang.annotations.Language
 
 
@@ -92,6 +93,7 @@ class MiniappDialogFragment : BaseDialog() {
                 this.presentationStyle = presentationStyle
                 this.payload = payload
             }
+            ActiveMiniapp.miniappId = miniappEntity.id
             fragmentManager.showFragment(dialog)
         }
     }
@@ -128,6 +130,7 @@ class MiniappDialogFragment : BaseDialog() {
 
         super.onCreate(savedInstanceState)
         this.savedInstanceState = savedInstanceState
+        ActiveMiniapp.miniappId = miniappEntity.id
 
     }
 
@@ -630,6 +633,7 @@ class MiniappDialogFragment : BaseDialog() {
         }
         appView.handleDestroy()
         model.releaseApp()
+        ActiveMiniapp.miniappId = null
     }
 
 
