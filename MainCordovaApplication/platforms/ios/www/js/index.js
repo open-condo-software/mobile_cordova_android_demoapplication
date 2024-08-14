@@ -35,7 +35,7 @@ function onDeviceReady() {
     // Cordova is now initialized. Have fun!
 
     console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
-    document.getElementById('deviceready').classList.add('ready');
+//    document.getElementById('deviceready').classList.add('ready');
 
 
     const clientId = 'miniapp-mobile-test-web';
@@ -96,7 +96,7 @@ function onDeviceReady() {
 //        .catch(err => console.error(err));
 
 
-    testBleStuff();
+//    testBleStuff();
 }
 
 function testBleStuff() {
@@ -129,7 +129,7 @@ function testBleStuff() {
 //                            int8[4] = 64
 //                            int8[5] = 127
 //                            return buffer;
-                              return "place characteristic data you want to send here" 
+                              return "place characteristic data you want to send here"
                         });
                     });
                 });

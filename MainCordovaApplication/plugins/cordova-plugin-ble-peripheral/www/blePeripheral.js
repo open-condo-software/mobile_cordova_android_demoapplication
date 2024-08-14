@@ -295,6 +295,23 @@ module.exports = {
 
     onBluetoothStateChange: function (callback) {
         onBluetoothStateChangeCallback = callback;
-    }
+    },
 
+    //If miniapp uses background features, services and advertising is performed even when miniapp is closed, or even applicaiton is closed.
+    //At some point (on read or write request from some bluetooth central) OS launches app, then app launches miniapp
+    //You should call this function when your miniapp is ready to accept such (read & write) events.
+    //You should call this function asap, because such bluetooth requests have 3 seconds timeout (OS restrictions),
+    //and some of this time is usually already consumed by starting the miniapp.
+    startSendingStashedReadWriteEvents: function() {
+        cordova.exec(() => {}, () => {}, 'BLEPeripheral', 'startSendingStashedReadWriteEvents', []);
+    },
+
+    //If miniapp uses background features, services and advertising is performed even when miniapp is closed, or even applicaiton is closed.
+    //So, in context of miniapp it may be dificult to understand, in what state is adverting and services are at the moment (at least aon the start of the miniapp)
+    //For that we made this fucntion, which exports data in json
+    getBluetoothSystemState: function() {
+        return new Promise(function (resolve, reject) {
+            cordova.exec(resolve, reject, 'BLEPeripheral', 'getBluetoothSystemState', []);
+        });
+    }
 };

@@ -70,5 +70,9 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string/>
 </dict>
 </plist>

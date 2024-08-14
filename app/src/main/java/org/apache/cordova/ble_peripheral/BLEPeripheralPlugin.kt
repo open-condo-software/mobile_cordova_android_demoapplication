@@ -53,6 +53,7 @@ import org.apache.cordova.CordovaWebView
 import org.apache.cordova.LOG
 import org.apache.cordova.PermissionHelper
 import org.apache.cordova.PluginResult
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.Arrays
@@ -435,9 +436,40 @@ class BLEPeripheralPlugin : CordovaPlugin() {
             val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             cordova.startActivityForResult(this, intent, REQUEST_ENABLE_BLUETOOTH)
             true
+        } else if (action == GET_BLUETOOTH_SYSTEM_STATE) {
+            val bleState = getBleState()
+
+            callbackContext.success(bleState)
+            true
+        } else if (action == START_SENDING_STASHED_READ_WRITE_EVENTS) {
+            true
         } else {
             false
         }
+    }
+
+    fun getBleState(): JSONObject {
+        val jsonResult = JSONObject()
+        val jsonServices = JSONArray()
+
+        gattServer?.services
+            ?.forEach {
+                val jsonService = JSONObject()
+                jsonService.put("uuid", it.uuid.toString())
+                jsonService.put("isPrimary", it.type == BluetoothGattService.SERVICE_TYPE_PRIMARY)
+                val jsonCharacteristics = JSONArray()
+                it.characteristics.forEach { it ->
+                    val jsonCharacteristic = JSONObject()
+                    jsonCharacteristic.put("uuid", it.uuid.toString())
+                    jsonCharacteristic.put("properties", it.properties.toString())
+                    jsonCharacteristic.put("permissions", it.permissions.toString())
+                    jsonCharacteristics.put(jsonCharacteristic)
+                }
+                jsonService.put("characteristics", jsonCharacteristics)
+                jsonServices.put(jsonService)
+            }
+        jsonResult.put("services", jsonServices)
+        return jsonResult
     }
 
     private fun onBluetoothStateChange(intent: Intent) {
@@ -841,6 +873,8 @@ class BLEPeripheralPlugin : CordovaPlugin() {
             "setCharacteristicValueRequestedListener"
         private const val RECEIVE_REQUESTED_CHARACTERISTIC_VALUE =
             "receiveRequestedCharacteristicValue"
+        private const val GET_BLUETOOTH_SYSTEM_STATE = "getBluetoothSystemState"
+        private const val START_SENDING_STASHED_READ_WRITE_EVENTS = "startSendingStashedReadWriteEvents"
 
         // 0x2902 https://www.bluetooth.com/specifications/gatt/descriptors
         private val CLIENT_CHARACTERISTIC_CONFIGURATION_UUID =
