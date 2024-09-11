@@ -25,8 +25,8 @@
         <param name="ios-package" value="CDVGestureHandler" />
         <param name="onload" value="true" />
     </feature>
-    <feature name="BLEPeripheral">
-        <param name="ios-package" onload="true" value="BLEPeripheralPlugin" />
+    <feature name="BLE">
+        <param name="ios-package" onload="true" value="BLECentralPlugin" />
     </feature>
     <feature name="Camera">
         <param name="ios-package" value="CDVCamera" />
@@ -66,5 +66,6 @@
     <preference name="SuppressesIncrementalRendering" value="false" />
     <preference name="SuppressesLongPressGesture" value="false" />
     <preference name="Suppresses3DTouchGesture" value="false" />
+    <preference name="bluetooth_restore_state" value="false" />
     <preference name="CameraUsesGeolocation" value="false" />
 </widget>

@@ -37,7 +37,7 @@
   "cordova-plugin-media-capture": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-media-capture@1.4.3"
+      "id": "cordova-plugin-media-capture@5.0.0"
     },
     "is_top_level": true,
     "variables": {}
@@ -45,9 +45,9 @@
   "cordova-plugin-file": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-file@^4.3.3"
+      "id": "cordova-plugin-file@^8.0.0"
     },
-    "is_top_level": true,
+    "is_top_level": false,
     "variables": {}
   }
 }

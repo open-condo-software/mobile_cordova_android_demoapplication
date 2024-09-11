@@ -33,12 +33,9 @@ function closeApplication() {
 
 function onDeviceReady() {
     // Cordova is now initialized. Have fun!
-    try {
-        console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
-        document.getElementById('deviceready').classList.add('ready');
-    } catch (error) {
 
-    }
+    console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
+    document.getElementById('deviceready').classList.add('ready');
 
 
     const clientId = 'miniapp-mobile-test-web';
@@ -99,55 +96,4 @@ function onDeviceReady() {
         .catch(err => console.error(err));
 
 
-//    var SUCCESS_EVENT = "pendingcaptureresult";
-//    var FAILURE_EVENT = "pendingcaptureerror";
-//
-//    var sChannel = cordova.addStickyDocumentEventHandler(SUCCESS_EVENT);
-//    var fChannel = cordova.addStickyDocumentEventHandler(FAILURE_EVENT);
-//
-//    // We fire one of two events in the case where the activity gets killed while
-//    // the user is capturing audio, image, video, etc. in a separate activity
-//    document.addEventListener("resume", function(event) {
-//        console.log('resume');
-//        if (event.pendingResult && event.pendingResult.pluginServiceName === "Capture") {
-//            if (event.pendingResult.pluginStatus === "OK") {
-//                var mediaFiles = helpers.wrapMediaFiles(event.pendingResult.result);
-//                sChannel.fire(mediaFiles);
-//            } else {
-//                fChannel.fire(event.pendingResult.result);
-//            }
-//        }
-//    });
-//
-//    window.requestFileSystem(window.TEMPORARY, 5 * 1024 * 1024, function (fs) {
-//
-//        console.log('file system open: ' + fs.name);
-//        createFile(fs.root, "newTempFile.txt", false);
-//
-//    }, function(err) {
-//        console.log("err: " + err)
-//    });
-
 }
-
-document.addEventListener('deviceready', function() {
-    var videoBtnElement = document.getElementById('video')
-    var videoInput = document.getElementById('video_capture_input')
-
-    var imageBtnElement = document.getElementById('image')
-    var imageInput = document.getElementById('image_capture_input')
-
-    videoBtnElement.onclick = function(e) {
-        var files = [videoInput.files[0]]
-        navigator.share({files})
-    }
-
-    imageBtnElement.onclick = function(e) {
-        var files = [imageInput.files[0]]
-        navigator.share({files})
-    }
-
-    videoInput.onclick = onClickVideoInput
-    imageInput.onclick = onClickInput
-
-}, false)

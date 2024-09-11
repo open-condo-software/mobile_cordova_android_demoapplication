@@ -281,17 +281,8 @@ class MiniappRepository @Inject constructor(
                     "{\"id\": \"cordova-plugin-file.isChrome\",\"file\": \"plugins/cordova-plugin-file/www/browser/isChrome.js\",\"pluginId\": \"cordova-plugin-file\",\"runs\": true }",
                     "{\"id\": \"cordova-plugin-file.iosFileSystem\",\"file\": \"plugins/cordova-plugin-file/www/ios/FileSystem.js\",\"pluginId\": \"cordova-plugin-file\",\"merges\": [\"FileSystem\" ] }",
                     "{\"id\": \"cordova-plugin-file.fileSystems-roots\",\"file\": \"plugins/cordova-plugin-file/www/fileSystems-roots.js\",\"pluginId\": \"cordova-plugin-file\",\"runs\": true }",
-                    "{\"id\": \"cordova-plugin-file.fileSystemPaths\",\"file\": \"plugins/cordova-plugin-file/www/fileSystemPaths.js\",\"pluginId\": \"cordova-plugin-file\",\"merges\": [\"cordova\" ],\"runs\": true }"
-
-
-//                    "{\n" +
-//                        "      \"id\": \"cordova-plugin-file.FileReader\",\n" +
-//                        "      \"file\": \"plugins/cordova-plugin-file/www/FileReader.js\",\n" +
-//                        "      \"pluginId\": \"cordova-plugin-file\",\n" +
-//                        "      \"clobbers\": [\n" +
-//                        "        \"window.FileReader\"\n" +
-//                        "      ]\n" +
-//                        "    }"
+                    "{\"id\": \"cordova-plugin-file.fileSystemPaths\",\"file\": \"plugins/cordova-plugin-file/www/fileSystemPaths.js\",\"pluginId\": \"cordova-plugin-file\",\"merges\": [\"cordova\" ],\"runs\": true }",
+                    "{\"id\": \"cordova-plugin-file.FileReader\",\"file\": \"plugins/cordova-plugin-file/www/FileReader.js\",\"pluginId\": \"cordova-plugin-file\",\"clobbers\": [\"window.FileReader\"] }"
                 )
             )
 

@@ -15,13 +15,7 @@
     "cordova-plugin-condo": {
       "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
     },
-    "cordova-plugin-file": {
-      "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
-    },
     "cordova-plugin-media-capture": {
-      "CAMERA_USAGE_DESCRIPTION": " ",
-      "MICROPHONE_USAGE_DESCRIPTION": " ",
-      "PHOTOLIBRARY_USAGE_DESCRIPTION": " ",
       "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
     },
     "cordova-plugin-whitelist": {
@@ -29,10 +23,16 @@
     }
   },
   "dependent_plugins": {
-    "cordova-plugin-ble-peripheral": {
+    "cordova-plugin-ble-central": {
+      "IOS_INIT_ON_LOAD": "true",
+      "BLUETOOTH_RESTORE_STATE": "false",
+      "BLUETOOTH_USAGE_DESCRIPTION": " ",
       "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
     },
     "cordova-plugin-compat": {
+      "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
+    },
+    "cordova-plugin-file": {
       "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
     }
   }

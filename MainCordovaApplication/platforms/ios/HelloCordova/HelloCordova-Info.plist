@@ -70,13 +70,15 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string/>
 	<key>NSCameraUsageDescription</key>
 	<string/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
-	<key>NSMicrophoneUsageDescription</key>
 	<string/>
 </dict>
 </plist>
