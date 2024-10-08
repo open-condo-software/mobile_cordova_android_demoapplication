@@ -18,6 +18,13 @@
 		6AFF5BF91D6E424B00AB3073 /* CDVLaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6AFF5BF81D6E424B00AB3073 /* CDVLaunchScreen.storyboard */; };
 		90B630EF2AECBBD0009EF368 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 90B630EE2AECBBD0009EF368 /* PrivacyInfo.xcprivacy */; };
 		591FCF399A404027A0AF16D9 /* Condo.m in Sources */ = {isa = PBXBuildFile; fileRef = F6331C0F52A642C68DFCF8BD /* Condo.m */; };
+		918E1940077645419BAEEDA8 /* CDVDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = A2D6FEEA53354DEE8B0F129F /* CDVDevice.m */; };
+		9DAF88BFBCA242E39DDEA451 /* CDVDevice.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 5B50C9CCBE924550BB1CDD16 /* CDVDevice.bundle */; };
+		BA4CFC4899E74DC798CA655E /* CDVLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AD970DDE51B34800AAA21E10 /* CDVLocationManager.m */; };
+		4F5842C7DABC4D6A8C3A1E23 /* AppDelegate+CDVLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F89DD71E70834838B9AADA21 /* AppDelegate+CDVLocationManager.m */; };
+		72A184D3492D491B9ABC34F6 /* LMLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 309370679433495DBC1B6EE2 /* LMLogger.m */; };
+		CFC1D5E5387C49A5A5FFC474 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 229532AF675D4CFFAE45696C /* CoreBluetooth.framework */; };
+		21FB221D943F4A2CA7CB6944 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C4F9189DCB1488E8C98E6D0 /* CoreLocation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +89,17 @@
 		ED33DF2A687741AEAF9F8254 /* Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = "HelloCordova/config.xml"; sourceTree = "<group>"; };
 		F6331C0F52A642C68DFCF8BD /* Condo.m */ = {isa = PBXFileReference; name = "Condo.m"; path = "cordova-plugin-condo/Condo.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		A2D6FEEA53354DEE8B0F129F /* CDVDevice.m */ = {isa = PBXFileReference; name = "CDVDevice.m"; path = "cordova-plugin-device/CDVDevice.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		2FCDFE9A42724CB88D5578CE /* CDVDevice.h */ = {isa = PBXFileReference; name = "CDVDevice.h"; path = "cordova-plugin-device/CDVDevice.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		5B50C9CCBE924550BB1CDD16 /* CDVDevice.bundle */ = {isa = PBXFileReference; name = "CDVDevice.bundle"; path = "CDVDevice.bundle"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.plug-in; explicitFileType = undefined; includeInIndex = 0; };
+		AD970DDE51B34800AAA21E10 /* CDVLocationManager.m */ = {isa = PBXFileReference; name = "CDVLocationManager.m"; path = "com.unarin.cordova.beacon/CDVLocationManager.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		F89DD71E70834838B9AADA21 /* AppDelegate+CDVLocationManager.m */ = {isa = PBXFileReference; name = "AppDelegate+CDVLocationManager.m"; path = "com.unarin.cordova.beacon/AppDelegate+CDVLocationManager.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		309370679433495DBC1B6EE2 /* LMLogger.m */ = {isa = PBXFileReference; name = "LMLogger.m"; path = "com.unarin.cordova.beacon/LMLogger.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		5937CBF668464B0695ADB012 /* CDVLocationManager.h */ = {isa = PBXFileReference; name = "CDVLocationManager.h"; path = "com.unarin.cordova.beacon/CDVLocationManager.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		27DECDA595A144AA936ED522 /* AppDelegate+CDVLocationManager.h */ = {isa = PBXFileReference; name = "AppDelegate+CDVLocationManager.h"; path = "com.unarin.cordova.beacon/AppDelegate+CDVLocationManager.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		7951EED7D13945318A803127 /* LMLogger.h */ = {isa = PBXFileReference; name = "LMLogger.h"; path = "com.unarin.cordova.beacon/LMLogger.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		229532AF675D4CFFAE45696C /* CoreBluetooth.framework */ = {isa = PBXFileReference; name = "CoreBluetooth.framework"; path = "System/Library/Frameworks/CoreBluetooth.framework"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
+		1C4F9189DCB1488E8C98E6D0 /* CoreLocation.framework */ = {isa = PBXFileReference; name = "CoreLocation.framework"; path = "System/Library/Frameworks/CoreLocation.framework"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +108,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				301BF552109A68D80062928A /* libCordova.a in Frameworks */,
+				CFC1D5E5387C49A5A5FFC474 /* CoreBluetooth.framework in Frameworks */,
+				21FB221D943F4A2CA7CB6944 /* CoreLocation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,6 +164,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5B50C9CCBE924550BB1CDD16 /* CDVDevice.bundle */,
 			);
 			name = Resources;
 			path = "HelloCordova/Resources";
@@ -152,6 +173,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				229532AF675D4CFFAE45696C /* CoreBluetooth.framework */,
+				1C4F9189DCB1488E8C98E6D0 /* CoreLocation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -179,6 +202,14 @@
 			isa = PBXGroup;
 			children = (
 				F6331C0F52A642C68DFCF8BD /* Condo.m */,
+				A2D6FEEA53354DEE8B0F129F /* CDVDevice.m */,
+				2FCDFE9A42724CB88D5578CE /* CDVDevice.h */,
+				AD970DDE51B34800AAA21E10 /* CDVLocationManager.m */,
+				F89DD71E70834838B9AADA21 /* AppDelegate+CDVLocationManager.m */,
+				309370679433495DBC1B6EE2 /* LMLogger.m */,
+				5937CBF668464B0695ADB012 /* CDVLocationManager.h */,
+				27DECDA595A144AA936ED522 /* AppDelegate+CDVLocationManager.h */,
+				7951EED7D13945318A803127 /* LMLogger.h */,
 			);
 			name = Plugins;
 			path = "HelloCordova/Plugins";
@@ -278,6 +309,7 @@
 				0207DA581B56EA530066E2B4 /* Assets.xcassets in Resources */,
 				90B630EF2AECBBD0009EF368 /* PrivacyInfo.xcprivacy in Resources */,
 				6AFF5BF91D6E424B00AB3073 /* CDVLaunchScreen.storyboard in Resources */,
+				9DAF88BFBCA242E39DDEA451 /* CDVDevice.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,6 +324,10 @@
 				1D3623260D0F684500981E51 /* AppDelegate.m in Sources */,
 				302D95F114D2391D003F00A1 /* MainViewController.m in Sources */,
 				591FCF399A404027A0AF16D9 /* Condo.m in Sources */,
+				918E1940077645419BAEEDA8 /* CDVDevice.m in Sources */,
+				BA4CFC4899E74DC798CA655E /* CDVLocationManager.m in Sources */,
+				4F5842C7DABC4D6A8C3A1E23 /* AppDelegate+CDVLocationManager.m in Sources */,
+				72A184D3492D491B9ABC34F6 /* LMLogger.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
