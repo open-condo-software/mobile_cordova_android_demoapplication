@@ -35,7 +35,6 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
-import android.os.RemoteException;
 import android.util.Log;
 
 import org.altbeacon.beacon.Beacon;
@@ -52,9 +51,6 @@ import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
-import org.altbeacon.beacon.service.RunningAverageRssiFilter;
-import org.altbeacon.beacon.service.ArmaRssiFilter;
-import org.altbeacon.beacon.service.RangedBeacon;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
@@ -72,7 +68,7 @@ import java.util.Collection;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import ai.doma.core.miniapps.services.BeaconEmitter;
+import ai.doma.core.miniapps.services.BeaconScanner;
 
 public class LocationManager extends CordovaPlugin implements BeaconConsumer
 {
@@ -133,7 +129,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
                 String.valueOf(foregroundScanPeriod) + " - " + String.valueOf(foregroundBetweenScanPeriod));
 
 //        iBeaconManager = BeaconManager.getInstanceForApplication(cordovaActivity);
-        iBeaconManager = BeaconEmitter.INSTANCE.getIBeaconManager();
+        iBeaconManager = BeaconScanner.INSTANCE.getIBeaconManager();
         Log.d(TAG, "initialize: " + iBeaconManager.getForegroundBetweenScanPeriod());
         Log.d(TAG, "initialize: " + iBeaconManager.getForegroundScanPeriod());
 
@@ -184,7 +180,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
     @Override
     public void onDestroy() {
 //        iBeaconManager.unbind(this);
-        BeaconEmitter.clearNotifiers();
+        BeaconScanner.clearNotifiers();
 
         if (broadcastReceiver != null) {
             cordova.getActivity().unregisterReceiver(broadcastReceiver);
@@ -517,7 +513,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
     private void createMonitorCallbacks(final CallbackContext callbackContext) {
 
         //Monitor callbacks
-        BeaconEmitter.registerMonitorNotifier(new MonitorNotifier() {
+        BeaconScanner.registerMonitorNotifier(new MonitorNotifier() {
             @Override
             public void didEnterRegion(Region region) {
                 debugLog("didEnterRegion INSIDE for " + region.getUniqueId());
@@ -569,7 +565,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
 
     private void createRangingCallbacks(final CallbackContext callbackContext) {
 
-        BeaconEmitter.registerRangeNotifier(new RangeNotifier() {
+        BeaconScanner.registerRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(final Collection<Beacon> iBeacons, final Region region) {
 
@@ -862,7 +858,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
                 Region region = null;
                 try {
                     region = parseRegion(arguments);
-                    BeaconEmitter.startMonitoring(region);
+                    BeaconScanner.startMonitoring(region);
 
                     PluginResult result = new PluginResult(PluginResult.Status.OK);
                     result.setKeepCallback(true);
@@ -889,7 +885,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
 
                 try {
                     Region region = parseRegion(arguments);
-                    BeaconEmitter.stopMonitoring(region);
+                    BeaconScanner.stopMonitoring(region);
 
                     PluginResult result = new PluginResult(PluginResult.Status.OK);
                     result.setKeepCallback(true);
@@ -921,7 +917,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
                             ? arguments.getDouble("min_accuracy")
                             : 1.0;
 
-                    BeaconEmitter.startRangingBeacons(region, minAccuracyValue);
+                    BeaconScanner.startRangingBeacons(region, minAccuracyValue);
 
                     PluginResult result = new PluginResult(PluginResult.Status.OK);
                     result.setKeepCallback(true);
@@ -944,7 +940,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
                 try {
                     Region region = parseRegion(arguments);
 //                    iBeaconManager.stopRangingBeaconsInRegion(region);
-                    BeaconEmitter.stopRangingBeacons(region);
+                    BeaconScanner.stopRangingBeacons(region);
 
                     PluginResult result = new PluginResult(PluginResult.Status.OK);
                     result.setKeepCallback(true);

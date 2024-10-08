@@ -16,8 +16,6 @@ import android.content.ServiceConnection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import org.altbeacon.beacon.Beacon
 import org.altbeacon.beacon.BeaconConsumer
@@ -38,7 +36,7 @@ private const val DEFAULT_FOREGROUND_BETWEEN_SCAN_PERIOD = 0
 private const val DEFAULT_SAMPLE_EXPIRATION_MILLISECOND = 20000
 
 @SuppressLint("StaticFieldLeak")
-object BeaconEmitter {
+object BeaconScanner {
 
     @Volatile
     var activeMiniappId: String? = null

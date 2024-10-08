@@ -4,7 +4,7 @@ import ai.doma.core.DI.CoreComponent
 import ai.doma.core.DI.CoreComponentProvider
 import ai.doma.core.DI.CoreModule
 import ai.doma.core.DI.DaggerCoreComponent
-import ai.doma.core.miniapps.services.BeaconEmitter
+import ai.doma.core.miniapps.services.BeaconScanner
 import ai.doma.miniappdemo.ext.logD
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
@@ -35,11 +35,11 @@ class App : Application(), CoreComponentProvider {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         scope.launch {
-            BeaconEmitter.stopScanning()
-            BeaconEmitter.init(provideCoreComponent().beaconRegionRepository, this@App)
+            BeaconScanner.stopScanning()
+            BeaconScanner.init(provideCoreComponent().beaconRegionRepository, this@App)
             logD("BeaconWorker") { "run emitting" }
             try {
-                BeaconEmitter.runEmitting().await()
+                BeaconScanner.runEmitting().await()
             } catch (e: Exception) {
                 logD("BeaconWorker") { "error: $e" }
             }
