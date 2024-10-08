@@ -1,64 +1,129 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <!--
-        Customize this policy to fit your own app's needs. For more guidance, see:
-            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
-        Some notes:
-            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
-            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
-            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
-                * Enable inline JS: add 'unsafe-inline' to default-src
-        -->
-        <!-- DOMA!
-            Ниже в meta теге необходимо указать сервера, с которыми предстоит взаимодействовать по примеру https://v1.doma.ai
-        -->
-        <!--        <meta http-equiv="Content-Security-Policy" content="default-src * 'self' https://v1.doma.ai data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">-->
-        <meta https-equiv="Content-Security-Policy" content="default-src *;" />
-        <meta name="format-detection" content="telephone=no">
-        <meta name="msapplication-tap-highlight" content="no">
-        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
-        <meta name="color-scheme" content="light dark">
-        <link rel="stylesheet" href="css/index.css">
-        <title>Beacon</title>
-    </head>
-    <body style="overflow: hidden;">
-        <h2 class="header_desc">Ranging</h2>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation App</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <style>
+        .content-section {
+            display: none;
+        }
+        .active-section {
+            display: block;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="grey lighten-4">
 
-        <h3>Add region for raging</h3>
-        <form class="add_form">
-            <div class="form-row">
-                <label class="form-label" for="uuid">UUID:</label>
-                <input type="text" id="uuid" name="uuid">
+<div class="container" style="padding-bottom: 80px;">
+
+    <!-- Monitoring Section -->
+    <div id="monitoring-section" class="content-section active-section">
+        <h3 class="center-align">Monitoring</h3>
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">Добавить новый Region</span>
+                <div class="input-field">
+                    <input id="uuid" type="text">
+                    <label for="uuid">UUID</label>
+                </div>
+                <div class="input-field">
+                    <input id="major" type="number">
+                    <label for="major">Major</label>
+                </div>
+                <div class="input-field">
+                    <input id="minor" type="number">
+                    <label for="minor">Minor</label>
+                </div>
+                <button class="btn waves-effect waves-light" onclick="addRegionForMonitoringFromUI()">Добавить</button>
             </div>
-            <div class="form-row">
-                <label class="form-label" for="major">Major:</label>
-                <input type="text" id="major" name="major">
-            </div>
-            <div class="form-row">
-                <label class="form-label" for="minor">Minor:</label>
-                <input type="text" id="minor" name="minor">
-            </div>
-            <div class="form-row">
-                <button type="button">Добавить</button>
-            </div>
-        </form>
-
-
-
-
-        <div class="bottom_panel">
-            <a class="bottom_btn">
-                Monitoring
-            </a>
-            <a class="bottom_btn">
-                Ranging
-            </a>
-            <a class="bottom_btn">
-                Other
-            </a>
         </div>
-        <script src="cordova.js"></script>
-    </body>
+
+        <ul id="region-list" class="collection with-header">
+            <li class="collection-header"><h5>Список Regions</h5></li>
+        </ul>
+    </div>
+
+    <!-- Ranging Section -->
+    <div id="ranging-section" class="content-section">
+        <h3 class="center-align">Ranging</h3>
+
+        <!-- Форма для добавления Region -->
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">Добавить новый Region</span>
+                <div class="input-field">
+                    <input id="ranging-uuid" type="text">
+                    <label for="uuid">UUID</label>
+                </div>
+                <div class="input-field">
+                    <input id="ranging-major" type="number">
+                    <label for="major">Major</label>
+                </div>
+                <div class="input-field">
+                    <input id="ranging-minor" type="number">
+                    <label for="minor">Minor</label>
+                </div>
+                <div class="input-field">
+                    <input id="ranging-distance" type="number">
+                    <label for="ranging-distance">Distance (meters)</label>
+                </div>
+                <button class="btn waves-effect waves-light" onclick="addRegionForRangingFromUI()">Добавить</button>
+            </div>
+        </div>
+
+        <!-- Список добавленных Regions -->
+        <ul id="ranging-region-list" class="collection with-header">
+            <li class="collection-header"><h5>Список Regions</h5></li>
+        </ul>
+
+<!--        &lt;!&ndash; Поле для логов &ndash;&gt;-->
+<!--        <div class="card">-->
+<!--            <div class="card-content">-->
+<!--                <span class="card-title">Логи</span>-->
+<!--                <div id="ranging-log-output" class="grey-text text-darken-2">Логи будут отображаться здесь...</div>-->
+<!--            </div>-->
+<!--        </div>-->
+    </div>
+
+    <!-- Other Section -->
+    <div id="other-section" class="content-section">
+        <h3 class="center-align">Other</h3>
+        <p class="center-align">Контент Other страницы пока пуст.</p>
+    </div>
+
+
+    <div class="card">
+        <div class="card-content">
+            <span class="card-title">Логи</span>
+            <div id="log-output" class="grey-text text-darken-2">Логи будут отображаться здесь...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+    <nav class="nav-extended">
+        <div class="nav-content">
+            <ul class="tabs tabs-fixed-width">
+                <li class="tab col s4"><a href="#!" class="active" onclick="showSection('monitoring-section')">Monitoring</a></li>
+                <li class="tab col s4"><a href="#!" onclick="showSection('ranging-section')">Ranging</a></li>
+                <li class="tab col s4"><a href="#!" onclick="showSection('other-section')">Other</a></li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<script src="js/beacon.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
 </html>

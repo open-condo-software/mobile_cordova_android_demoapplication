@@ -98,7 +98,6 @@ function removeRegionFromRanging(element) {
     logAction("Удален Region: " + item.textContent.trim());
 }
 
-
 function logAction(message) {
     const logOutput = document.getElementById('log-output');
     logOutput.innerHTML += `<div>${new Date().toLocaleTimeString()} - ${message}</div>`;
