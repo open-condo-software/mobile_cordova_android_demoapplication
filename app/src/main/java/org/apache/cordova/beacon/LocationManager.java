@@ -72,6 +72,8 @@ import java.util.Collection;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import ai.doma.core.miniapps.services.BeaconEmitter;
+
 public class LocationManager extends CordovaPlugin implements BeaconConsumer
 {
 
@@ -128,9 +130,13 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
                 FOREGROUND_SCAN_PERIOD_NAME, DEFAULT_FOREGROUND_SCAN_PERIOD);
 
         Log.i(TAG, "Determined config value FOREGROUND_SCAN_PERIOD: " +
-                String.valueOf(foregroundScanPeriod));
+                String.valueOf(foregroundScanPeriod) + " - " + String.valueOf(foregroundBetweenScanPeriod));
 
-        iBeaconManager = BeaconManager.getInstanceForApplication(cordovaActivity);
+//        iBeaconManager = BeaconManager.getInstanceForApplication(cordovaActivity);
+        iBeaconManager = BeaconEmitter.INSTANCE.getIBeaconManager();
+        Log.d(TAG, "initialize: " + iBeaconManager.getForegroundBetweenScanPeriod());
+        Log.d(TAG, "initialize: " + iBeaconManager.getForegroundScanPeriod());
+
         iBeaconManager.setForegroundBetweenScanPeriod(foregroundBetweenScanPeriod);
         iBeaconManager.setForegroundScanPeriod(foregroundScanPeriod);
 
@@ -143,14 +149,14 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
         final boolean enableArmaFilter = this.preferences.getBoolean(
                 ENABLE_ARMA_FILTER_NAME, DEFAULT_ENABLE_ARMA_FILTER);
 
-        if(enableArmaFilter){
-               iBeaconManager.setRssiFilterImplClass(ArmaRssiFilter.class);
-        }
-        else{
-               iBeaconManager.setRssiFilterImplClass(RunningAverageRssiFilter.class);
-               RunningAverageRssiFilter.setSampleExpirationMilliseconds(sampleExpirationMilliseconds);
-        }
-        RangedBeacon.setSampleExpirationMilliseconds(sampleExpirationMilliseconds);
+//        if(enableArmaFilter){
+//               iBeaconManager.setRssiFilterImplClass(ArmaRssiFilter.class);
+//        }
+//        else{
+//               iBeaconManager.setRssiFilterImplClass(RunningAverageRssiFilter.class);
+//               RunningAverageRssiFilter.setSampleExpirationMilliseconds(sampleExpirationMilliseconds);
+//        }
+//        RangedBeacon.setSampleExpirationMilliseconds(sampleExpirationMilliseconds);
 
         initBluetoothListener();
         initEventQueue();
@@ -169,7 +175,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
                 REQUEST_BT_PERMISSION_NAME, DEFAULT_REQUEST_BT_PERMISSION);
 
         if(requestPermission)
-              tryToRequestMarshmallowLocationPermission();
+            tryToRequestMarshmallowLocationPermission();
     }
 
     /**
@@ -177,7 +183,8 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
      */
     @Override
     public void onDestroy() {
-        iBeaconManager.unbind(this);
+//        iBeaconManager.unbind(this);
+        BeaconEmitter.clearNotifiers();
 
         if (broadcastReceiver != null) {
             cordova.getActivity().unregisterReceiver(broadcastReceiver);
@@ -510,7 +517,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
     private void createMonitorCallbacks(final CallbackContext callbackContext) {
 
         //Monitor callbacks
-        iBeaconManager.addMonitorNotifier(new MonitorNotifier() {
+        BeaconEmitter.registerMonitorNotifier(new MonitorNotifier() {
             @Override
             public void didEnterRegion(Region region) {
                 debugLog("didEnterRegion INSIDE for " + region.getUniqueId());
@@ -562,7 +569,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
 
     private void createRangingCallbacks(final CallbackContext callbackContext) {
 
-        iBeaconManager.addRangeNotifier(new RangeNotifier() {
+        BeaconEmitter.registerRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(final Collection<Beacon> iBeacons, final Region region) {
 
@@ -855,7 +862,7 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
                 Region region = null;
                 try {
                     region = parseRegion(arguments);
-                    iBeaconManager.startMonitoring(region);
+                    BeaconEmitter.startMonitoring(region);
 
                     PluginResult result = new PluginResult(PluginResult.Status.OK);
                     result.setKeepCallback(true);
@@ -882,15 +889,15 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
 
                 try {
                     Region region = parseRegion(arguments);
-                    iBeaconManager.stopMonitoringBeaconsInRegion(region);
+                    BeaconEmitter.stopMonitoring(region);
 
                     PluginResult result = new PluginResult(PluginResult.Status.OK);
                     result.setKeepCallback(true);
                     return result;
 
-                } catch (RemoteException e) {
-                    Log.e(TAG, "'stopMonitoringForRegion' service error: " + e.getCause());
-                    return new PluginResult(PluginResult.Status.ERROR, e.getMessage());
+//                } catch (RemoteException e) {
+//                    Log.e(TAG, "'stopMonitoringForRegion' service error: " + e.getCause());
+//                    return new PluginResult(PluginResult.Status.ERROR, e.getMessage());
                 } catch (Exception e) {
                     Log.e(TAG, "'stopMonitoringForRegion' exception " + e.getCause());
                     return new PluginResult(PluginResult.Status.ERROR, e.getMessage());
@@ -910,7 +917,11 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
 
                 try {
                     Region region = parseRegion(arguments);
-                    iBeaconManager.startRangingBeacons(region);
+                    double minAccuracyValue = arguments.has("min_accuracy")
+                            ? arguments.getDouble("min_accuracy")
+                            : 1.0;
+
+                    BeaconEmitter.startRangingBeacons(region, minAccuracyValue);
 
                     PluginResult result = new PluginResult(PluginResult.Status.OK);
                     result.setKeepCallback(true);
@@ -932,15 +943,16 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
 
                 try {
                     Region region = parseRegion(arguments);
-                    iBeaconManager.stopRangingBeaconsInRegion(region);
+//                    iBeaconManager.stopRangingBeaconsInRegion(region);
+                    BeaconEmitter.stopRangingBeacons(region);
 
                     PluginResult result = new PluginResult(PluginResult.Status.OK);
                     result.setKeepCallback(true);
                     return result;
 
-                } catch (RemoteException e) {
-                    Log.e(TAG, "'stopRangingBeaconsInRegion' service error: " + e.getCause());
-                    return new PluginResult(PluginResult.Status.ERROR, e.getMessage());
+//                } catch (RemoteException e) {
+//                    Log.e(TAG, "'stopRangingBeaconsInRegion' service error: " + e.getCause());
+//                    return new PluginResult(PluginResult.Status.ERROR, e.getMessage());
                 } catch (Exception e) {
                     Log.e(TAG, "'stopRangingBeaconsInRegion' exception " + e.getCause());
                     return new PluginResult(PluginResult.Status.ERROR, e.getMessage());
