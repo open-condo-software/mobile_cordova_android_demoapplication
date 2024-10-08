@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Region Scanner</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/beacon.css">
+</head>
+<body class="grey lighten-4">
+
+<div class="container">
+    <h3 class="center-align">Region Scanner</h3>
+
+    <!-- Форма для добавления Region -->
+    <div class="card">
+        <div class="card-content">
+            <span class="card-title">Добавить новый Region</span>
+            <div class="input-field">
+                <input id="uuid" type="text">
+                <label for="uuid">UUID</label>
+            </div>
+            <div class="input-field">
+                <input id="major" type="number">
+                <label for="major">Major</label>
+            </div>
+            <div class="input-field">
+                <input id="minor" type="number">
+                <label for="minor">Minor</label>
+            </div>
+            <div class="input-field">
+                <input id="distance" type="number">
+                <label for="distance">Distance (meters)</label>
+            </div>
+            <button class="btn waves-effect waves-light" onclick="addRegion()">Добавить</button>
+        </div>
+    </div>
+
+    <!-- Список добавленных Regions -->
+    <ul id="region-list" class="collection with-header">
+        <li class="collection-header"><h5>Список Regions</h5></li>
+    </ul>
+
+    <!-- Поле для логов -->
+    <div class="card">
+        <div class="card-content">
+            <span class="card-title">Логи</span>
+            <div id="log-output" class="grey-text text-darken-2">Логи будут отображаться здесь...</div>
+        </div>
+    </div>
+</div>
+
+<div class="bottom_panel">
+    <a class="bottom_btn">
+        Monitoring
+    </a>
+    <a class="bottom_btn">
+        Ranging
+    </a>
+    <a class="bottom_btn">
+        Other
+    </a>
+</div>
+
+<script src="js/region.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>
