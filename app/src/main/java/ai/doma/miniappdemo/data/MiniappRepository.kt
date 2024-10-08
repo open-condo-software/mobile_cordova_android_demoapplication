@@ -46,7 +46,6 @@ class MiniappRepository @Inject constructor(
     }
 
 
-
     suspend fun downloadMiniappFromUrl(miniappId: String, url: String): Boolean {
         val stream = when (miniappId) {
             MINIAPP_SERVER_AUTH_BY_URL_ID -> context.resources.openRawResource(R.raw.www)
@@ -100,14 +99,14 @@ class MiniappRepository @Inject constructor(
 
             //меняем файлы кордовы на свои собственные
             val cordovajsFile = File(dir, "cordova.js")
-            if(cordovajsFile.exists()){
+            if (cordovajsFile.exists()) {
                 cordovajsFile.delete()
             }
             cordovajsFile.createNewFile()
             cordovajsFile.writeBytes(context.resources.openRawResource(R.raw.cordova).readBytes())
 
             val cordova_pluginsjsFile = File(dir, "cordova_plugins.js")
-            if(cordova_pluginsjsFile.exists()){
+            if (cordova_pluginsjsFile.exists()) {
                 cordova_pluginsjsFile.delete()
             }
             cordova_pluginsjsFile.createNewFile()
@@ -116,7 +115,7 @@ class MiniappRepository @Inject constructor(
             )
 
             val cordovaJsSrcDir = File(dir, "cordova-js-src")
-            if(cordovaJsSrcDir.exists() && cordovaJsSrcDir.isDirectory){
+            if (cordovaJsSrcDir.exists() && cordovaJsSrcDir.isDirectory) {
                 cordovaJsSrcDir.deleteRecursively()
             }
             cordovaJsSrcDir.mkdir()
@@ -137,11 +136,15 @@ class MiniappRepository @Inject constructor(
 
             val nativeapiproviderFile = File(cordovaJsSrcDirAndroid, "nativeapiprovider.js")
             nativeapiproviderFile.createNewFile()
-            nativeapiproviderFile.writeBytes(context.resources.openRawResource(R.raw.nativeapiprovider).readBytes())
+            nativeapiproviderFile.writeBytes(
+                context.resources.openRawResource(R.raw.nativeapiprovider).readBytes()
+            )
 
             val promptbasednativeapiFile = File(cordovaJsSrcDirAndroid, "promptbasednativeapi.js")
             promptbasednativeapiFile.createNewFile()
-            promptbasednativeapiFile.writeBytes(context.resources.openRawResource(R.raw.promptbasednativeapi).readBytes())
+            promptbasednativeapiFile.writeBytes(
+                context.resources.openRawResource(R.raw.promptbasednativeapi).readBytes()
+            )
 
             val appFile = File(cordovaJsSrcDirPluginAndroid, "app.js")
             appFile.createNewFile()
@@ -149,11 +152,13 @@ class MiniappRepository @Inject constructor(
 
 
             val condoPluginFile = File(dir, "plugins/cordova-plugin-condo/www/condo.js")
-            if(condoPluginFile.exists()){
+            if (condoPluginFile.exists()) {
                 condoPluginFile.delete()
             }
             condoPluginFile.createNewFile()
-            condoPluginFile.writeBytes(context.resources.openRawResource(R.raw.condo_plugin).readBytes())
+            condoPluginFile.writeBytes(
+                context.resources.openRawResource(R.raw.condo_plugin).readBytes()
+            )
 
         }
 
@@ -182,10 +187,10 @@ class MiniappRepository @Inject constructor(
         return """
             cordova.define('cordova/plugin_list', function(require, exports, module) {
               module.exports = [
-                ${foundPlugins.mapNotNull { it.configJson }.joinToString(separator = ",\n") { it }}
+                ${foundPlugins.flatMap { it.configJson.toList() }.joinToString(separator = ",\n") { it }}
               ];
               module.exports.metadata = {
-                ${foundPlugins.mapNotNull { it.meta }.joinToString(separator = ",\n") { it }}
+                ${foundPlugins.mapNotNull { it.meta }.toSet().joinToString(separator = ",\n") { it }}
               };
             });
         """.trimIndent()
@@ -196,24 +201,41 @@ class MiniappRepository @Inject constructor(
             return File(context.filesDir.path + File.separator + MINIAPPS_PATH + File.separator + miniappId)
         }
 
-        @Keep
-        enum class MiniappPlugin(val dir: String, val meta: String, val configJson: String?) {
+        enum class MiniappPlugin(val dir: String, val meta: String, val configJson: Array<String>) {
             CONDO(
                 "cordova-plugin-condo",
                 "\"cordova-plugin-condo\": \"0.0.2\"",
-                "{\"id\": \"cordova-plugin-condo.Condo\", \"file\": \"plugins/cordova-plugin-condo/www/condo.js\", \"pluginId\": \"cordova-plugin-condo\", \"clobbers\": [ \"cordova.plugins.condo\" ]}"
+                arrayOf("{\"id\": \"cordova-plugin-condo.Condo\", \"file\": \"plugins/cordova-plugin-condo/www/condo.js\", \"pluginId\": \"cordova-plugin-condo\", \"clobbers\": [ \"cordova.plugins.condo\" ]}")
             ),
             BLE(
                 "cordova-plugin-ble-central",
                 "\"cordova-plugin-ble-central\": \"1.5.0\"",
-                "{\"id\": \"cordova-plugin-ble-central.ble\", \"file\": \"plugins/cordova-plugin-ble-central/www/ble.js\", \"pluginId\": \"cordova-plugin-ble-central\", \"clobbers\": [ \"ble\" ]}"
+                arrayOf("{\"id\": \"cordova-plugin-ble-central.ble\", \"file\": \"plugins/cordova-plugin-ble-central/www/ble.js\", \"pluginId\": \"cordova-plugin-ble-central\", \"clobbers\": [ \"ble\" ]}")
             ),
             DEVICE(
                 "cordova-plugin-device",
                 "\"cordova-plugin-device\": \"2.1.0\"",
-                "{\"id\": \"cordova-plugin-device.device\", \"file\": \"plugins/cordova-plugin-device/www/device.js\", \"pluginId\": \"cordova-plugin-device\", \"clobbers\": [ \"device\" ]}"
+                arrayOf("{\"id\": \"cordova-plugin-device.device\", \"file\": \"plugins/cordova-plugin-device/www/device.js\", \"pluginId\": \"cordova-plugin-device\", \"clobbers\": [ \"device\" ]}")
             ),
-            WHITELIST("cordova-plugin-whitelist", "\"cordova-plugin-whitelist\": \"1.3.5\"", null)
+            WHITELIST(
+                "cordova-plugin-whitelist",
+                "\"cordova-plugin-whitelist\": \"1.3.5\"",
+                arrayOf()
+            ),
+            BEACON(
+                "com.unarin.cordova.beacon",
+                "\"com.unarin.cordova.beacon\": \"3.8.1\"",
+                arrayOf(
+                    "{\"id\": \"com.unarin.cordova.beacon.underscorejs\", \"file\": \"plugins/com.unarin.cordova.beacon/www/lib/underscore-min-1.6.js\", \"pluginId\": \"com.unarin.cordova.beacon\", \"runs\": true}",
+                    "{\"id\": \"com.unarin.cordova.beacon.Q\", \"file\": \"plugins/com.unarin.cordova.beacon/www/lib/q.min.js\", \"pluginId\": \"com.unarin.cordova.beacon\", \"runs\": true}",
+                    "{\"id\": \"com.unarin.cordova.beacon.LocationManager\", \"file\": \"plugins/com.unarin.cordova.beacon/www/LocationManager.js\", \"pluginId\": \"com.unarin.cordova.beacon\", \"merges\": [\"cordova.plugins\"]}",
+                    "{\"id\": \"com.unarin.cordova.beacon.Delegate\", \"file\": \"plugins/com.unarin.cordova.beacon/www/Delegate.js\", \"pluginId\": \"com.unarin.cordova.beacon\", \"runs\": true}",
+                    "{\"id\": \"com.unarin.cordova.beacon.Region\", \"file\": \"plugins/com.unarin.cordova.beacon/www/model/Region.js\", \"pluginId\": \"com.unarin.cordova.beacon\", \"runs\": true}",
+                    "{\"id\": \"com.unarin.cordova.beacon.Regions\", \"file\": \"plugins/com.unarin.cordova.beacon/www/Regions.js\", \"pluginId\": \"com.unarin.cordova.beacon\", \"runs\": true}",
+                    "{\"id\": \"com.unarin.cordova.beacon.CircularRegion\", \"file\": \"plugins/com.unarin.cordova.beacon/www/model/CircularRegion.js\", \"pluginId\": \"com.unarin.cordova.beacon\", \"runs\": true}",
+                    "{\"id\": \"com.unarin.cordova.beacon.BeaconRegion\", \"file\": \"plugins/com.unarin.cordova.beacon/www/model/BeaconRegion.js\", \"pluginId\": \"com.unarin.cordova.beacon\", \"runs\": true}",
+                )
+            )
         }
     }
 
