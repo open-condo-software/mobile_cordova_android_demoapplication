@@ -31,7 +31,7 @@ function addRegionForMonitoring(identifier, uuid, major, minor) {
         newItem.innerHTML = `
             <span>
                 <strong>Identifier:</strong> ${identifier} | <br/> <strong>UUID:</strong> ${uuid} | <br/><strong>Major:</strong> ${major} | <br/><strong>Minor:</strong> ${minor}<br/>
-                <span class="new badge green" data-badge-caption="Inside" id="status-${identifier}">Inside</span>
+                <span class="new badge green" id="status-${identifier}">Inside</span>
             </span>
             <a href="#!" class="secondary-content" onclick="removeRegionFromMonitoring(this)">
                 <i class="material-icons red-text">delete</i>
@@ -140,7 +140,7 @@ function updateMonitoringItem(region) {
     element.innerHTML = `
             <span>
                 <strong>Identifier:</strong> ${region.identifier} | <br/> <strong>UUID:</strong> ${region.uuid} | <br/><strong>Major:</strong> ${region.major} | <br/><strong>Minor:</strong> ${region.minor}<br/>
-                <span class="new badge green" data-badge-caption="Inside" id="status-${region.identifier}">Inside</span>
+                <span class="new badge green" id="status-${region.identifier}">Inside</span>
             </span>
             <a href="#!" class="secondary-content" onclick="removeRegionFromMonitoring(this)">
                 <i class="material-icons red-text">delete</i>
@@ -179,17 +179,17 @@ function createDelegate() {
 
     delegate.didEnterRegion = function (pluginResult) {
         console.log('didEnterRegion:', pluginResult);
-        enteredRegions[pluginResult.identifier] = pluginResult
-        updateRegionStatus(region.identifier, 1)
+        enteredRegions[pluginResult.region.identifier] = pluginResult
+        updateRegionStatus(pluginResult.region.identifier, 1)
 
         logToDom('didEnterRegion:' + JSON.stringify(pluginResult));
     }
 
     delegate.didExitRegion = function (pluginResult) {
         console.log('didExitRegion:', pluginResult);
-        delete enteredRegions[pluginResult.identifier]
+        delete enteredRegions[pluginResult.region.identifier]
 //        document.getElementById[`monitoring-item-${pluginResult.identifier}`]
-        updateRegionStatus(region.identifier, 0)
+        updateRegionStatus(pluginResult.region.identifier, 0)
 
         logToDom('didExitRegion:' + JSON.stringify(pluginResult));
     }
@@ -198,7 +198,10 @@ function createDelegate() {
 }
 
 function startMonitoringRequest(id, uuid, major, minor) {
-    let region = new cordova.plugins.locationManager.BeaconRegion(id, uuid, Number(major), Number(minor))
+    if (major) { major = Number(major) } else major = undefined
+    if (minor) { major = Number(minor) } else minor = undefined
+
+    let region = new cordova.plugins.locationManager.BeaconRegion(id, uuid, major, minor)
 
     cordova.plugins.locationManager.startMonitoringForRegion(region)
         .then((r) => {
