@@ -264,7 +264,7 @@ object BeaconScanner {
         iBeaconManager?.addMonitorNotifier(object : MonitorNotifier {
             override fun didEnterRegion(region: Region) {
                 logD("BeaconEmitter") { "didEnterRegion: $region <<<<" }
-                if (activeMiniappId == outerMonitorNotifier?.first) {
+                if (outerMonitorNotifier != null) {
                     outerMonitorNotifier?.didEnterRegion(region)
                 } else {
                     scope.launch(Dispatchers.IO) {
@@ -277,8 +277,8 @@ object BeaconScanner {
 
             override fun didExitRegion(region: Region) {
                 logD("BeaconEmitter") { "didExitRegion: $region <<<<" }
-                if (activeMiniappId != null && activeMiniappId == outerMonitorNotifier?.first) {
-                    outerMonitorNotifier?.second?.didExitRegion(region)
+                if (outerMonitorNotifier != null) {
+                    outerMonitorNotifier?.didExitRegion(region)
                 } else {
                     scope.launch(Dispatchers.IO) {
                         getMonitoringEntity(region)?.let { regionEntity ->
@@ -291,8 +291,8 @@ object BeaconScanner {
 
             override fun didDetermineStateForRegion(state: Int, region: Region) {
                 logD("BeaconEmitter") { "didDetermineStateForRegion: $state $region <<<<" }
-                if (activeMiniappId == outerMonitorNotifier?.first) {
-                    outerMonitorNotifier?.second?.didDetermineStateForRegion(state, region)
+                if (outerMonitorNotifier != null) {
+                    outerMonitorNotifier?.didDetermineStateForRegion(state, region)
                 }
             }
         })
@@ -306,8 +306,8 @@ object BeaconScanner {
             ) {
                 logD("BeaconEmitter") { "didRangeBeaconsInRegion: $region ${beacons?.joinToString { it.toString() + " (${
                     Math.round(it.distance * 100.0) / 100.0})" }} <<<<" }
-                if (activeMiniappId != null && activeMiniappId == outerRangeNotifier?.first) {
-                    outerRangeNotifier?.second?.didRangeBeaconsInRegion(beacons, region)
+                if (outerRangeNotifier != null) {
+                    outerRangeNotifier?.didRangeBeaconsInRegion(beacons, region)
                 } else {
                     scope.launch(Dispatchers.IO) {
                         getRangingEntity(region)?.let {
