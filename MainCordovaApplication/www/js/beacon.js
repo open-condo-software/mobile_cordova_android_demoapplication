@@ -20,7 +20,7 @@ function addRegionForMonitoringFromUI() {
 }
 
 function addRegionForMonitoring(identifier, uuid, major, minor) {
-    if (uuid) {
+    if (identifier) {
         const list = document.getElementById('region-list');
         const newItem = document.createElement('li');
         newItem.className = 'collection-item';
@@ -33,20 +33,25 @@ function addRegionForMonitoring(identifier, uuid, major, minor) {
                 <strong>Identifier:</strong> ${identifier} | <br/> <strong>UUID:</strong> ${uuid} | <br/><strong>Major:</strong> ${major} | <br/><strong>Minor:</strong> ${minor}<br/>
                 <span class="new badge green" id="status-${identifier}">Inside</span>
             </span>
-            <a href="#!" class="secondary-content" onclick="removeRegionFromMonitoring(this)">
+            <a href="#!" class="secondary-content" onclick="removeRegionFromMonitoring('${identifier}', '${uuid}', '${major}', '${minor}')">
                 <i class="material-icons red-text">delete</i>
             </a>
         `;
 
         list.appendChild(newItem);
-        logAction(`Добавлен Region - UUID: ${uuid}, Major: ${major}, Minor: ${minor}`);
+//        logAction(`Добавлен Region - UUID: ${uuid}, Major: ${major}, Minor: ${minor}`);
         document.getElementById('identifier').value = '';
         document.getElementById('uuid').value = '';
         document.getElementById('major').value = '';
         document.getElementById('minor').value = '';
-        updateRegionStatus(identifier, 0);
+
+        if (enteredRegions[identifier]) {
+            updateRegionStatus(identifier, 1);
+        } else {
+            updateRegionStatus(identifier, 0);
+        }
     } else {
-        logAction("Ошибка: Все поля формы должны быть заполнены!");
+        logAction("Ошибка: Поле identifier формы должно быть заполнено!");
     }
 }
 
@@ -78,7 +83,7 @@ function addRegionForRanging(identifier, uuid, major, minor, distance) {
         list.appendChild(newItem);
 
         // Логируем добавление
-        logAction(`Добавлен Region - UUID: ${uuid}, Major: ${major}, Minor: ${minor} | <strong>Distance:</strong> ${distance} (m)`);
+//        logAction(`Добавлен Region - UUID: ${uuid}, Major: ${major}, Minor: ${minor} | <strong>Distance:</strong> ${distance} (m)`);
 
         // Очищаем поля формы
         document.getElementById('ranging-uuid').value = '';
@@ -91,11 +96,20 @@ function addRegionForRanging(identifier, uuid, major, minor, distance) {
 }
 
 
-function removeRegionFromMonitoring(element) {
-    const item = element.parentElement;
-    const uuid = item.getAttribute("data-uuid");
-    item.remove();
-    logAction("Удален Region: UUID - " + uuid);
+function removeRegionFromMonitoring(identifier, uuid, major, minor) {
+    if (uuid == 'undefined') uuid = undefined;
+    if (major == 'undefined') major = undefined;
+    if (minor == 'undefined') minor = undefined;
+
+    let region = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor)
+    cordova.plugins.locationManager.stopMonitoringForRegion(region).then((r) => {
+        actualizeMonitoring()
+    })
+
+//    const item = element.parentElement;
+//    const uuid = item.getAttribute("data-uuid");
+//    item.remove();
+//    logAction("Удален Region: UUID - " + uuid);
 }
 
 // Функция удаления Region
@@ -142,12 +156,16 @@ function updateMonitoringItem(region) {
                 <strong>Identifier:</strong> ${region.identifier} | <br/> <strong>UUID:</strong> ${region.uuid} | <br/><strong>Major:</strong> ${region.major} | <br/><strong>Minor:</strong> ${region.minor}<br/>
                 <span class="new badge green" id="status-${region.identifier}">Inside</span>
             </span>
-            <a href="#!" class="secondary-content" onclick="removeRegionFromMonitoring(this)">
+            <a href="#!" class="secondary-content" onclick="removeRegionFromMonitoring('${region.identifier}', '${region.uuid}', '${region.major}', '${region.minor}')">
                 <i class="material-icons red-text">delete</i>
             </a>
         `;
 
-    updateRegionStatus(region.identifier, 0)
+    if (enteredRegions[region.identifier]) {
+        updateRegionStatus(region.identifier, 1);
+    } else {
+        updateRegionStatus(region.identifier, 0);
+    }
 }
 
 
@@ -199,7 +217,7 @@ function createDelegate() {
 
 function startMonitoringRequest(id, uuid, major, minor) {
     if (major) { major = Number(major) } else major = undefined
-    if (minor) { major = Number(minor) } else minor = undefined
+    if (minor) { minor = Number(minor) } else minor = undefined
 
     let region = new cordova.plugins.locationManager.BeaconRegion(id, uuid, major, minor)
 
