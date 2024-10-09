@@ -9,6 +9,9 @@ function showSection(sectionId) {
     document.getElementById(sectionId).classList.add('active-section');
 }
 
+
+
+
 // Код для страницы Monitoring
 function addRegionForMonitoringFromUI() {
     const identifier = document.getElementById('identifier').value;
@@ -40,61 +43,16 @@ function addRegionForMonitoring(identifier, uuid, major, minor) {
 
         list.appendChild(newItem);
 //        logAction(`Добавлен Region - UUID: ${uuid}, Major: ${major}, Minor: ${minor}`);
-        document.getElementById('identifier').value = '';
-        document.getElementById('uuid').value = '';
-        document.getElementById('major').value = '';
-        document.getElementById('minor').value = '';
 
         if (enteredRegions[identifier]) {
-            updateRegionStatus(identifier, 1);
+            updateMonitoringRegionStatus(identifier, 1);
         } else {
-            updateRegionStatus(identifier, 0);
+            updateMonitoringRegionStatus(identifier, 0);
         }
     } else {
         logAction("Ошибка: Поле identifier формы должно быть заполнено!");
     }
 }
-
-function addRegionForRangingFromUI() {
-    const uuid = document.getElementById('ranging-uuid').value;
-    const major = document.getElementById('ranging-major').value;
-    const minor = document.getElementById('ranging-minor').value;
-    const distance = document.getElementById('ranging-distance').value;
-
-    addRegionForRanging(uuid, major, minor, distance);
-}
-
-function addRegionForRanging(identifier, uuid, major, minor, distance) {
-    if (uuid) {
-        const list = document.getElementById('ranging-region-list');
-        const newItem = document.createElement('li');
-        newItem.className = 'collection-item';
-        newItem.id = `ranging-item-${identifier}`
-
-        // Контент нового элемента
-        newItem.innerHTML = `
-            <span><strong>UUID:</strong> ${uuid} | <strong>Major:</strong> ${major} | <strong>Minor:</strong> ${minor} | <strong>Distance:</strong> ${distance} (m)</span>
-            <a href="#!" class="secondary-content" onclick="removeRegionFromRanging(this)">
-                <i class="material-icons red-text">delete</i>
-            </a>
-        `;
-
-        // Добавляем новый элемент в список
-        list.appendChild(newItem);
-
-        // Логируем добавление
-//        logAction(`Добавлен Region - UUID: ${uuid}, Major: ${major}, Minor: ${minor} | <strong>Distance:</strong> ${distance} (m)`);
-
-        // Очищаем поля формы
-        document.getElementById('ranging-uuid').value = '';
-        document.getElementById('ranging-major').value = '';
-        document.getElementById('ranging-minor').value = '';
-        document.getElementById('ranging-distance').value = '';
-    } else {
-        logAction("Ошибка: UUID должен быть заполнен!");
-    }
-}
-
 
 function removeRegionFromMonitoring(identifier, uuid, major, minor) {
     if (uuid == 'undefined') uuid = undefined;
@@ -110,38 +68,6 @@ function removeRegionFromMonitoring(identifier, uuid, major, minor) {
 //    const uuid = item.getAttribute("data-uuid");
 //    item.remove();
 //    logAction("Удален Region: UUID - " + uuid);
-}
-
-// Функция удаления Region
-function removeRegionFromRanging(element) {
-    const item = element.parentElement;
-    item.remove();
-    logAction("Удален Region: " + item.textContent.trim());
-}
-
-function logAction(message) {
-    const logOutput = document.getElementById('log-output');
-    logOutput.innerHTML += `<div>${new Date().toLocaleTimeString()} - ${message}</div>`;
-}
-
-function updateRegionStatus(identifier, status) {
-    const statusElement = document.getElementById(`status-${identifier}`);
-
-    if (statusElement) {
-        if (status === 1) {
-            statusElement.classList.remove('red');
-            statusElement.classList.add('green');
-            statusElement.textContent = 'Inside';
-            logAction(`Region ${identifier} - статус обновлен на Inside`);
-        } else if (status === 0) {
-            statusElement.classList.remove('green');
-            statusElement.classList.add('red');
-            statusElement.textContent = 'Outside';
-            logAction(`Region ${identifier} - статус обновлен на Outside`);
-        }
-    } else {
-        logAction(`Ошибка: Region с UUID ${identifier} не найден`);
-    }
 }
 
 function updateMonitoringItem(region) {
@@ -162,15 +88,137 @@ function updateMonitoringItem(region) {
         `;
 
     if (enteredRegions[region.identifier]) {
-        updateRegionStatus(region.identifier, 1);
+        updateMonitoringRegionStatus(region.identifier, 1);
     } else {
-        updateRegionStatus(region.identifier, 0);
+        updateMonitoringRegionStatus(region.identifier, 0);
+    }
+}
+
+function updateMonitoringRegionStatus(identifier, status) {
+    const statusElement = document.getElementById(`status-${identifier}`);
+
+    if (statusElement) {
+        if (status === 1) {
+            statusElement.classList.remove('red');
+            statusElement.classList.add('green');
+            statusElement.textContent = 'Inside';
+            logAction(`Region ${identifier} - статус обновлен на Inside`);
+        } else if (status === 0) {
+            statusElement.classList.remove('green');
+            statusElement.classList.add('red');
+            statusElement.textContent = 'Outside';
+            logAction(`Region ${identifier} - статус обновлен на Outside`);
+        }
+    } else {
+        logAction(`Ошибка: Region с UUID ${identifier} не найден`);
     }
 }
 
 
 
+// Код для страницы Ranging
+function addRegionForRangingFromUI() {
+    const identifier = document.getElementById('ranging-identifier').value;
+    const uuid = document.getElementById('ranging-uuid').value;
+    const major = document.getElementById('ranging-major').value;
+    const minor = document.getElementById('ranging-minor').value;
+    const distance = document.getElementById('ranging-distance').value;
+
+    startRangingRequest(identifier, uuid, major, minor, distance);
+}
+
+function addRegionForRanging(identifier, uuid, major, minor) {
+    if (identifier) {
+        const list = document.getElementById('ranging-region-list');
+        const newItem = document.createElement('li');
+        newItem.className = 'collection-item';
+        newItem.style = 'padding-bottom: 30px;'
+        newItem.id = `ranging-item-${identifier}`
+
+        var distance = ''
+        if (rangedRegions[identifier]) {
+            distance += '<ul>'
+            rangedRegions[identifier].beacons.forEach(function(item, i) {
+                distance += `<li> ${i + 1})  ${item.accuracy} m</li>`
+            })
+            distance += '</ul>'
+        }
+        // Контент нового элемента
+        newItem.innerHTML = `
+            <span><strong>Identifier:</strong> ${identifier} <br/> <strong>UUID:</strong> ${uuid} <br/> <strong>Major:</strong> ${major} <br/> <strong>Minor:</strong> ${minor} </span> <br>
+            <span><strong>Beacons:</strong></span>
+             ${distance}
+            <a href="#!" class="secondary-content" onclick="removeRegionFromRanging('${identifier}', '${uuid}', '${major}', '${minor}')">
+                <i class="material-icons red-text">delete</i>
+            </a>
+        `;
+
+        // Добавляем новый элемент в список
+        list.appendChild(newItem);
+
+        // Логируем добавление
+//        logAction(`Добавлен Region - UUID: ${uuid}, Major: ${major}, Minor: ${minor} | <strong>Distance:</strong> ${distance} (m)`);
+
+
+    } else {
+        logAction("Ошибка: Identifier должен быть заполнен!");
+    }
+}
+
+function removeRegionFromRanging(identifier, uuid, major, minor) {
+    if (uuid == 'undefined') uuid = undefined;
+    if (major == 'undefined') major = undefined;
+    if (minor == 'undefined') minor = undefined;
+
+    let region = new cordova.plugins.locationManager.BeaconRegion(identifier, uuid, major, minor)
+    cordova.plugins.locationManager.stopRangingBeaconsInRegion(region).then((r) => {
+        actualizeRanging()
+    })
+//    const item = element.parentElement;
+//    item.remove();
+//    logAction("Удален Region: " + item.textContent.trim());
+}
+
+function updateRangingItem(region) {
+    let element = document.getElementById(`ranging-item-${region.identifier}`)
+    if (element == null) {
+        addRegionForRanging(region.identifier, region.uuid, region.major, region.minor)
+        return
+    }
+
+    var distance = ''
+    if (rangedRegions[region.identifier]) {
+        distance += '<ul>'
+        rangedRegions[region.identifier].beacons.forEach(function(item, i) {
+            distance += `<li> ${i + 1})  ${item.accuracy} m</li>`
+        })
+        distance += '</ul>'
+    }
+    // Контент элемента
+    element.innerHTML = `
+        <span><strong>Identifier:</strong> ${region.identifier} <br/> <strong>UUID:</strong> ${region.uuid} <br/> <strong>Major:</strong> ${region.major} <br/> <strong>Minor:</strong> ${region.minor} </span> <br>
+        <span><strong>Beacons:</strong></span>
+         ${distance}
+        <a href="#!" class="secondary-content" onclick="removeRegionFromRanging('${region.identifier}', '${region.uuid}', '${region.major}', '${region.minor}')">
+            <i class="material-icons red-text">delete</i>
+        </a>
+    `;
+
+}
+
+
+function logAction(message) {
+    const logOutput = document.getElementById('log-output');
+    logOutput.innerHTML += `<div>${new Date().toLocaleTimeString()} - ${message}</div>`;
+}
+
+
+
+
+
 var enteredRegions = {}
+// { ID_example: [{  }] }
+var rangedRegions = {}
 //  Методы для работы с плагином
 function createDelegate() {
     var logToDom = function (message) {
@@ -191,14 +239,19 @@ function createDelegate() {
     };
 
     delegate.didRangeBeaconsInRegion = function (pluginResult) {
-        logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
-
+//        logToDom('[DOM] didRangeBeaconsInRegion: ' + JSON.stringify(pluginResult));
+        rangedRegions[pluginResult.region.identifier] = {
+            region: pluginResult.region,
+            beacons: pluginResult.beacons
+        }
+        actualizeRanging()
+//        console.log(rangedRegions)
     };
 
     delegate.didEnterRegion = function (pluginResult) {
         console.log('didEnterRegion:', pluginResult);
         enteredRegions[pluginResult.region.identifier] = pluginResult
-        updateRegionStatus(pluginResult.region.identifier, 1)
+        updateMonitoringRegionStatus(pluginResult.region.identifier, 1)
 
         logToDom('didEnterRegion:' + JSON.stringify(pluginResult));
     }
@@ -207,7 +260,7 @@ function createDelegate() {
         console.log('didExitRegion:', pluginResult);
         delete enteredRegions[pluginResult.region.identifier]
 //        document.getElementById[`monitoring-item-${pluginResult.identifier}`]
-        updateRegionStatus(pluginResult.region.identifier, 0)
+        updateMonitoringRegionStatus(pluginResult.region.identifier, 0)
 
         logToDom('didExitRegion:' + JSON.stringify(pluginResult));
     }
@@ -216,6 +269,7 @@ function createDelegate() {
 }
 
 function startMonitoringRequest(id, uuid, major, minor) {
+    if (!uuid) uuid = undefined
     if (major) { major = Number(major) } else major = undefined
     if (minor) { minor = Number(minor) } else minor = undefined
 
@@ -223,16 +277,36 @@ function startMonitoringRequest(id, uuid, major, minor) {
 
     cordova.plugins.locationManager.startMonitoringForRegion(region)
         .then((r) => {
+            document.getElementById('identifier').value = '';
+            document.getElementById('uuid').value = '';
+            document.getElementById('major').value = '';
+            document.getElementById('minor').value = '';
+
             actualizeMonitoring();
         })
-        .fail(function(e) { console.log(e); })
+        .fail(function(e) {
+            console.log(e);
+        })
 }
 
 function startRangingRequest(id, uuid, major, minor, distance) {
-    //  TODO: distance support
-    let region = cordova.plugins.locationManager.Region(id, uuid, major, minor)
+    if (!uuid) uuid = undefined
+    if (major) { major = Number(major) } else major = undefined
+    if (minor) { minor = Number(minor) } else minor = undefined
+
+    let region = new cordova.plugins.locationManager.BeaconRegion(id, uuid, major, minor)
+
     cordova.plugins.locationManager.startRangingBeaconsInRegion(region)
-        .then()
+        .then((r) => {
+            // Очищаем поля формы
+            document.getElementById('ranging-identifier').value = '';
+            document.getElementById('ranging-uuid').value = '';
+            document.getElementById('ranging-major').value = '';
+            document.getElementById('ranging-minor').value = '';
+            document.getElementById('ranging-distance').value = '';
+
+            actualizeRanging()
+        })
 }
 
 function actualizeMonitoring() {
@@ -244,6 +318,17 @@ function actualizeMonitoring() {
                 updateMonitoringItem(region)
             })
         })
+        .fail(function(e) { console.log(e); })
 }
 
+function actualizeRanging() {
+    cordova.plugins.locationManager.getRangedRegions()
+        .then((regions) => {
+            let l = document.getElementById("ranging-region-list")
+            l.innerHTML = ''
+            regions.forEach(function(region, index, array) {
+                updateRangingItem(region)
+            })
+        })
+}
 
