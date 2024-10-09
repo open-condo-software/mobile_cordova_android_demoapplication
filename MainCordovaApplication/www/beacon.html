@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta https-equiv="Content-Security-Policy" content="default-src *;" />
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
     <title>Navigation App</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
@@ -31,6 +36,11 @@
         <div class="card">
             <div class="card-content">
                 <span class="card-title">Добавить новый Region</span>
+
+                <div class="input-field">
+                    <input id="identifier" type="text">
+                    <label for="uuid">Identifier</label>
+                </div>
                 <div class="input-field">
                     <input id="uuid" type="text">
                     <label for="uuid">UUID</label>
@@ -110,7 +120,7 @@
 </div>
 
 <!-- Bottom Navigation -->
-<div class="bottom-nav">
+<div class="bottom-nav" style="height: ">
     <nav class="nav-extended">
         <div class="nav-content">
             <ul class="tabs tabs-fixed-width">
@@ -123,6 +133,8 @@
 </div>
 
 <script src="js/beacon.js"></script>
+<script src="cordova.js"></script>
+<script src="js/index.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>

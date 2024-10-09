@@ -39,7 +39,7 @@ private const val DEFAULT_SAMPLE_EXPIRATION_MILLISECOND = 20000
 object BeaconScanner {
 
     @Volatile
-    var activeMiniappId: String? = null
+//    var activeMiniappId: String? = null
     private lateinit var coreComponent: CoreComponent
     private val scope = CoroutineScope(Dispatchers.IO)
     private var repository: BeaconRegionRepository? = null
@@ -48,8 +48,8 @@ object BeaconScanner {
     var iBeaconManager: BeaconManager? = null
         private set
 
-    private var outerMonitorNotifier: Pair<String, MonitorNotifier>? = null
-    private var outerRangeNotifier: Pair<String, RangeNotifier>? = null
+    private var outerMonitorNotifier: MonitorNotifier? = null
+    private var outerRangeNotifier: RangeNotifier? = null
 
     private var beaconNotifier: BeaconNotifier? = null
 
@@ -212,16 +212,16 @@ object BeaconScanner {
 
     @JvmStatic
     fun registerMonitorNotifier(outerMonitorNotifier: MonitorNotifier) {
-        activeMiniappId?.let {
-            this.outerMonitorNotifier = it to outerMonitorNotifier
-        }
+//        activeMiniappId?.let {
+            this.outerMonitorNotifier = outerMonitorNotifier
+//        }
     }
 
     @JvmStatic
     fun registerRangeNotifier(outerRangeNotifier: RangeNotifier) {
-        activeMiniappId?.let {
-            this.outerRangeNotifier = it to outerRangeNotifier
-        }
+//        activeMiniappId?.let {
+            this.outerRangeNotifier = outerRangeNotifier
+//        }
     }
 
     @JvmStatic
@@ -264,8 +264,8 @@ object BeaconScanner {
         iBeaconManager?.addMonitorNotifier(object : MonitorNotifier {
             override fun didEnterRegion(region: Region) {
                 logD("BeaconEmitter") { "didEnterRegion: $region <<<<" }
-                if (activeMiniappId != null && activeMiniappId == outerMonitorNotifier?.first) {
-                    outerMonitorNotifier?.second?.didEnterRegion(region)
+                if (activeMiniappId == outerMonitorNotifier?.first) {
+                    outerMonitorNotifier?.didEnterRegion(region)
                 } else {
                     scope.launch(Dispatchers.IO) {
                         getMonitoringEntity(region)?.let { regionEntity ->
