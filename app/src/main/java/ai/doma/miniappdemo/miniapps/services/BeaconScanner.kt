@@ -52,6 +52,7 @@ object BeaconScanner {
     private var outerRangeNotifier: RangeNotifier? = null
 
     private var beaconNotifier: BeaconNotifier? = null
+    private val monitoringState: MutableMap<Region, Int> = mutableMapOf()
 
 
     fun init(
@@ -212,9 +213,13 @@ object BeaconScanner {
 
     @JvmStatic
     fun registerMonitorNotifier(outerMonitorNotifier: MonitorNotifier) {
-//        activeMiniappId?.let {
-            this.outerMonitorNotifier = outerMonitorNotifier
-//        }
+        this.outerMonitorNotifier = outerMonitorNotifier
+        monitoringState.forEach {
+            when(it.value) {
+                0 -> outerMonitorNotifier.didExitRegion(it.key)
+                1 -> outerMonitorNotifier.didEnterRegion(it.key)
+            }
+        }
     }
 
     @JvmStatic
@@ -272,6 +277,8 @@ object BeaconScanner {
                             beaconNotifier?.didEnterRegion(regionEntity)
                         }
                     }
+
+                    monitoringState[region] = 1
                 }
             }
 
@@ -285,6 +292,8 @@ object BeaconScanner {
                             beaconNotifier?.didExitRegion(regionEntity)
                         }
                     }
+
+                    monitoringState[region] = 0
                 }
 
             }
