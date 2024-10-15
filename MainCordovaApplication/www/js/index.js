@@ -76,7 +76,7 @@ function onDeviceReady() {
             if (res.data.authenticatedUser) {
                 console.log('authentificated => ', JSON.stringify(res.data.authenticatedUser));
                 cordova.plugins.condo.getCurrentResident(function(response) {
-                    console.log("current resident\address => ", JSON.stringify(response));
+                    console.log("current resident address => ", JSON.stringify(response));
                 }, function(error) {
                     console.log(error);
                 })
