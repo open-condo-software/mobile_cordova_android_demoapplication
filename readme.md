@@ -191,24 +191,26 @@ addEventListener("condoPopstate", (event) => {console.log("condoPopstate => ", J
 # 4. Supported plugins <a name="plugins"></a>
 Using Cordova, you can add various plugins to your project. But if the plugin accesses the native part, then this plugin must be supported by our application. Here is a list of such plugins:
 
-- BLE Peripheral
-- BLE Central
-- [iBeacon](#ibeacon)
-- Camera
-- Network Information
-- Device
+1. [BLE Peripheral](#ble_peripheral)
+2. [BLE Central](#ble_central)
+3. [iBeacon](#ibeacon)
+4. Camera
+5. Network Information
+6. Device
 
-## iBeacon <a name="ibeacon"></a>
+## 4.1. BLE Peripheral <a name="ble_peripheral"></a>
+## 4.2. BLE Central <a name="ble_central"></a>
+## 4.3. iBeacon <a name="ibeacon"></a>
 ### Recommendation to install: 
 
     cordova plugin add https://github.com/petermetz/cordova-plugin-ibeacon/tree/v3.x
 
-### ⚠️ Required:
+### ⚠️ Required permissions: `beacon`
 For work with these plugin **native_config.json** file in your miniapp need to contains <u>beacon</u> permission ([mobile_permission](#important-differences)) 
 
 ### Difference API:
 
-- Method `startRangingBeaconsInRegion(...)`; 
+- Method `startRangingBeaconsInRegion(...)`;
     <p><u>By default</u> takes 1 parameter: BeaconRegion</p>
     <p>
         Usage: 
@@ -234,6 +236,7 @@ For work with these plugin **native_config.json** file in your miniapp need to c
         .fail(...)
     ```
     </p>
+
 
 
 # 5. Environment. <a name="environment"></a>
@@ -291,6 +294,7 @@ The plugin provides a **hostApplication** object that can synchronously output i
     ```
 
 
+
 # 6. Important differences. <a name="important_differences"></a>
 Unlike the standard Cordova, our application uses an additional configuration file, which must be located in the www directory and named **native_config.json**
 
@@ -334,6 +338,7 @@ This file is a json file and may contain the following fields:
 5. Now, on the main application screen in the list of mini-applications, the last button allows you to download or replace a previously downloaded mini-application from files. When you click on it, you need to select the previously taken `www.zip` archive.
 
 6. The application loaded in this way has a built-in js console, which is accessible by clicking on the button at the bottom right of the open mini-application and is able to show a lot of additional information, including various errors.
+
 
 
 # 8. Publishing <a name="publishing"></a>
