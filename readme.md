@@ -8,18 +8,18 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
 # Content
 1. [Getting started](#getting_started)
 2. [Common methods.](#common_methods)
-3. [Important differences.](#important_differences)
-4. [Navigation system.](#navigation_system)
+3. [Navigation system.](#navigation_system)
+4. [Supported plugins.](#plugins)
+    - [iBeacon](#ibeacon)
 5. [Environment.](#environment)
-6. [Testing.](#testing)
+6. [Important differences.](#important_differences)
+7. [Testing.](#testing)
+   - [6.1 Testing in Demo environment](#testing-demo)
+   - [6.2 Testing in Production environment](#testing-production)
+8. [Publishing.](#publishing)
 
-   6.1 [Testing in Demo environment](#testing-demo)
-   
-   6.2 [Testing in Production environment](#testing-production)
-7. [Publishing.](#publishing)
 
-
-# Getting started <a name="getting_started"></a>
+# 1. Getting started <a name="getting_started"></a>
 
 1. Installing the necessary dependencies:
 
@@ -79,7 +79,7 @@ accept license agreements by:
 
 
 
-# Common methods <a name="common_methods"></a>
+# 2. Common methods <a name="common_methods"></a>
 - authorization
 
 
@@ -121,7 +121,7 @@ example:
 
 
 
-# Navigation system. <a name="navigation_system"></a>
+# 3. Navigation system. <a name="navigation_system"></a>
 
 We provide native navigation for your minapps with js code side control. Each miniapp launches with a system navigation bar and a close button on it. In general, you can implement everything else on your side, make an additional panel or controls for nested navigation and work with them.
 
@@ -163,7 +163,7 @@ But we **strongly recommend** to do otherwise. You can control what the system n
 
     example:
 
-    ```
+    ```javascript
     cordova.plugins.condo.history.go(-1);
     ```
 
@@ -173,7 +173,7 @@ But we **strongly recommend** to do otherwise. You can control what the system n
 
 In addition, you need to recognize when a user has pressed the system back button. This is achieved by subscribing to the already existing Cordova backbutton event https://cordova.apache.org/docs/en/12.x/cordova/events/events.html#backbutton This event is called for the system button as well.
 
-```
+```javascript
 document.addEventListener("backbutton", onBackKeyDown, false);
 
 function onBackKeyDown() {
@@ -182,13 +182,61 @@ function onBackKeyDown() {
 ```
 
 And of course after all these changes you can get the State that is now showing on the navigation bar. This is done similarly to the standard system method - by subscribing to the condoPopstate event:
-```
+```javascript
 addEventListener("condoPopstate", (event) => {console.log("condoPopstate => ", JSON.stringify(event.state));});
 ```
 
 
 
-# Environment. <a name="environment"></a>
+# 4. Supported plugins <a name="plugins"></a>
+Using Cordova, you can add various plugins to your project. But if the plugin accesses the native part, then this plugin must be supported by our application. Here is a list of such plugins:
+
+- BLE Peripheral
+- BLE Central
+- [iBeacon](#ibeacon)
+- Camera
+- Network Information
+- Device
+
+## iBeacon <a name="ibeacon"></a>
+### Recommendation to install: 
+
+    cordova plugin add https://github.com/petermetz/cordova-plugin-ibeacon/tree/v3.x
+
+### ⚠️ Required:
+For work with these plugin **native_config.json** file in your miniapp need to contains <u>beacon</u> permission ([mobile_permission](#important-differences)) 
+
+### Difference API:
+
+- Method `startRangingBeaconsInRegion(...)`; 
+    <p><u>By default</u> takes 1 parameter: BeaconRegion</p>
+    <p>
+        Usage: 
+         
+    ```javascript
+    let region = new cordova.plugins.locationManager.BeaconRegion(...)
+    cordova.plugins.locationManager.startRangingBeaconsInRegion(region)
+        .then(...)
+        .fail(...)
+    ```
+    </p>
+
+    <p><u>In out project</u> these method can takes second parameter: <b>distance</b>. This distance is needed to determine at what point to send a request to launch the miniapp from the background.</p>
+    <p>
+        Usage:
+
+    ```javascript
+    let region = new cordova.plugins.locationManager.BeaconRegion(...)
+    let min_distance = 0.5
+    // The miniapp will be launched from the background if the distance to the region is 0.5 meters
+    cordova.plugins.locationManager.startRangingBeaconsInRegion(region, min_distance)
+        .then(...)
+        .fail(...)
+    ```
+    </p>
+
+
+# 5. Environment. <a name="environment"></a>
 
 The plugin provides a **hostApplication** object that can synchronously output information about the current environment in which the mini-app is running.
 
@@ -243,17 +291,17 @@ The plugin provides a **hostApplication** object that can synchronously output i
     ```
 
 
-# Important differences. <a name="important_differences"></a>
+# 6. Important differences. <a name="important_differences"></a>
 Unlike the standard Cordova, our application uses an additional configuration file, which must be located in the www directory and named **native_config.json**
 
 This file is a json file and may contain the following fields:
 
 1. presentationStyle - application display type, required, should be set to **present_fullscreen**
-2. mobile_permissions - An array of strings describing the necessary permissions for the application to work. the array can contain the following values: **record_audio**, **camera**, **audio_settings**
+2. mobile_permissions - An array of strings describing the necessary permissions for the application to work. the array can contain the following values: **record_audio**, **camera**, **audio_settings**, **beacon**
 
 
 
-# Testing  <a name="testing"></a>
+# 7. Testing  <a name="testing"></a>
 
 ## Demo environment  <a name="testing-demo"></a>
 
@@ -288,6 +336,6 @@ This file is a json file and may contain the following fields:
 6. The application loaded in this way has a built-in js console, which is accessible by clicking on the button at the bottom right of the open mini-application and is able to show a lot of additional information, including various errors.
 
 
-# Publishing <a name="publishing"></a>
+# 8. Publishing <a name="publishing"></a>
 To publish the mini-application, send the `www.zip` archive you received during the testing phase to the people at Doma with whom you interact.   
         
