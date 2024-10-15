@@ -57,6 +57,8 @@ class MiniappRepository @Inject constructor(
 
     private fun unpackZip(miniappId: String, inputStream: InputStream): Boolean {
         val path = getMiniapp(context, miniappId)
+        path.deleteRecursively()
+        path.mkdir()
         val zis: ZipInputStream
         try {
             var filename: String
