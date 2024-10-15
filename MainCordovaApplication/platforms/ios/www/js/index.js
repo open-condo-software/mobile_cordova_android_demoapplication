@@ -34,11 +34,11 @@ function closeApplication() {
 function onDeviceReady() {
     // Cordova is now initialized. Have fun!
 
-//    console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
-//    document.getElementById('deviceready').classList.add('ready');
+    console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
+    document.getElementById('deviceready').classList.add('ready');
 
 
-//    const clientId = 'miniapp-mobile-test-web';
+    const clientId = 'miniapp-mobile-test-web';
 
     // DOMA!
     // Вариант авторизации номер один
@@ -57,44 +57,43 @@ function onDeviceReady() {
     // Вариант авторизации номер два - основной способ, мы обращаемся на сервер миниапа и просим авторизовать, а дльше редиректы по всему сценарию
 
 
-//    let data = {"variables":{},"query":"{\n  authenticatedUser {\n    id\n    name\n   email\n    isAdmin\n    __typename\n  }\n}\n"};
-//
-//    // request options
-//    const options = {
-//        method: 'POST',
-//        body: JSON.stringify(data),
-//        credentials: "include",
-//        headers: {
-//            'Content-Type': 'application/json'
-//        }
-//    }
-//
-//    // send post request
-//    fetch('https://miniapp.d.doma.ai/admin/api', options)
-//        .then(res => res.json())
-//        .then((res) => {
-//            if (res.data.authenticatedUser) {
-//                console.log('authentificated => ', JSON.stringify(res.data.authenticatedUser));
-//                cordova.plugins.condo.getCurrentResident(function(response) {
-//                    console.log("current resident address => ", JSON.stringify(response));
-//                }, function(error) {
-//                    console.log(error);
-//                })
-//            } else {
-//                console.log('authentification missing => ', JSON.stringify(res));
-//                // вот она
-//                cordova.plugins.condo.requestServerAuthorizationByUrl('https://miniapp.d.doma.ai/oidc/auth', {}, function(response) {
-//                    console.log(response);
-//                    console.log('receive authorization result => ', JSON.stringify(response));
-//                    console.log('reloading');
-//                    window.location.reload();
-//                }, function(error) {
-//                    console.log(error);
-//                });
-//            }
-//        })
-//        .catch(err => console.error(err));
+    let data = {"variables":{},"query":"{\n  authenticatedUser {\n    id\n    name\n   email\n    isAdmin\n    __typename\n  }\n}\n"};
 
-    cordova.plugins.locationManager.setDelegate(createDelegate());
-    actualizeMonitoring()
+    // request options
+    const options = {
+        method: 'POST',
+        body: JSON.stringify(data),
+        credentials: "include",
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }
+
+    // send post request
+    fetch('https://miniapp.d.doma.ai/admin/api', options)
+        .then(res => res.json())
+        .then((res) => {
+            if (res.data.authenticatedUser) {
+                console.log('authentificated => ', JSON.stringify(res.data.authenticatedUser));
+                cordova.plugins.condo.getCurrentResident(function(response) {
+                    console.log("current resident\address => ", JSON.stringify(response));
+                }, function(error) {
+                    console.log(error);
+                })
+            } else {
+                console.log('authentification missing => ', JSON.stringify(res));
+                // вот она
+                cordova.plugins.condo.requestServerAuthorizationByUrl('https://miniapp.d.doma.ai/oidc/auth', {}, function(response) {
+                    console.log(response);
+                    console.log('receive authorization result => ', JSON.stringify(response));
+                    console.log('reloading');
+                    window.location.reload();
+                }, function(error) {
+                    console.log(error);
+                });
+            }
+        })
+        .catch(err => console.error(err));
+
+
 }

@@ -24,8 +24,8 @@
 24
 25    <uses-sdk
 26        android:minSdkVersion="22"
-26-->/Users/batraz/Documents/work/mobile_cordova_android_demoapplication_2/CordovaLib/AndroidManifest.xml
+26-->/Users/dwsh/StudioProjects/mobile_cordova_android_demoapplication/CordovaLib/AndroidManifest.xml
 27        android:targetSdkVersion="22" />
-27-->/Users/batraz/Documents/work/mobile_cordova_android_demoapplication_2/CordovaLib/AndroidManifest.xml
+27-->/Users/dwsh/StudioProjects/mobile_cordova_android_demoapplication/CordovaLib/AndroidManifest.xml
 28
 29</manifest>
