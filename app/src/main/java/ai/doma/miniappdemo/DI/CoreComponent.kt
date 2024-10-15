@@ -51,6 +51,8 @@ abstract class CoreComponent {
         instance = this
     }
 
+    var isMainProcess: Boolean = true
+
     companion object {
 
         @Volatile

@@ -6,7 +6,8 @@ buildscript {
         classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.4.2'
     }
     ext.versions = [
-            'room' : '2.6.1'
+            'room'          : '2.6.1',
+            'work'          : '2.9.0'
     ]
 }
 

@@ -49,6 +49,18 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTop"
             android:theme="@style/MediaFullscreenTheme" />
+
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="ai.doma.miniappdemo.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+
     </application>
 
 </manifest>
