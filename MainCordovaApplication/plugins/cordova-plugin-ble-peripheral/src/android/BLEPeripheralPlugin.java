@@ -71,6 +71,8 @@ public class BLEPeripheralPlugin extends CordovaPlugin {
 	private static final String START_ADVERTISING = "startAdvertising";
 	private static final String STOP_ADVERTISING = "stopAdvertising";
 	private static final String SET_CHARACTERISTIC_VALUE = "setCharacteristicValue";
+	private static final String GET_BLUETOOTH_SYSTEM_STATE = "getBluetoothSystemState";
+	private static final String START_SENDING_STASHED_READ_WRITE_EVENTS = "startSendingStashedReadWriteEvents";
 
 	private static final String SET_CHARACTERISTIC_VALUE_CHANGED_LISTENER = "setCharacteristicValueChangedListener";
 
@@ -456,13 +458,45 @@ public class BLEPeripheralPlugin extends CordovaPlugin {
 			cordova.startActivityForResult(this, intent, REQUEST_ENABLE_BLUETOOTH);
 
 			return true;
+		} else if (action.equals(GET_BLUETOOTH_SYSTEM_STATE)) {
+			JSONObject bleState = getBleState();
+
+			callbackContext.success(bleState);
+			return true;
+		} else if (action.equals(START_SENDING_STASHED_READ_WRITE_EVENTS)) {
+			return true;
 		} else {
-
 			return false;
-
 		}
 	}
 
+	private JSONObject getBleState() throws JSONException {
+		JSONObject jsonResult = new JSONObject();
+		JSONArray jsonServices = new JSONArray();
+
+		if (gattServer == null) return jsonResult;
+
+		for (BluetoothGattService service : gattServer.getServices()) {
+
+			JSONObject jsonService = new JSONObject();
+			jsonService.put("uuid", service.getUuid().toString());
+			jsonService.put("isPrimary", service.getType() == BluetoothGattService.SERVICE_TYPE_PRIMARY);
+			JSONArray jsonCharacteristics = new JSONArray();
+
+			for (BluetoothGattCharacteristic it : service.getCharacteristics()) {
+				JSONObject jsonCharacteristic = new JSONObject();
+				jsonCharacteristic.put("uuid", it.getUuid().toString());
+				jsonCharacteristic.put("properties", String.valueOf(it.getProperties()));
+				jsonCharacteristic.put("permissions", String.valueOf(it.getPermissions()));
+				jsonCharacteristics.put(jsonCharacteristic);
+			}
+			jsonService.put("characteristics", jsonCharacteristics);
+			jsonServices.put(jsonService);
+		}
+
+		jsonResult.put("services", jsonServices);
+		return jsonResult;
+	}
 
 	private void onBluetoothStateChange(Intent intent) {
 		final String action = intent.getAction();
