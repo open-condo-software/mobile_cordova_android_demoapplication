@@ -203,7 +203,7 @@ Using Cordova, you can add various plugins to your project. But if the plugin ac
 ## 4.3. iBeacon <a name="ibeacon"></a>
 ### Recommendation to install: 
 
-    cordova plugin add https://github.com/petermetz/cordova-plugin-ibeacon/tree/v3.x
+    cordova plugin add https://github.com/IRazma/cordova-plugin-ibeacon
 
 ### ⚠️ Required permissions: `beacon`
 For work with these plugin **native_config.json** file in your miniapp need to contains <u>beacon</u> permission ([mobile_permission](#important-differences)) 
