@@ -14,5 +14,13 @@
     },
     "is_top_level": true,
     "variables": {}
+  },
+  "cordova-plugin-ble-peripheral": {
+    "source": {
+      "type": "registry",
+      "id": "https://github.com/Donny1995/cordova-plugin-ble-peripheral.git"
+    },
+    "is_top_level": true,
+    "variables": {}
   }
 }
