@@ -204,12 +204,6 @@ class CoreModule(private val app: Application) {
             .build()
     }
 
-    @Provides
-    @Singleton
-    internal fun provideBeaconRegionRepository(miniappDB: MiniappDB): BeaconRegionRepository {
-        return BeaconRegionRepository(miniappDB)
-    }
-
     internal class ApiLogger : HttpLoggingInterceptor.Logger {
         override fun log(message: String) {
             val logName = "ApiLogger"

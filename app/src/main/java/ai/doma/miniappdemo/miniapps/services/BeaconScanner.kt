@@ -38,8 +38,6 @@ private const val DEFAULT_SAMPLE_EXPIRATION_MILLISECOND = 20000
 @SuppressLint("StaticFieldLeak")
 object BeaconScanner {
 
-    @Volatile
-//    var activeMiniappId: String? = null
     private lateinit var coreComponent: CoreComponent
     private val scope = CoroutineScope(Dispatchers.IO)
     private var repository: BeaconRegionRepository? = null
@@ -132,22 +130,6 @@ object BeaconScanner {
                 logE("BeaconEmitter") { "$tag : $message : ${args.joinToString()}" }
             }
         })
-
-//        context.bindService(Intent(context, BeaconBinder::class.java), object : ServiceConnection {
-//            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-//                logD("BeaconEmitter") { "Connected" }
-//                (service as? BeaconBinder)?.let { beaconBinder ->
-//                    logD("BeaconEmitter") { "get binder with service: ${beaconBinder.service}" }
-//                }
-//
-//            }
-//
-//            override fun onServiceDisconnected(name: ComponentName?) {
-////                TODO("Not yet implemented")
-//            }
-//
-//        }, Context.BIND_AUTO_CREATE)
-//        iBeaconManager?.backgroundMode = true
     }
 
     @JvmStatic
@@ -224,9 +206,7 @@ object BeaconScanner {
 
     @JvmStatic
     fun registerRangeNotifier(outerRangeNotifier: RangeNotifier) {
-//        activeMiniappId?.let {
-            this.outerRangeNotifier = outerRangeNotifier
-//        }
+        this.outerRangeNotifier = outerRangeNotifier
     }
 
     @JvmStatic
@@ -260,12 +240,14 @@ object BeaconScanner {
         }
     }
     private fun initLocationManager() {
+        iBeaconManager!!.beaconParsers.clear()
         iBeaconManager!!.beaconParsers.add(BeaconParser().setBeaconLayout("m:0-3=4c000215,i:4-19,i:20-21,i:22-23,p:24-24"))
         iBeaconManager!!.beaconParsers.add(BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"))
         iBeaconManager!!.bind(consumer)
     }
 
     private fun initMonitorNotifier() {
+        iBeaconManager?.monitoringNotifiers?.clear()
         iBeaconManager?.addMonitorNotifier(object : MonitorNotifier {
             override fun didEnterRegion(region: Region) {
                 logD("BeaconEmitter") { "didEnterRegion: $region <<<<" }
@@ -308,6 +290,7 @@ object BeaconScanner {
     }
 
     private fun initRangeNotifier() {
+        iBeaconManager?.rangingNotifiers?.clear()
         iBeaconManager?.addRangeNotifier(object : RangeNotifier {
             override fun didRangeBeaconsInRegion(
                 beacons: MutableCollection<Beacon>?,
@@ -358,7 +341,7 @@ object BeaconScanner {
         }?.firstOrNull()
     }
 
-    fun runEmitting() = scope.async(Dispatchers.Main) {
+    fun runEmitting() = scope.async(Dispatchers.IO) {
         logD("BeaconWorker") { "runEmitting start 1" }
         logD("BeaconWorker") { "runEmitting start 2" }
         val repository = repository ?: return@async

@@ -8,7 +8,9 @@ import ai.doma.core.miniapps.data.db.toModel
 import ai.doma.miniappdemo.ext.logW
 import org.altbeacon.beacon.Region
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class BeaconRegionRepository @Inject constructor(
     private val db: MiniappDB
 ) {
@@ -77,7 +79,6 @@ class BeaconRegionRepository @Inject constructor(
             .filter { it.type == BeaconRegionType.MONITORING }
     }
 
-    // TODO: warning usage?
     fun getMonitoringRegions(
         identifier: String,
     ): List<BeaconRegionEntity> {
@@ -86,7 +87,6 @@ class BeaconRegionRepository @Inject constructor(
         )
     }
 
-    // TODO: warning usage?
     fun getRangingRegions(
         identifier: String,
     ): List<BeaconRegionEntity> {
