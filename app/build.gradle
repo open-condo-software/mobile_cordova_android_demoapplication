@@ -77,8 +77,6 @@ dependencies {
     api "androidx.room:room-paging:${versions.room}"
     kapt "androidx.room:room-compiler:${versions.room}"
 
-    implementation "androidx.work:work-runtime-ktx:${versions.work}"
-
 
 
 }

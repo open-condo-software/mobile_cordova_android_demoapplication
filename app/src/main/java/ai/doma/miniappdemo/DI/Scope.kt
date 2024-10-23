@@ -6,10 +6,6 @@ import javax.inject.Scope
 
 @Scope
 @Retention(AnnotationRetention.RUNTIME)
-annotation class GlobalWorkerScope
-
-@Scope
-@Retention(AnnotationRetention.RUNTIME)
 annotation class FeatureScope
 
 @Scope
@@ -20,6 +16,3 @@ annotation class FilterScope
 @Retention(AnnotationRetention.RUNTIME)
 annotation class UserScope
 
-@Scope
-@Retention(AnnotationRetention.RUNTIME)
-annotation class AppWorkerScope
