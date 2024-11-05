@@ -1,5 +1,7 @@
 package ai.doma.core.DI
 
+import ai.doma.core.miniapps.data.db.MiniappDB
+import ai.doma.core.miniapps.data.repositories.BeaconRegionRepository
 import ai.doma.feature_miniapps.domain.MiniappInteractor
 import ai.doma.miniappdemo.BuildConfig
 import ai.doma.miniappdemo.data.MiniappRepository
@@ -10,6 +12,7 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import android.webkit.CookieManager
+import androidx.room.Room
 import com.franmontiel.persistentcookiejar.PersistentCookieJar
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
@@ -42,10 +45,12 @@ abstract class CoreComponent {
     abstract val miniappCookieContextRepository: MiniappCookieContextRepository
     abstract val miniappInteractor: MiniappInteractor
     abstract val context: Context
+    abstract val beaconRegionRepository: BeaconRegionRepository
 
     init {
         instance = this
     }
+
 
     companion object {
 
@@ -186,6 +191,16 @@ class CoreModule(private val app: Application) {
             .build()
 
         return client
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideMiniappDB(context: Context): MiniappDB {
+        return Room.databaseBuilder(context, MiniappDB::class.java, "miniapp_db")
+            .fallbackToDestructiveMigration()
+            .enableMultiInstanceInvalidation()
+            .setAutoCloseTimeout(5, TimeUnit.MINUTES)
+            .build()
     }
 
     internal class ApiLogger : HttpLoggingInterceptor.Logger {

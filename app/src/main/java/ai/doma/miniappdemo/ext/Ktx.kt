@@ -27,11 +27,11 @@ fun View.getViewScope(): CoroutineScope{
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     this.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener{
-        override fun onViewAttachedToWindow(v: View?) {
+        override fun onViewAttachedToWindow(v: View) {
 
         }
 
-        override fun onViewDetachedFromWindow(v: View?) {
+        override fun onViewDetachedFromWindow(v: View) {
             this@getViewScope.removeOnAttachStateChangeListener(this)
             scope.cancel(CancellationException(Exception("onViewDetachedFromWindow")))
         }
