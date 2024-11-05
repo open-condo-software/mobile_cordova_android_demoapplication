@@ -1,0 +1,39 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {
+      "res/xml/config.xml": {
+        "parents": {
+          "/*": [
+            {
+              "xml": "<feature name=\"Condo\"><param name=\"android-package\" value=\"cordova.plugin.condo\" /></feature>",
+              "count": 1
+            }
+          ]
+        }
+      }
+    }
+  },
+  "installed_plugins": {
+    "cordova-plugin-condo": {
+      "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
+    }
+  },
+  "dependent_plugins": {},
+  "modules": [
+    {
+      "id": "cordova-plugin-condo.Condo",
+      "file": "plugins/cordova-plugin-condo/www/condo.js",
+      "pluginId": "cordova-plugin-condo",
+      "clobbers": [
+        "cordova.plugins.condo"
+      ]
+    }
+  ],
+  "plugin_metadata": {
+    "cordova-plugin-condo": "0.0.1"
+  }
+}
