@@ -78,29 +78,29 @@ task updateCordovaProjectToDemo {
         exec {
             workingDir "../MainCordovaApplication"
             if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine "cmd", "/c", 'cordova', 'platform' ,'remove', 'ios'
+                commandLine "cmd", "/c", 'cordova', 'platform' ,'remove', 'android'
             } else {
-                commandLine 'cordova', 'platform' , 'remove', 'ios'
+                commandLine 'cordova', 'platform' , 'remove', 'android'
             }
         }
         exec {
             workingDir "../MainCordovaApplication"
             if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine "cmd", "/c", 'cordova', 'platform', 'add', 'ios'
+                commandLine "cmd", "/c", 'cordova', 'platform', 'add', 'android'
             } else {
-                commandLine 'cordova', 'platform', 'add', 'ios'
+                commandLine 'cordova', 'platform', 'add', 'android'
             }
         }
         exec {
             workingDir "../MainCordovaApplication"
             if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine "cmd", "/c", 'cordova', 'prepare', 'ios'
+                commandLine "cmd", "/c", 'cordova', 'prepare', 'android'
             } else {
-                commandLine 'cordova', 'prepare', 'ios'
+                commandLine 'cordova', 'prepare', 'android'
             }
         }
         exec {
-            workingDir "../MainCordovaApplication/platforms/ios"
+            workingDir "../MainCordovaApplication/platforms/android/app/src/main/assets"
             if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
                 commandLine "cmd", "/c", 'tar', '-a', '-c', '-f', 'www.zip', 'www'
             } else {
@@ -109,11 +109,11 @@ task updateCordovaProjectToDemo {
         }
 
         exec {
-            workingDir "../MainCordovaApplication/platforms/ios"
+            workingDir "../MainCordovaApplication/platforms/android/app/src/main/assets"
             if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine "cmd", "/c", 'copy', '/y', 'www.zip', '..\\..\\..\\app\\src\\main\\res\\raw\\www.zip'
+                commandLine "cmd", "/c", 'copy', '/y', 'www.zip', '..\\..\\..\\..\\..\\..\\..\\app\\src\\main\\res\\raw\\www.zip'
             } else {
-                commandLine 'cp', 'www.zip', '../../../app/src/main/res/raw/www.zip'
+                commandLine 'cp', 'www.zip', '../../../../../../../app/src/main/res/raw/www.zip'
             }
         }
         println "updateCordovaProjectToDemo"
