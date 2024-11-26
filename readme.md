@@ -10,13 +10,14 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
 2. [Common methods.](#common_methods)
 3. [Important differences.](#important_differences)
 4. [Navigation system.](#navigation_system)
-5. [Environment.](#environment)
-6. [Testing.](#testing)
+5. [Working with user input.](#working_with_user_input)
+6. [Environment.](#environment)
+7. [Testing.](#testing)
 
-   6.1 [Testing in Demo environment](#testing-demo)
+   7.1 [Testing in Demo environment](#testing-demo)
    
-   6.2 [Testing in Production environment](#testing-production)
-7. [Publishing.](#publishing)
+   7.2 [Testing in Production environment](#testing-production)
+8. [Publishing.](#publishing)
 
 
 # Getting started <a name="getting_started"></a>
@@ -186,6 +187,123 @@ And of course after all these changes you can get the State that is now showing 
 addEventListener("condoPopstate", (event) => {console.log("condoPopstate => ", JSON.stringify(event.state));});
 ```
 
+
+
+# Working with user input. <a name="working_with_user_input"></a>
+
+## Sharing files. <a name="sharing_files"></a>
+
+Original Documentation: [**WEB File API**](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share)
+### Example for sharing local document:
+```html
+    <script>
+        function shareSomeDocument() {
+            fetch('images.com/some_image.png')
+                .then(function(response) {
+                    return response.blob()
+                })
+                .then(function(blob) {
+                    var file = new File([blob], "image.png", {type: blob.type});
+                    var filesArray = [file];
+                        navigator.share({
+                        files: filesArray
+                    });
+                });
+            }
+    </script>
+```
+
+> [!CAUTION]
+> On iOS calls to `navigator.share` with `files` argument **must** be called in responce to user interaction (button tap, or alike).
+> Otherwise it throws an error
+
+## 3.2 Importing Files. <a name="import_files"></a>
+Original Documentation: [**Using files from web applications**](https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications)
+### Importing images and video:
+Button opens image picker (select one image):
+```html
+<input type="file" accept="image/*">
+```
+Button opens image picker (select multiple images):
+```html
+<input type="file" accept="image/*" multiple>
+```
+Button opens video picker (select one video):
+```html
+<input type="file" accept="image/*">
+```
+Button opens video picker (select multiple videos):
+```html
+<input type="file" accept="image/*" multiple>
+```
+
+> [!CAUTION]
+> In miniapps on android, input tags don't support getting a file from the camera.
+
+By default, these inputs run the file selector from the device. To get image/video from the camera, a corresponding plugin was added to our project: [cordova-plugin-media-capture](https://github.com/apache/cordova-plugin-media-capture)
+
+To get image/video from camera use:
+```javascript
+// get image from camera
+navigator.device.capture.captureImage(...)
+
+// get video from camera
+navigator.device.capture.captureImage(...)
+```
+
+Example:
+```javascript
+// override default onclick listener
+input_element_image.onclick = onClickInput
+input_element_video.onclick = onClickVideoInput
+
+function onClickInput(input_element) {
+    navigator.device.capture.captureImage(
+        (files) => { captureSuccess(files, input_element) }, captureError, { limit : 1 }
+    );
+    return false
+}
+
+function onClickVideoInput(input_element) {
+    navigator.device.capture.captureVideo(
+        (files) => { captureSuccess(files, input_element) }, captureError, { limit : 1 }
+    );
+    return false
+}
+
+// capture error callback
+function captureError(error) {
+    console.log('Error code: ' + error.code);
+};
+
+// capture success callback
+function captureSuccess(mediaFiles, inputElement) {
+    var i, path, len;
+    for (i = 0, len = mediaFiles.length; i < len; i += 1) {
+        console.log(mediaFiles[i])
+        path = mediaFiles[i].fullPath;
+
+        var xhr = new XMLHttpRequest()
+        xhr.open('GET', path)
+        var index = i
+        xhr.onload = function (r) {
+            var content = xhr.response;
+            var blob = new Blob([content]);
+            file = new File([blob], mediaFiles[index].name, { type: mediaFiles[index].type })
+
+            var dt  = new DataTransfer();
+            dt.items.add(file);
+            var file_list = dt.files;
+
+            // insert files to input element
+            inputElement.target.files = file_list
+        }
+        xhr.responseType = 'blob'
+        xhr.send()
+    }
+};
+
+```
 
 
 # Environment. <a name="environment"></a>
