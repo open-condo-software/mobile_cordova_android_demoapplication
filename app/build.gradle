@@ -66,58 +66,55 @@ dependencies {
     implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
     implementation "androidx.navigation:navigation-fragment-ktx:2.4.1"
     implementation "androidx.navigation:navigation-ui-ktx:2.4.1"
-    implementation "com.pdfview:pdfview-android:1.0.0"
+    implementation "com.dmitryborodin:pdfview-android:1.1.0"
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     kapt 'com.github.bumptech.glide:compiler:4.11.0'
 }
 
 task updateCordovaProjectToDemo {
     doFirst {
-        if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')){
-            return
-        }
         println "updateCordovaProjectToDemo start!"
 
         //update platforms/ios entirely
         exec {
             workingDir "../MainCordovaApplication"
             if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine 'cordova', 'platform' ,'remove', 'ios'
+                commandLine "cmd", "/c", 'cordova', 'platform' ,'remove', 'android'
             } else {
-                commandLine 'cordova', 'platform' , 'remove', 'ios'
+                commandLine 'cordova', 'platform' , 'remove', 'android'
             }
         }
         exec {
             workingDir "../MainCordovaApplication"
             if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine 'cordova', 'platform', 'add', 'ios'
+                commandLine "cmd", "/c", 'cordova', 'platform', 'add', 'android'
             } else {
-                commandLine 'cordova', 'platform', 'add', 'ios'
+                commandLine 'cordova', 'platform', 'add', 'android'
             }
         }
         exec {
             workingDir "../MainCordovaApplication"
             if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine 'cordova', 'prepare', 'ios'
+                commandLine "cmd", "/c", 'cordova', 'prepare', 'android'
             } else {
-                commandLine 'cordova', 'prepare', 'ios'
+                commandLine 'cordova', 'prepare', 'android'
             }
         }
         exec {
-            workingDir "../MainCordovaApplication/platforms/ios"
+            workingDir "../MainCordovaApplication/platforms/android/app/src/main/assets"
             if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine 'tar', '-a', '-c', '-f', 'www.zip', 'www'
+                commandLine "cmd", "/c", 'tar', '-a', '-c', '-f', 'www.zip', 'www'
             } else {
                 commandLine 'zip', '-r', 'www.zip', 'www'
             }
         }
 
         exec {
-            workingDir "../MainCordovaApplication/platforms/ios"
+            workingDir "../MainCordovaApplication/platforms/android/app/src/main/assets"
             if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine 'copy', '/y', 'www.zip', '..\\..\\..\\app\\src\\main\\res\\raw\\www.zip'
+                commandLine "cmd", "/c", 'copy', '/y', 'www.zip', '..\\..\\..\\..\\..\\..\\..\\app\\src\\main\\res\\raw\\www.zip'
             } else {
-                commandLine 'cp', 'www.zip', '../../../app/src/main/res/raw/www.zip'
+                commandLine 'cp', 'www.zip', '../../../../../../../app/src/main/res/raw/www.zip'
             }
         }
         println "updateCordovaProjectToDemo"
