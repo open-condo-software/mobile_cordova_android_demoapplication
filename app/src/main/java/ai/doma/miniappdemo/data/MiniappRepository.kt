@@ -150,7 +150,6 @@ class MiniappRepository @Inject constructor(
             appFile.createNewFile()
             appFile.writeBytes(context.resources.openRawResource(R.raw.app).readBytes())
 
-
             val condoPluginFile = File(dir, "plugins/cordova-plugin-condo/www/condo.js")
             if (condoPluginFile.exists()) {
                 condoPluginFile.delete()
@@ -159,6 +158,22 @@ class MiniappRepository @Inject constructor(
             condoPluginFile.writeBytes(
                 context.resources.openRawResource(R.raw.condo_plugin).readBytes()
             )
+
+            val sharePluginDir = File(dir, "plugins/nl.madebymark.share/www")
+            if (sharePluginDir.exists()) {
+                sharePluginDir.deleteRecursively()
+            }
+            if (!sharePluginDir.exists()) {
+                sharePluginDir.mkdirs()
+            }
+
+            val sharePluginFile = File(sharePluginDir, "share.js")
+            if (!sharePluginFile.exists()) {
+                sharePluginFile.createNewFile()
+                sharePluginFile.writeBytes(
+                    context.resources.openRawResource(R.raw.share).readBytes()
+                )
+            }
 
         }
 
