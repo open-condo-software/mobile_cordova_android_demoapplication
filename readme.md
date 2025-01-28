@@ -290,7 +290,7 @@ For work with these plugin **native_config.json** file in your miniapp need to c
 
 # 5. Working with user input. <a name="working_with_user_input"></a>
 
-## Sharing files. <a name="sharing_files"></a>
+## 5.1 Sharing files. <a name="sharing_files"></a>
 
 Original Documentation: [**WEB File API**](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share)
 ### Example for sharing local document:
@@ -316,7 +316,7 @@ Original Documentation: [**WEB File API**](https://developer.mozilla.org/en-US/d
 > On iOS calls to `navigator.share` with `files` argument **must** be called in responce to user interaction (button tap, or alike).
 > Otherwise it throws an error
 
-## 3.2 Importing Files. <a name="import_files"></a>
+## 5.2 Importing Files. <a name="import_files"></a>
 Original Documentation: [**Using files from web applications**](https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications)
 ### Importing images and video:
 Button opens image picker (select one image):
