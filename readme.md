@@ -55,15 +55,9 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
   it will contain your application code, edit it freely
 
 3. Launching and testing the application
-- ⚠️Android app works with miniapps builds for the iOS environment from `MainCordovaApplication/platforms/ios`.
+- ⚠️Android app works with miniapps builds for the Android environment from `MainCordovaApplication/platforms/android`.
 
-- For linux and macOS: there is `updateCordovaProjectToDemo` subtask which runs during project build (file `app/build.gradle`, 66 line), this subtask automatically builds final cordova app file `www.zip` (`MainCordovaApplication/platforms/ios/www.zip`) and copies it into `app/src/main/res/raw/www.zip` to use it by android app.
-- For Windows: before each app build run these scripts:
-
-        cd MainCordovaApplication
-        cordova prepare ios
-        tar -a -c -f www.zip www
-        copy /y  www.zip ..\app\src\main\res\raw\www.zip
+- For Windows, linux and macOS: there is `updateCordovaProjectToDemo` subtask which runs during project build (file `app/build.gradle`, 85 line), this subtask automatically builds final cordova app file `www.zip` (`MainCordovaApplication/platforms/android/app/src/main/assets/www.zip`) and copies it into `app/src/main/res/raw/www.zip` to use it by android app.
 
 - open project folder with Android Studio, wait until indexing is complete, then choose real or virtual device and click play button
 
@@ -486,7 +480,7 @@ This file is a json file and may contain the following fields:
 
 ## Production environment  <a name="testing-production"></a>
 
-1. Take `www.zip` archive built for ios environment:
+1. Take `www.zip` archive built for android environment:
 
         /MainCordovaApplication/platforms/android/app/src/main/assets/www.zip
 
