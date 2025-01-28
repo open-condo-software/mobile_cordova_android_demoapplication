@@ -240,7 +240,6 @@
   <input id="create-service-uuid-field" type="text" placeholder="Enter service UUID" class="input" style="width: 100%;"/>
 </div>
 
-
 <div id="dialog-characteristic-create" class="page-container3" title="Add characteristic">
   <span id="dialog-characteristic-title">Добавление характеристики для сервиса: {UUID}</span>
   <input id="create-characteristic-uuid-field"
@@ -267,7 +266,7 @@
     placeholder="JSON {...}"
     class="textarea page-textarea"
     style="width: 100%;"
-    rows=""
+    rows="10"
   ></textarea>
 </div>
 
@@ -307,6 +306,9 @@
       </span>
       <span class="properties-detail">Properties</span><br/>
       <span class="permissions-detail">Permissions</span><br/>
+      <br/>
+      <span style="margin-top: 10px;">Characteristic value: </span>
+      <textarea class="characteristic-value" rows="3" placeholder="Enter characteristic value"></textarea>
 
   <ul class="list home-ul2 descriptors-list" style="display: none;">
     <li class="list-item">

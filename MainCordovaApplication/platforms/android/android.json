@@ -7,9 +7,37 @@
     "files": {
       "res/xml/config.xml": {
         "parents": {
+          "/widget": [
+            {
+              "xml": "<feature name=\"BLEPeripheral\"><param name=\"android-package\" value=\"com.megster.cordova.ble.peripheral.BLEPeripheralPlugin\" /></feature>",
+              "count": 1
+            }
+          ],
           "/*": [
             {
               "xml": "<feature name=\"Condo\"><param name=\"android-package\" value=\"cordova.plugin.condo\" /></feature>",
+              "count": 1
+            }
+          ]
+        }
+      },
+      "AndroidManifest.xml": {
+        "parents": {
+          "/manifest": [
+            {
+              "xml": "<uses-permission android:maxSdkVersion=\"30\" android:name=\"android.permission.BLUETOOTH\" />",
+              "count": 1
+            },
+            {
+              "xml": "<uses-permission android:maxSdkVersion=\"30\" android:name=\"android.permission.BLUETOOTH_ADMIN\" />",
+              "count": 1
+            },
+            {
+              "xml": "<uses-permission android:name=\"android.permission.BLUETOOTH_CONNECT\" />",
+              "count": 1
+            },
+            {
+              "xml": "<uses-permission android:name=\"android.permission.BLUETOOTH_ADVERTISE\" />",
               "count": 1
             }
           ]
@@ -18,12 +46,23 @@
     }
   },
   "installed_plugins": {
+    "cordova-plugin-ble-peripheral": {
+      "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
+    },
     "cordova-plugin-condo": {
       "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
     }
   },
   "dependent_plugins": {},
   "modules": [
+    {
+      "id": "cordova-plugin-ble-peripheral.blePeripheral",
+      "file": "plugins/cordova-plugin-ble-peripheral/www/blePeripheral.js",
+      "pluginId": "cordova-plugin-ble-peripheral",
+      "clobbers": [
+        "blePeripheral"
+      ]
+    },
     {
       "id": "cordova-plugin-condo.Condo",
       "file": "plugins/cordova-plugin-condo/www/condo.js",
@@ -34,6 +73,7 @@
     }
   ],
   "plugin_metadata": {
+    "cordova-plugin-ble-peripheral": "1.1.2.1",
     "cordova-plugin-condo": "0.0.1"
   }
 }

@@ -14,12 +14,5 @@
       "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
     }
   },
-  "dependent_plugins": {
-    "cordova-plugin-ble-central": {
-      "IOS_INIT_ON_LOAD": "true",
-      "BLUETOOTH_RESTORE_STATE": "false",
-      "BLUETOOTH_USAGE_DESCRIPTION": " ",
-      "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
-    }
-  }
+  "dependent_plugins": {}
 }
