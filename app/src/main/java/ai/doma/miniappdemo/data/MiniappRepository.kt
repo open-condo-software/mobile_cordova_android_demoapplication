@@ -154,6 +154,7 @@ class MiniappRepository @Inject constructor(
 
 
             val condoPluginFile = File(dir, "plugins/cordova-plugin-condo/www/condo.js")
+            condoPluginFile.parentFile?.mkdirs()
             if (condoPluginFile.exists()) {
                 condoPluginFile.delete()
             }

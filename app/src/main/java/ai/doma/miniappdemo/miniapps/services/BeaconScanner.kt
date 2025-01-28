@@ -52,6 +52,65 @@ object BeaconScanner {
     private var beaconNotifier: BeaconNotifier? = null
     private val monitoringState: MutableMap<Region, Int> = mutableMapOf()
 
+    private val monitoringNotifier = object : MonitorNotifier {
+        override fun didEnterRegion(region: Region) {
+            logD("BeaconEmitter") { "didEnterRegion: $region <<<<" }
+            if (outerMonitorNotifier != null) {
+                outerMonitorNotifier?.didEnterRegion(region)
+            } else {
+                scope.launch(Dispatchers.IO) {
+                    getMonitoringEntity(region)?.let { regionEntity ->
+                        beaconNotifier?.didEnterRegion(regionEntity)
+                    }
+                }
+
+                monitoringState[region] = 1
+            }
+        }
+
+        override fun didExitRegion(region: Region) {
+            logD("BeaconEmitter") { "didExitRegion: $region <<<<" }
+            if (outerMonitorNotifier != null) {
+                outerMonitorNotifier?.didExitRegion(region)
+            } else {
+                scope.launch(Dispatchers.IO) {
+                    getMonitoringEntity(region)?.let { regionEntity ->
+                        beaconNotifier?.didExitRegion(regionEntity)
+                    }
+                }
+
+                monitoringState[region] = 0
+            }
+
+        }
+
+        override fun didDetermineStateForRegion(state: Int, region: Region) {
+            logD("BeaconEmitter") { "didDetermineStateForRegion: $state $region <<<<" }
+            if (outerMonitorNotifier != null) {
+                outerMonitorNotifier?.didDetermineStateForRegion(state, region)
+            }
+        }
+    }
+
+    private val rangeNotifier = object : RangeNotifier {
+        override fun didRangeBeaconsInRegion(
+            beacons: MutableCollection<Beacon>?,
+            region: Region
+        ) {
+            logD("BeaconEmitter") { "didRangeBeaconsInRegion: $region ${beacons?.joinToString { it.toString() + " (${
+                Math.round(it.distance * 100.0) / 100.0})" }} <<<<" }
+            if (outerRangeNotifier != null) {
+                outerRangeNotifier?.didRangeBeaconsInRegion(beacons, region)
+            } else {
+                scope.launch(Dispatchers.IO) {
+                    getRangingEntity(region)?.let {
+                        beaconNotifier?.didRangeBeaconsInRegion(it, beacons.orEmpty())
+                    }
+                }
+            }
+        }
+    }
+
 
     fun init(
         repository: BeaconRegionRepository,
@@ -247,68 +306,19 @@ object BeaconScanner {
     }
 
     private fun initMonitorNotifier() {
-        iBeaconManager?.monitoringNotifiers?.clear()
-        iBeaconManager?.addMonitorNotifier(object : MonitorNotifier {
-            override fun didEnterRegion(region: Region) {
-                logD("BeaconEmitter") { "didEnterRegion: $region <<<<" }
-                if (outerMonitorNotifier != null) {
-                    outerMonitorNotifier?.didEnterRegion(region)
-                } else {
-                    scope.launch(Dispatchers.IO) {
-                        getMonitoringEntity(region)?.let { regionEntity ->
-                            beaconNotifier?.didEnterRegion(regionEntity)
-                        }
-                    }
+        if (iBeaconManager?.monitoringNotifiers?.contains(monitoringNotifier) == true) {
+            return
+        }
 
-                    monitoringState[region] = 1
-                }
-            }
-
-            override fun didExitRegion(region: Region) {
-                logD("BeaconEmitter") { "didExitRegion: $region <<<<" }
-                if (outerMonitorNotifier != null) {
-                    outerMonitorNotifier?.didExitRegion(region)
-                } else {
-                    scope.launch(Dispatchers.IO) {
-                        getMonitoringEntity(region)?.let { regionEntity ->
-                            beaconNotifier?.didExitRegion(regionEntity)
-                        }
-                    }
-
-                    monitoringState[region] = 0
-                }
-
-            }
-
-            override fun didDetermineStateForRegion(state: Int, region: Region) {
-                logD("BeaconEmitter") { "didDetermineStateForRegion: $state $region <<<<" }
-                if (outerMonitorNotifier != null) {
-                    outerMonitorNotifier?.didDetermineStateForRegion(state, region)
-                }
-            }
-        })
+        iBeaconManager?.addMonitorNotifier(monitoringNotifier)
     }
 
     private fun initRangeNotifier() {
-        iBeaconManager?.rangingNotifiers?.clear()
-        iBeaconManager?.addRangeNotifier(object : RangeNotifier {
-            override fun didRangeBeaconsInRegion(
-                beacons: MutableCollection<Beacon>?,
-                region: Region
-            ) {
-                logD("BeaconEmitter") { "didRangeBeaconsInRegion: $region ${beacons?.joinToString { it.toString() + " (${
-                    Math.round(it.distance * 100.0) / 100.0})" }} <<<<" }
-                if (outerRangeNotifier != null) {
-                    outerRangeNotifier?.didRangeBeaconsInRegion(beacons, region)
-                } else {
-                    scope.launch(Dispatchers.IO) {
-                        getRangingEntity(region)?.let {
-                            beaconNotifier?.didRangeBeaconsInRegion(it, beacons.orEmpty())
-                        }
-                    }
-                }
-            }
-        })
+        if (iBeaconManager?.rangingNotifiers?.contains(rangeNotifier) == true) {
+            return
+        }
+
+        iBeaconManager?.addRangeNotifier(rangeNotifier)
     }
 
 
