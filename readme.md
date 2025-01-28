@@ -488,11 +488,11 @@ This file is a json file and may contain the following fields:
 
 1. Take `www.zip` archive built for ios environment:
 
-        MainCordovaApplication/platforms/ios/www.zip
+        /MainCordovaApplication/platforms/android/app/src/main/assets/www.zip
 
    If it doesn't exist create it from folder:
 
-        /MainCordovaApplication/platforms/ios/www
+        //MainCordovaApplication/platforms/android/app/src/main/assets/www
 
 2. [Install](https://play.google.com/store/apps/details?id=ai.doma.client) Doma app from Google Play
 
