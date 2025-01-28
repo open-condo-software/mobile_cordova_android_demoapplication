@@ -11,12 +11,13 @@ You can find the cordova app itself in the `MainCordovaApplication` folder, wher
 3. [Navigation system.](#navigation_system)
 4. [Supported plugins.](#plugins)
     - [iBeacon](#ibeacon)
-5. [Environment.](#environment)
-6. [Important differences.](#important_differences)
-7. [Testing.](#testing)
-   - [6.1 Testing in Demo environment](#testing-demo)
-   - [6.2 Testing in Production environment](#testing-production)
-8. [Publishing.](#publishing)
+5. [Working with user input.](#working_with_user_input)
+6. [Environment.](#environment)
+7. [Important differences.](#important_differences)
+8. [Testing.](#testing)
+   - [8.1 Testing in Demo environment](#testing-demo)
+   - [8.2 Testing in Production environment](#testing-production)
+9. [Publishing.](#publishing)
 
 
 # 1. Getting started <a name="getting_started"></a>
@@ -199,7 +200,55 @@ Using Cordova, you can add various plugins to your project. But if the plugin ac
 6. Device
 
 ## 4.1. BLE Peripheral <a name="ble_peripheral"></a>
+### Recommendation to install:
+
+    cordova plugin add https://github.com/IRazma/cordova-plugin-ble-peripheral
+
+### Difference API:
+
+This plugin support all the functionality specified in the [original plugin repository](#https://github.com/don/cordova-plugin-ble-peripheral). Our solution has added several methods that are needed to use all the features that miniapps provide:
+
+___
+> [!Remember]
+> <p>That the services that you advertise continue to be advertised even when >the application is closed</p>
+___
+
+- `getBluetoothSystemState()`;
+    <p>
+        Method return JSON object that contains an array of services that are advertised at this moment.
+    </p>
+    Example:
+  
+    ```json
+    {
+        "services": [
+            {
+                "uuid": "...",
+                "isPrimary": true,
+                "characteristics": [
+                    {
+                        "uuid": "...",
+                        "properties": 1, // int
+                        "permissions": 1 // int
+                    },
+                    {
+                        "uuid": "...",
+                        "properties": 3, // int
+                        "permissions": 5 // int
+                    }
+                ]
+            }, {...}, ...
+        ]
+    }
+    ```
+
+- `startSendingStashedReadWriteEvents()`;
+    <p>
+        ⚠️ You should call this method when your miniapp is ready to accept such (read & write) events. Otherwise, you may not receive the read/write requests that were requested when the application was closed (in the background).
+    </p>
+
 ## 4.2. BLE Central <a name="ble_central"></a>
+
 ## 4.3. iBeacon <a name="ibeacon"></a>
 ### Recommendation to install: 
 
@@ -239,7 +288,124 @@ For work with these plugin **native_config.json** file in your miniapp need to c
 
 
 
-# 5. Environment. <a name="environment"></a>
+# 5. Working with user input. <a name="working_with_user_input"></a>
+
+## Sharing files. <a name="sharing_files"></a>
+
+Original Documentation: [**WEB File API**](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share)
+### Example for sharing local document:
+```html
+    <script>
+        function shareSomeDocument() {
+            fetch('images.com/some_image.png')
+                .then(function(response) {
+                    return response.blob()
+                })
+                .then(function(blob) {
+                    var file = new File([blob], "image.png", {type: blob.type});
+                    var filesArray = [file];
+                        navigator.share({
+                        files: filesArray
+                    });
+                });
+            }
+    </script>
+```
+
+> [!CAUTION]
+> On iOS calls to `navigator.share` with `files` argument **must** be called in responce to user interaction (button tap, or alike).
+> Otherwise it throws an error
+
+## 3.2 Importing Files. <a name="import_files"></a>
+Original Documentation: [**Using files from web applications**](https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications)
+### Importing images and video:
+Button opens image picker (select one image):
+```html
+<input type="file" accept="image/*">
+```
+Button opens image picker (select multiple images):
+```html
+<input type="file" accept="image/*" multiple>
+```
+Button opens video picker (select one video):
+```html
+<input type="file" accept="image/*">
+```
+Button opens video picker (select multiple videos):
+```html
+<input type="file" accept="image/*" multiple>
+```
+
+> [!CAUTION]
+> In miniapps on android, input tags don't support getting a file from the camera.
+
+By default, these inputs run the file selector from the device. To get image/video from the camera, a corresponding plugin was added to our project: [cordova-plugin-media-capture](https://github.com/apache/cordova-plugin-media-capture)
+
+To get image/video from camera use:
+```javascript
+// get image from camera
+navigator.device.capture.captureImage(...)
+
+// get video from camera
+navigator.device.capture.captureImage(...)
+```
+
+Example:
+```javascript
+// override default onclick listener
+input_element_image.onclick = onClickInput
+input_element_video.onclick = onClickVideoInput
+
+function onClickInput(input_element) {
+    navigator.device.capture.captureImage(
+        (files) => { captureSuccess(files, input_element) }, captureError, { limit : 1 }
+    );
+    return false
+}
+
+function onClickVideoInput(input_element) {
+    navigator.device.capture.captureVideo(
+        (files) => { captureSuccess(files, input_element) }, captureError, { limit : 1 }
+    );
+    return false
+}
+
+// capture error callback
+function captureError(error) {
+    console.log('Error code: ' + error.code);
+};
+
+// capture success callback
+function captureSuccess(mediaFiles, inputElement) {
+    var i, path, len;
+    for (i = 0, len = mediaFiles.length; i < len; i += 1) {
+        console.log(mediaFiles[i])
+        path = mediaFiles[i].fullPath;
+
+        var xhr = new XMLHttpRequest()
+        xhr.open('GET', path)
+        var index = i
+        xhr.onload = function (r) {
+            var content = xhr.response;
+            var blob = new Blob([content]);
+            file = new File([blob], mediaFiles[index].name, { type: mediaFiles[index].type })
+
+            var dt  = new DataTransfer();
+            dt.items.add(file);
+            var file_list = dt.files;
+
+            // insert files to input element
+            inputElement.target.files = file_list
+        }
+        xhr.responseType = 'blob'
+        xhr.send()
+    }
+};
+
+```
+
+
+# 6. Environment. <a name="environment"></a>
 
 The plugin provides a **hostApplication** object that can synchronously output information about the current environment in which the mini-app is running.
 
@@ -295,7 +461,7 @@ The plugin provides a **hostApplication** object that can synchronously output i
 
 
 
-# 6. Important differences. <a name="important_differences"></a>
+# 7. Important differences. <a name="important_differences"></a>
 Unlike the standard Cordova, our application uses an additional configuration file, which must be located in the www directory and named **native_config.json**
 
 This file is a json file and may contain the following fields:
@@ -305,7 +471,7 @@ This file is a json file and may contain the following fields:
 
 
 
-# 7. Testing  <a name="testing"></a>
+# 8. Testing  <a name="testing"></a>
 
 ## Demo environment  <a name="testing-demo"></a>
 
@@ -341,6 +507,6 @@ This file is a json file and may contain the following fields:
 
 
 
-# 8. Publishing <a name="publishing"></a>
+# 9. Publishing <a name="publishing"></a>
 To publish the mini-application, send the `www.zip` archive you received during the testing phase to the people at Doma with whom you interact.   
         

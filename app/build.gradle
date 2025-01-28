@@ -13,7 +13,7 @@ android {
     defaultConfig {
         applicationId "ai.doma.miniappdemo"
         minSdk 23
-        targetSdk 32
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -48,6 +48,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.webkit:webkit:1.11.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
@@ -89,31 +90,29 @@ task updateCordovaProjectToDemo {
         exec {
             workingDir "../MainCordovaApplication"
             if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine "cmd", "/c", 'cordova', 'platform' ,'remove', 'ios'
+                commandLine "cmd", "/c", 'cordova', 'platform' ,'remove', 'android'
             } else {
-                commandLine 'cordova', 'platform' , 'remove', 'ios'
+                commandLine 'cordova', 'platform' , 'remove', 'android'
             }
         }
-        try {
-            exec {
-                workingDir "../MainCordovaApplication"
-                if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                    commandLine "cmd", "/c", 'cordova', 'platform', 'add', 'ios'
-                } else {
-                    commandLine 'cordova', 'platform', 'add', 'ios'
-                }
-            }
-        } catch (e) {}
         exec {
             workingDir "../MainCordovaApplication"
             if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine "cmd", "/c", 'cordova', 'prepare', 'ios'
+                commandLine "cmd", "/c", 'cordova', 'platform', 'add', 'android'
             } else {
-                commandLine 'cordova', 'prepare', 'ios'
+                commandLine 'cordova', 'platform', 'add', 'android'
             }
         }
         exec {
-            workingDir "../MainCordovaApplication/platforms/ios"
+            workingDir "../MainCordovaApplication"
+            if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+                commandLine "cmd", "/c", 'cordova', 'prepare', 'android'
+            } else {
+                commandLine 'cordova', 'prepare', 'android'
+            }
+        }
+        exec {
+            workingDir "../MainCordovaApplication/platforms/android/app/src/main/assets"
             if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
                 commandLine "cmd", "/c", 'tar', '-a', '-c', '-f', 'www.zip', 'www'
             } else {
@@ -122,11 +121,11 @@ task updateCordovaProjectToDemo {
         }
 
         exec {
-            workingDir "../MainCordovaApplication/platforms/ios"
+            workingDir "../MainCordovaApplication/platforms/android/app/src/main/assets"
             if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine "cmd", "/c", 'copy', '/y', 'www.zip', '..\\..\\..\\app\\src\\main\\res\\raw\\www.zip'
+                commandLine "cmd", "/c", 'copy', '/y', 'www.zip', '..\\..\\..\\..\\..\\..\\..\\app\\src\\main\\res\\raw\\www.zip'
             } else {
-                commandLine 'cp', 'www.zip', '../../../app/src/main/res/raw/www.zip'
+                commandLine 'cp', 'www.zip', '../../../../../../../app/src/main/res/raw/www.zip'
             }
         }
         println "updateCordovaProjectToDemo"

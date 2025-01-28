@@ -49,6 +49,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
+import org.apache.cordova.file.ActiveMiniapp
 import org.intellij.lang.annotations.Language
 
 class MiniappFragment : BaseFragment() {
@@ -74,6 +75,7 @@ class MiniappFragment : BaseFragment() {
 
     var savedInstanceState: Bundle? = null
     override fun onCreate(savedInstanceState: Bundle?) {
+        ActiveMiniapp.miniappId = miniappEntity.id
         loadConfig()
         miniappFeatureComponent = DaggerMiniappsFeatureComponent.builder()
             .coreComponent(InjectHelper.provideCoreComponent(requireContext().applicationContext))
@@ -440,6 +442,7 @@ class MiniappFragment : BaseFragment() {
         }
         appView.handleDestroy()
         model.releaseApp()
+        ActiveMiniapp.miniappId = null
     }
 
 

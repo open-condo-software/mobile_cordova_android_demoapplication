@@ -30,6 +30,24 @@
         <param name="android-package" value="org.apache.cordova.WhitelistPlugin" />
         <param name="onload" value="true" />
     </feature>
+    <feature name="BLEPeripheral">
+        <param name="android-package" value="org.apache.cordova.ble_peripheral.BLEPeripheralPlugin"/>
+    </feature>
+
+    <feature name="Share">
+        <param name="android-package" value="org.apache.cordova.Share"/>
+        <param name="onload" value="true" />
+    </feature>
+
+    <feature name="File">
+        <param name="android-package" value="org.apache.cordova.file.FileUtils" />
+        <param name="onload" value="true" />
+    </feature>
+
+    <feature name="Capture">
+        <param name="android-package" value="org.apache.cordova.media_capture.Capture" />
+    </feature>
+
     <feature name="LocationManager" >
         <param name="android-package" value="org.apache.cordova.beacon.LocationManager"/>
     </feature>
