@@ -299,8 +299,14 @@ class MiniappRepository @Inject constructor(
                     "{\"id\": \"cordova-plugin-file.fileSystemPaths\",\"file\": \"plugins/cordova-plugin-file/www/fileSystemPaths.js\",\"pluginId\": \"cordova-plugin-file\",\"merges\": [\"cordova\" ],\"runs\": true }",
                     "{\"id\": \"cordova-plugin-file.FileReader\",\"file\": \"plugins/cordova-plugin-file/www/FileReader.js\",\"pluginId\": \"cordova-plugin-file\",\"clobbers\": [\"window.FileReader\"] }"
                 )
+            ),
+            BLE_PERIPHERAL(
+                "cordova-plugin-ble-peripheral",
+                "\"cordova-plugin-ble-peripheral\": \"1.1.2\"",
+                arrayOf(
+                    "{\"id\": \"cordova-plugin-ble-peripheral.blePeripheral\",\"file\": \"plugins/cordova-plugin-ble-peripheral/www/blePeripheral.js\",\"pluginId\": \"cordova-plugin-ble-peripheral\",\"clobbers\": [\"blePeripheral\"]}"
+                )
             )
-
         }
     }
 
