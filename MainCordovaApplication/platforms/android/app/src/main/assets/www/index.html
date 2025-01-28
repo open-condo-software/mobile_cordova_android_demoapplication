@@ -1,329 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Gracious Immaculate Woodcock</title>
-  <meta property="og:title" content="Gracious Immaculate Woodcock" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta charset="utf-8" />
-  <meta property="twitter:card" content="summary_large_image" />
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
 
-  <style data-tag="reset-style-sheet">
-    html {  line-height: 1.15;}body {  margin: 0;}* {  box-sizing: border-box;  border-width: 0;  border-style: solid;}p,li,ul,pre,div,h1,h2,h3,h4,h5,h6,figure,blockquote,figcaption {  margin: 0;  padding: 0;}button {  background-color: transparent;}button,input,optgroup,select,textarea {  font-family: inherit;  font-size: 100%;  line-height: 1.15;  margin: 0;}button,select {  text-transform: none;}button,[type="button"],[type="reset"],[type="submit"] {  -webkit-appearance: button;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner {  border-style: none;  padding: 0;}button:-moz-focus,[type="button"]:-moz-focus,[type="reset"]:-moz-focus,[type="submit"]:-moz-focus {  outline: 1px dotted ButtonText;}a {  color: inherit;  text-decoration: inherit;}input {  padding: 2px 4px;}img {  display: block;}html { scroll-behavior: smooth  }
-  </style>
-  <style data-tag="default-style-sheet">
-    html {
-      font-family: Inter;
-      font-size: 16px;
-    }
+    http://www.apache.org/licenses/LICENSE-2.0
 
-    body {
-      font-weight: 400;
-      font-style:normal;
-      text-decoration: none;
-      text-transform: none;
-      letter-spacing: normal;
-      line-height: 1.15;
-      color: var(--dl-color-theme-neutral-dark);
-      background-color: var(--dl-color-theme-neutral-light);
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <!--
+        Customize this policy to fit your own app's needs. For more guidance, see:
+            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+        Some notes:
+            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+                * Enable inline JS: add 'unsafe-inline' to default-src
+        -->
+        <!-- DOMA!
+            Ниже в meta теге необходимо указать сервера, с которыми предстоит взаимодействовать по примеру https://v1.doma.ai
+        -->
+<!--        <meta http-equiv="Content-Security-Policy" content="default-src * 'self' https://v1.doma.ai data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">-->
+        <meta https-equiv="Content-Security-Policy" content="default-src *;" />
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+        <meta name="color-scheme" content="light dark">
+        <link rel="stylesheet" href="css/index.css">
+        <title>Hello World</title>
+    </head>
+    <body style="overflow: hidden;">
+        <div class="app">
+            <h1>Apache Cordova</h1>
+            <div id="deviceready" class="blink">
+                <p class="event listening">Connecting to Device</p>
+                <p class="event received">Device is Ready</p>
+            </div>
+            <a href="#" onclick="window.open('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', '_blank', 'fullscreen=yes'); return false;">MyPDF</a>
 
-      fill: var(--dl-color-theme-neutral-dark);
-    }
-  </style>
-  <link
-          rel="stylesheet"
-          href="./css/animate.css"
-  />
-  ]
-  <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
-          data-tag="font"
-  />
-
-  <link rel="stylesheet" href="./jquery-ui-1.14.0.custom/jquery-ui.css">
-  <link rel="stylesheet" href="./jquery-ui-1.14.0.custom/jquery-ui.structure.css">
-  <link rel="stylesheet" href="./jquery-ui-1.14.0.custom/jquery-ui.theme.css">
-
-  <script src="./js/jquery-3.7.1.min.js"></script>
-  <script src="./jquery-ui-1.14.0.custom/jquery-ui.js"></script>
-
-</head>
-<body>
-<link rel="stylesheet" href="./style.css" />
-<div>
-  <link href="./index.css" rel="stylesheet" />
-
-  <div class="home-container10">
-
-    <!-- Header -->
-    <div class="home-container11">
-      <div class="home-container12">
-        <button id="btn-create-service" type="button" class="button home-button1">
-              <span class="home-text10">
-                <span>Создать сервис</span>
-                <br />
-              </span>
-        </button>
-        <button id="stop-advertising" type="button" class="button home-button2">
-              <span class="home-text13">
-                <span>остановить адвертайзинг</span>
-                <br />
-              </span>
-        </button>
-        <button id="btn-create-service-json" type="button" class="button home-button3">
-              <span>
-                <span>JSON</span>
-                <br />
-              </span>
-        </button>
-      </div>
-    </div>
-
-    <div>
-      <span id="status-field">Статус:</span>
-    </div>
-
-    <!-- Список сервисов -->
-    <ul class="list home-ul1 services-list">
-
-      <li class="list-item home-li10">
-        <div class="home-container13">
-          <span target="service-title" class="home-text19">Service 1: {UUID}</span>
-          <span class="home-run1">Run</span>
-          <span class="home-run2">Remove</span>
         </div>
-        <div>
-              <span class="home-text20">
-                <span>Characteristics:</span>
-                <br />
-              </span>
-          <ul class="list home-ul2">
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-          </ul>
-        </div>
-        <div class="home-container15">
-              <span class="home-text26">
-                <span>Characteristics:</span>
-                <br />
-              </span>
-          <ul class="list home-ul3">
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-          </ul>
-        </div>
-        <button type="button" class="button">+ Add characteristic</button>
-      </li>
-
-
-
-      <li class="list-item home-li17">
-        <div class="home-container16">
-          <span class="home-text32">Service 2: {UUID}</span>
-          <span class="home-run3">Stop</span>
-          <span class="home-run4">Remove</span>
-        </div>
-        <div class="home-container17">
-              <span class="home-text33">
-                <span>Characteristics:</span>
-                <br />
-              </span>
-          <ul class="list home-ul4">
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-          </ul>
-        </div>
-        <div class="home-container18">
-              <span class="home-text39">
-                <span>Characteristics:</span>
-                <br />
-              </span>
-          <ul class="list home-ul5">
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-          </ul>
-        </div>
-        <button type="button" class="button">+ Add characteristic</button>
-      </li>
-      <li class="list-item home-li24">
-        <div class="home-container19">
-          <span class="home-text45">Service 3: {UUID}</span>
-          <span class="home-run5">Publish</span>
-          <span class="home-run6">Remove</span>
-        </div>
-        <div class="home-container20">
-              <span class="home-text46">
-                <span>Characteristics:</span>
-                <br />
-              </span>
-          <ul class="list home-ul6">
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-          </ul>
-        </div>
-        <div class="home-container21">
-              <span class="home-text52">
-                <span>Characteristics:</span>
-                <br />
-              </span>
-          <ul class="list home-ul7">
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-            <li class="list-item">
-              <span>{UUID}; permissions: 1; property: 16</span>
-            </li>
-          </ul>
-        </div>
-        <button type="button" class="button">+ Add characteristic</button>
-      </li>
-    </ul>
-
-
-    <!-- Нижняя панель -->
-    <div class="home-container22">
-      <button type="button" class="button">
-            <span>
-              <span id="remove-all-services">Удалить все сервисы</span>
-              <br />
-            </span>
-      </button>
-      <button type="button" class="button home-button8">
-        Start sending
-      </button>
-    </div>
-
-  </div>
-</div>
-
-<!-- Диалоги -->
-
-<div id="dialog-service-create" class="page-container2" title="Create service">
-  <input id="create-service-uuid-field" type="text" placeholder="Enter service UUID" class="input" style="width: 100%;"/>
-</div>
-
-<div id="dialog-characteristic-create" class="page-container3" title="Add characteristic">
-  <span id="dialog-characteristic-title">Добавление характеристики для сервиса: {UUID}</span>
-  <input id="create-characteristic-uuid-field"
-         type="text"
-         style="width: 100%;"
-         placeholder="Enter characteristic UUID"
-         class="input page-textinput"
-  />
-  <div id="permissions-list" style="margin-top: 10px;">
-    <span>Permissions</span>
-  </div>
-  <div id="property-list" style="margin-top: 10px;">
-    <span>Properties</span>
-  </div>
-</div>
-
-<div id="dialog-service-create-json" class="page-container4">
-  <span>
-    <span>Добавление сервиса через JSON</span>
-    <br />
-  </span>
-  <textarea
-    id="ta-create-service-json"
-    placeholder="JSON {...}"
-    class="textarea page-textarea"
-    style="width: 100%;"
-    rows="10"
-  ></textarea>
-</div>
-
-
-
-
-<script src="js/main.js"></script>
-
-<!-- =======  TMPs  ======== -->
-
-<!-- Сервис -->
-<li class="list-item home-li10 service-block-tmp" style="display: none;">
-  <div class="home-container13">
-    <span target="service-title" class="home-text19">Service 1: {UUID}</span>
-    <span class="home-run1 run-action">Run</span>
-    <span class="home-run2 remove-action">Remove</span>
-  </div>
-
-  <div class="home-container15 characteristics-list" style="padding: 6px 18px;">
-    <span class="empty-list-span">Список пуст...</span>
-    <!-- <span class="home-text26">
-      <span>Characteristics:</span>
-      <br />
-    </span>
-    <ul class="list home-ul3 ">
-      <span class="empty-list-span">Список пуст...</span>
-    </ul> -->
-  </div>
-  <button type="button" class="button btn-add-characteristic">+ Add characteristic</button>
-</li>
-
-<!-- Характеристика -->
-<div class="characteristic-block-tmp" style="display: none; padding-bottom: 16px;">
-      <span class="home-text20">
-        <span class="characteristic-title-span">Characteristic {UUID}</span>
-        <br />
-      </span>
-      <span class="properties-detail">Properties</span><br/>
-      <span class="permissions-detail">Permissions</span><br/>
-      <br/>
-      <span style="margin-top: 10px;">Characteristic value: </span>
-      <textarea class="characteristic-value" rows="3" placeholder="Enter characteristic value"></textarea>
-
-  <ul class="list home-ul2 descriptors-list" style="display: none;">
-    <li class="list-item">
-      <span>{UUID}; permissions: 1; property: 16</span>
-    </li>
-    <li class="list-item">
-      <span>{UUID}; permissions: 1; property: 16</span>
-    </li>
-    <li class="list-item">
-      <span>{UUID}; permissions: 1; property: 16</span>
-    </li>
-  </ul>
-</div>
-
-  <script src="cordova.js"></script>
-  <script src="js/index.js"></script>
-</body>
+        <script src="cordova.js"></script>
+        <script src="js/file_helpers.js"></script>
+        <script src="js/index.js"></script>
+    </body>
 </html>
