@@ -64,7 +64,7 @@ data class MiniappNativeConfig(
                             perms.add(it)
                         }
                     }
-                    mapWebPermissionsToAndroid(perms)
+                    mapWebPermissionsToAndroid(perms).flatMap { it }
                 }.orEmpty()
             )
         }
@@ -72,10 +72,18 @@ data class MiniappNativeConfig(
 
         fun mapWebPermissionsToAndroid(list: List<String>) = list.mapNotNull {
             when (it) {
-                "record_audio" -> Manifest.permission.RECORD_AUDIO
-                "audio_settings" -> Manifest.permission.MODIFY_AUDIO_SETTINGS
-                "camera" -> Manifest.permission.CAMERA
-                else -> null
+                "record_audio" -> listOf(Manifest.permission.RECORD_AUDIO)
+                "audio_settings" -> listOf(Manifest.permission.MODIFY_AUDIO_SETTINGS)
+                "camera" -> listOf(Manifest.permission.CAMERA)
+                "beacon" -> listOf(
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                )
+
+                else -> listOf()
             }
         }
     }

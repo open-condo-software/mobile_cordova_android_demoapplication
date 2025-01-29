@@ -7,15 +7,27 @@
     "files": {
       "res/xml/config.xml": {
         "parents": {
-          "/widget": [
+          "/*": [
             {
-              "xml": "<feature name=\"BLEPeripheral\"><param name=\"android-package\" value=\"com.megster.cordova.ble.peripheral.BLEPeripheralPlugin\" /></feature>",
+              "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
+              "count": 1
+            },
+            {
+              "xml": "<feature name=\"LocationManager\"><param name=\"android-package\" value=\"com.unarin.cordova.beacon.LocationManager\" /></feature>",
+              "count": 1
+            },
+            {
+              "xml": "<feature name=\"Camera\"><param name=\"android-package\" value=\"org.apache.cordova.camera.CameraLauncher\" /></feature>",
+              "count": 1
+            },
+            {
+              "xml": "<feature name=\"Condo\"><param name=\"android-package\" value=\"cordova.plugin.condo\" /></feature>",
               "count": 1
             }
           ],
-          "/*": [
+          "/widget": [
             {
-              "xml": "<feature name=\"Condo\"><param name=\"android-package\" value=\"cordova.plugin.condo\" /></feature>",
+              "xml": "<feature name=\"BLEPeripheral\"><param name=\"android-package\" value=\"com.megster.cordova.ble.peripheral.BLEPeripheralPlugin\" /></feature>",
               "count": 1
             }
           ]
@@ -24,6 +36,10 @@
       "AndroidManifest.xml": {
         "parents": {
           "/manifest": [
+            {
+              "xml": "<uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\" />",
+              "count": 1
+            },
             {
               "xml": "<uses-permission android:maxSdkVersion=\"30\" android:name=\"android.permission.BLUETOOTH\" />",
               "count": 1
@@ -40,13 +56,34 @@
               "xml": "<uses-permission android:name=\"android.permission.BLUETOOTH_ADVERTISE\" />",
               "count": 1
             }
+          ],
+          "/*": [
+            {
+              "xml": "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />",
+              "count": 1
+            }
+          ],
+          "application": [
+            {
+              "xml": "<provider android:authorities=\"${applicationId}.provider\" android:exported=\"false\" android:grantUriPermissions=\"true\" android:name=\"android.support.v4.content.FileProvider\"><meta-data android:name=\"android.support.FILE_PROVIDER_PATHS\" android:resource=\"@xml/provider_paths\" /></provider>",
+              "count": 1
+            }
           ]
         }
       }
     }
   },
   "installed_plugins": {
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
+    },
+    "com.unarin.cordova.beacon": {
+      "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
+    },
     "cordova-plugin-ble-peripheral": {
+      "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
+    },
+    "cordova-plugin-camera": {
       "PACKAGE_NAME": "io.cordova.hellocordova.demo.app"
     },
     "cordova-plugin-condo": {
@@ -56,11 +93,109 @@
   "dependent_plugins": {},
   "modules": [
     {
+      "id": "cordova-plugin-device.device",
+      "file": "plugins/cordova-plugin-device/www/device.js",
+      "pluginId": "cordova-plugin-device",
+      "clobbers": [
+        "device"
+      ]
+    },
+    {
+      "id": "com.unarin.cordova.beacon.underscorejs",
+      "file": "plugins/com.unarin.cordova.beacon/www/lib/underscore-min-1.6.js",
+      "pluginId": "com.unarin.cordova.beacon",
+      "runs": true
+    },
+    {
+      "id": "com.unarin.cordova.beacon.Q",
+      "file": "plugins/com.unarin.cordova.beacon/www/lib/q.min.js",
+      "pluginId": "com.unarin.cordova.beacon",
+      "runs": true
+    },
+    {
+      "id": "com.unarin.cordova.beacon.LocationManager",
+      "file": "plugins/com.unarin.cordova.beacon/www/LocationManager.js",
+      "pluginId": "com.unarin.cordova.beacon",
+      "merges": [
+        "cordova.plugins"
+      ]
+    },
+    {
+      "id": "com.unarin.cordova.beacon.Delegate",
+      "file": "plugins/com.unarin.cordova.beacon/www/Delegate.js",
+      "pluginId": "com.unarin.cordova.beacon",
+      "runs": true
+    },
+    {
+      "id": "com.unarin.cordova.beacon.Region",
+      "file": "plugins/com.unarin.cordova.beacon/www/model/Region.js",
+      "pluginId": "com.unarin.cordova.beacon",
+      "runs": true
+    },
+    {
+      "id": "com.unarin.cordova.beacon.Regions",
+      "file": "plugins/com.unarin.cordova.beacon/www/Regions.js",
+      "pluginId": "com.unarin.cordova.beacon",
+      "runs": true
+    },
+    {
+      "id": "com.unarin.cordova.beacon.CircularRegion",
+      "file": "plugins/com.unarin.cordova.beacon/www/model/CircularRegion.js",
+      "pluginId": "com.unarin.cordova.beacon",
+      "runs": true
+    },
+    {
+      "id": "com.unarin.cordova.beacon.BeaconRegion",
+      "file": "plugins/com.unarin.cordova.beacon/www/model/BeaconRegion.js",
+      "pluginId": "com.unarin.cordova.beacon",
+      "runs": true
+    },
+    {
       "id": "cordova-plugin-ble-peripheral.blePeripheral",
       "file": "plugins/cordova-plugin-ble-peripheral/www/blePeripheral.js",
       "pluginId": "cordova-plugin-ble-peripheral",
       "clobbers": [
         "blePeripheral"
+      ]
+    },
+    {
+      "id": "cordova-plugin-camera.Camera",
+      "file": "plugins/cordova-plugin-camera/www/CameraConstants.js",
+      "pluginId": "cordova-plugin-camera",
+      "clobbers": [
+        "Camera"
+      ]
+    },
+    {
+      "id": "cordova-plugin-camera.CameraPopoverOptions",
+      "file": "plugins/cordova-plugin-camera/www/CameraPopoverOptions.js",
+      "pluginId": "cordova-plugin-camera",
+      "clobbers": [
+        "CameraPopoverOptions"
+      ]
+    },
+    {
+      "id": "cordova-plugin-camera.camera",
+      "file": "plugins/cordova-plugin-camera/www/Camera.js",
+      "pluginId": "cordova-plugin-camera",
+      "clobbers": [
+        "navigator.camera"
+      ]
+    },
+    {
+      "id": "cordova-plugin-camera.CameraPopoverHandle",
+      "file": "plugins/cordova-plugin-camera/www/CameraPopoverHandle.js",
+      "pluginId": "cordova-plugin-camera",
+      "clobbers": [
+        "CameraPopoverHandle"
+      ]
+    },
+    {
+      "id": "cordova-plugin-camera.CameraPopoverHandle",
+      "file": "plugins/cordova-plugin-camera/www/CameraPopoverHandle.js",
+      "pluginId": "cordova-plugin-camera",
+      "clobbers": [
+        "CameraPopoverHandle"
       ]
     },
     {
@@ -73,7 +208,10 @@
     }
   ],
   "plugin_metadata": {
+    "cordova-plugin-device": "3.0.0",
+    "com.unarin.cordova.beacon": "3.8.1",
     "cordova-plugin-ble-peripheral": "1.1.2.1",
+    "cordova-plugin-camera": "2.4.1",
     "cordova-plugin-condo": "0.0.1"
   }
 }

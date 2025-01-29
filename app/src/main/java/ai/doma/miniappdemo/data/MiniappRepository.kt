@@ -57,6 +57,8 @@ class MiniappRepository @Inject constructor(
 
     private fun unpackZip(miniappId: String, inputStream: InputStream): Boolean {
         val path = getMiniapp(context, miniappId)
+        path.deleteRecursively()
+        path.mkdir()
         val zis: ZipInputStream
         try {
             var filename: String
@@ -151,6 +153,7 @@ class MiniappRepository @Inject constructor(
             appFile.writeBytes(context.resources.openRawResource(R.raw.app).readBytes())
 
             val condoPluginFile = File(dir, "plugins/cordova-plugin-condo/www/condo.js")
+            condoPluginFile.parentFile?.mkdirs()
             if (condoPluginFile.exists()) {
                 condoPluginFile.delete()
             }
@@ -202,14 +205,10 @@ class MiniappRepository @Inject constructor(
         return """
             cordova.define('cordova/plugin_list', function(require, exports, module) {
               module.exports = [
-                ${
-            foundPlugins.flatMap { it.configJson.toList() }.joinToString(separator = ",\n") { it }
-        }
+                ${foundPlugins.flatMap { it.configJson.toList() }.joinToString(separator = ",\n") { it }}
               ];
               module.exports.metadata = {
-                ${
-            foundPlugins.mapNotNull { it.meta }.toSet().joinToString(separator = ",\n") { it }
-        }
+                ${foundPlugins.mapNotNull { it.meta }.toSet().joinToString(separator = ",\n") { it }}
               };
             });
         """.trimIndent()
@@ -305,6 +304,20 @@ class MiniappRepository @Inject constructor(
                 "\"cordova-plugin-ble-peripheral\": \"1.1.2\"",
                 arrayOf(
                     "{\"id\": \"cordova-plugin-ble-peripheral.blePeripheral\",\"file\": \"plugins/cordova-plugin-ble-peripheral/www/blePeripheral.js\",\"pluginId\": \"cordova-plugin-ble-peripheral\",\"clobbers\": [\"blePeripheral\"]}"
+                )
+            ),
+            BEACON(
+                "com.unarin.cordova.beacon",
+                "\"com.unarin.cordova.beacon\": \"3.8.1\"",
+                arrayOf(
+                    "{\"id\": \"com.unarin.cordova.beacon.underscorejs\", \"file\": \"plugins/com.unarin.cordova.beacon/www/lib/underscore-min-1.6.js\", \"pluginId\": \"com.unarin.cordova.beacon\", \"runs\": true}",
+                    "{\"id\": \"com.unarin.cordova.beacon.Q\", \"file\": \"plugins/com.unarin.cordova.beacon/www/lib/q.min.js\", \"pluginId\": \"com.unarin.cordova.beacon\", \"runs\": true}",
+                    "{\"id\": \"com.unarin.cordova.beacon.LocationManager\", \"file\": \"plugins/com.unarin.cordova.beacon/www/LocationManager.js\", \"pluginId\": \"com.unarin.cordova.beacon\", \"merges\": [\"cordova.plugins\"]}",
+                    "{\"id\": \"com.unarin.cordova.beacon.Delegate\", \"file\": \"plugins/com.unarin.cordova.beacon/www/Delegate.js\", \"pluginId\": \"com.unarin.cordova.beacon\", \"runs\": true}",
+                    "{\"id\": \"com.unarin.cordova.beacon.Region\", \"file\": \"plugins/com.unarin.cordova.beacon/www/model/Region.js\", \"pluginId\": \"com.unarin.cordova.beacon\", \"runs\": true}",
+                    "{\"id\": \"com.unarin.cordova.beacon.Regions\", \"file\": \"plugins/com.unarin.cordova.beacon/www/Regions.js\", \"pluginId\": \"com.unarin.cordova.beacon\", \"runs\": true}",
+                    "{\"id\": \"com.unarin.cordova.beacon.CircularRegion\", \"file\": \"plugins/com.unarin.cordova.beacon/www/model/CircularRegion.js\", \"pluginId\": \"com.unarin.cordova.beacon\", \"runs\": true}",
+                    "{\"id\": \"com.unarin.cordova.beacon.BeaconRegion\", \"file\": \"plugins/com.unarin.cordova.beacon/www/model/BeaconRegion.js\", \"pluginId\": \"com.unarin.cordova.beacon\", \"runs\": true}",
                 )
             )
         }

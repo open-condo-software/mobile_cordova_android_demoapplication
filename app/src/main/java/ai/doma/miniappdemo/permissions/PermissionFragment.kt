@@ -8,9 +8,10 @@ import kotlinx.coroutines.CompletableDeferred
 
 class PermissionFragment : Fragment() {
   var completableDeferred: CompletableDeferred<List<Permission>> = CompletableDeferred()
+  private var needAwaitAllPermissions: Boolean = true
 
   private val permissionRequest = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-    if (permissions.all { it.value }) {
+    if (permissions.all { it.value } || !needAwaitAllPermissions) {
       completableDeferred.complete(permissions.map {
         Permission(
           permission = it.key,
@@ -30,6 +31,12 @@ class PermissionFragment : Fragment() {
     activity?.let {
       !isPermissionGranted(permission) && ActivityCompat.shouldShowRequestPermissionRationale(it, permission)
     } ?: false
+
+  fun request(needAwaitAllPermissions: Boolean = true, vararg permissions: String) {
+    this.needAwaitAllPermissions = needAwaitAllPermissions
+    permissionRequest.launch(permissions.toList().toTypedArray())
+  }
+
 
   private fun isPermissionGranted(permission: String): Boolean =
     activity?.let {
