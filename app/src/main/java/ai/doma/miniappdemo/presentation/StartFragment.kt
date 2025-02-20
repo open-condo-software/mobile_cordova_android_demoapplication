@@ -11,6 +11,7 @@ import ai.doma.miniappdemo.collectAndTrace
 import ai.doma.miniappdemo.data.MiniappRepository
 import ai.doma.miniappdemo.databinding.FragmentStartBinding
 import ai.doma.miniappdemo.domain.MiniappEntity
+import ai.doma.miniappdemo.ext.logD
 import ai.doma.miniappdemo.ext.viewBinding
 import ai.doma.miniappdemo.getViewScope
 import android.content.res.ColorStateList
@@ -54,7 +55,9 @@ class StartFragment: Fragment() {
             it.getViewScope().launch {
                 miniappInteractor.getOrDownloadMiniapp(MINIAPP_SERVER_AUTH_BY_URL_ID)
                     .flowOn(Dispatchers.IO)
-                    .collectAndTrace {(file, config) ->
+                    .collectAndTrace(onError = {
+                        logD("") { "exception: $it" }
+                    }) {(file, config) ->
                         val miniappEntity = MiniappEntity(MINIAPP_SERVER_AUTH_BY_URL_ID, "test name", "test description", "1.0.0", System.currentTimeMillis(),null,null,null,null)
                         if(config.isModal){
                             MiniappDialogFragment.show(

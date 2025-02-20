@@ -30,6 +30,23 @@ internal object PermissionFlow {
     }
   }
 
+  private fun request(
+    fragmentManager: FragmentManager,
+    awaitAllPermissions: Boolean = true,
+    vararg permissionsToRequest: String
+  ) = flow {
+    createFragment(fragmentManager).takeIf { permissionsToRequest.isNotEmpty() }?.run {
+      request(awaitAllPermissions, *permissionsToRequest)
+      val results = completableDeferred.await()
+      if (results.isNotEmpty()) {
+        emit(results)
+      }
+    }
+  }
+  internal fun unsafeRequest(fragment: Fragment, vararg permissionsToRequest: String) =
+    request(fragment.childFragmentManager, false, *permissionsToRequest)
+
+
   private fun requestEach(fragmentManager: FragmentManager, vararg permissionsToRequest: String) = flow {
     createFragment(fragmentManager).takeIf { permissionsToRequest.isNotEmpty() }?.run {
       request(*permissionsToRequest)
@@ -66,3 +83,6 @@ fun Fragment.requestPermissions(vararg permissionsToRequest: String) =
   PermissionFlow.request(this, *permissionsToRequest)
 fun Fragment.requestEachPermissions(vararg permissionsToRequest: String) =
   PermissionFlow.requestEach(this, *permissionsToRequest)
+
+fun Fragment.unsafeRequestPermissions(vararg permissionsToRequest: String) =
+  PermissionFlow.unsafeRequest(this, *permissionsToRequest)
