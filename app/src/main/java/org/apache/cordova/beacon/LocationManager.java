@@ -1225,8 +1225,8 @@ public class LocationManager extends CordovaPlugin implements BeaconConsumer
                         .setId1(uuid) // UUID for beacon
                         .setId2(major) // Major for beacon
                         .setId3(minor) // Minor for beacon
-                        .setManufacturer(0x0118) // Radius Networks.0x0118  Change this for other beacon layouts//0x004C for iPhone
-//                        .setManufacturer(0x004C) // Radius Networks.0x0118  Change this for other beacon layouts//0x004C for iPhone
+//                        .setManufacturer(0x0118) // Radius Networks.0x0118  Change this for other beacon layouts//0x004C for iPhone
+                        .setManufacturer(0x004C) // Radius Networks.0x0118  Change this for other beacon layouts//0x004C for iPhone
                         .setTxPower(measuredPower) // Power in dB
                         .setDataFields(Arrays.asList(new Long[] {0l})) // Remove this for beacon layouts without d: fields
                         .build();
