@@ -39,6 +39,7 @@ import android.os.ParcelUuid
 import android.provider.Settings
 import android.util.Base64
 import android.util.Log
+import androidx.annotation.RequiresApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -509,18 +510,23 @@ class BLEPeripheralPlugin : CordovaPlugin() {
                 )
                 return true
             }
+            advertisingStartedCallback = callbackContext
+
             val advertisedName = args.getString(1)
             val serviceUUID = uuidFromString(args.getString(0))
             bluetoothAdapter!!.name = advertisedName
             val bluetoothLeAdvertiser = bluetoothAdapter!!.bluetoothLeAdvertiser
-            val advertisementData = getAdvertisementData(serviceUUID)
-            val advertiseSettings = advertiseSettings
-            bluetoothLeAdvertiser.startAdvertising(
-                advertiseSettings,
-                advertisementData,
-                advertiseCallback
-            )
-            advertisingStartedCallback = callbackContext
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || !startModernAdvertising(serviceUUID)) {
+                val advertiseSettings = advertiseSettings
+                val advertisementData = getAdvertisementData(serviceUUID)
+                bluetoothLeAdvertiser.startAdvertising(
+                    advertiseSettings,
+                    advertisementData,
+                    advertiseCallback
+                )
+            }
+
             true
         } else if (action == STOP_ADVERTISING) {
             val hasAdvertisingPermission = PermissionHelper.hasPermission(this, BLUETOOTH_ADVERTISE)
@@ -941,6 +947,29 @@ class BLEPeripheralPlugin : CordovaPlugin() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    val advertisingSetcallback = object : android.bluetooth.le.AdvertisingSetCallback() {
+        override fun onAdvertisingSetStarted(
+            advertisingSet: android.bluetooth.le.AdvertisingSet?,
+            txPower: Int,
+            status: Int
+        ) {
+            if (status == ADVERTISE_SUCCESS) {
+                Log.d("BLEPeripheral", "Modern API advertising started successfully, txPower=$txPower")
+                if (advertisingStartedCallback != null) {
+                    advertisingStartedCallback!!.success()
+                }
+            } else {
+                val errorMessage = "Modern API advertising failed, code: $status"
+                Log.e("BLEPeripheral", errorMessage)
+
+                if (advertisingStartedCallback != null) {
+                    advertisingStartedCallback!!.error(errorMessage)
+                }
+            }
+        }
+    }
+
     private fun notifyRegisteredDevices(
         characteristic: BluetoothGattCharacteristic,
         value: ByteArray
@@ -1056,6 +1085,51 @@ class BLEPeripheralPlugin : CordovaPlugin() {
         val callback = permissionCallback
         permissionCallback = null
         return callback
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @SuppressLint("MissingPermission")
+    private fun startModernAdvertising(serviceUUID: UUID): Boolean {
+        if (Build.VERSION.SDK_INT < 26) {
+            Log.d("BLEPeripheral", "API version < 26, using old advertisement method")
+            return false
+        }
+
+        try {
+            val bluetoothLeAdvertiser = bluetoothAdapter!!.bluetoothLeAdvertiser
+
+            // Create a compact advertising data package
+            val advertisementData = AdvertiseData.Builder()
+                .addServiceUuid(ParcelUuid(serviceUUID))
+                .setIncludeDeviceName(false) // Remove device name to save space
+                .setIncludeTxPowerLevel(false) // Remove power level to save space
+                .build()
+
+            Log.d("BLEPeripheral", "Created compact advertising data for service UUID: $serviceUUID")
+
+            val parameters = android.bluetooth.le.AdvertisingSetParameters.Builder()
+                .setLegacyMode(true) // Ensures compatibility with older scanners
+                .setInterval(android.bluetooth.le.AdvertisingSetParameters.INTERVAL_MEDIUM)
+                .setTxPowerLevel(android.bluetooth.le.AdvertisingSetParameters.TX_POWER_HIGH)
+                .setConnectable(true)
+                .setScannable(true)
+                .build()
+
+            bluetoothLeAdvertiser.startAdvertisingSet(
+                parameters,
+                advertisementData,
+                null, // scanResponse
+                null, // periodicParameters
+                null, // periodicData
+                advertisingSetcallback
+            )
+
+            Log.d("BLEPeripheral", "Requested modern API advertising start")
+            return true
+        } catch (e: Exception) {
+            Log.e("BLEPeripheral", "Modern API advertising failed", e)
+            return false
+        }
     }
 
     companion object {
