@@ -1,3 +1,4 @@
+
 // (c) 2016 Don Coleman
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +17,20 @@
 "use strict";
 
 // Util functions for translating nested array buffers going across the Cordova bridge
+function stringToBase64(str) {
+    const utf8Bytes = new TextEncoder().encode(str); // UTF-8 -> Uint8Array
+    let binary = '';
+    for (let i = 0; i < utf8Bytes.length; i++) {
+        binary += String.fromCharCode(utf8Bytes[i]);
+    }
+    return btoa(binary); // Binary -> Base64
+}
+
+function base64ToString(base64) {
+    const binary = atob(base64); // Base64 -> binary string
+    const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+    return new TextDecoder().decode(bytes); // UTF-8 decode
+}
 
 var stringToArrayBuffer = function (str) {
     var ret = new Uint8Array(str.length);
@@ -61,9 +76,20 @@ function registerWriteRequestCallback() {
         console.log('didReceiveWriteRequest');
         console.log(json);
         convertToNativeJS(json);
+        const contextID = json.contextID;
 
         if (onWriteRequestCallback && typeof onWriteRequestCallback === 'function') {
-            onWriteRequestCallback(json);
+            let result = onWriteRequestCallback(json);
+
+            if (result instanceof ArrayBuffer) {
+                var base64String = stringToBase64([].reduce.call(new Uint8Array(result),function(p,c){return p+String.fromCharCode(c)},''));
+                cordova.exec(() => { }, () => { }, 'BLEPeripheral', 'receiveChangedCharacteristicValue', [contextID, base64String]);
+            } else if (typeof result === 'string' && result.length > 0) {
+                var base64String = stringToBase64(result);
+                cordova.exec(() => { }, () => { }, 'BLEPeripheral', 'receiveChangedCharacteristicValue', [contextID, base64String]);
+            } else {
+                cordova.exec(() => { }, () => { }, 'BLEPeripheral', 'receiveChangedCharacteristicValue', [contextID]);
+            }
         }
     };
 
@@ -74,44 +100,43 @@ function registerWriteRequestCallback() {
 
     cordova.exec(didReceiveWriteRequest, failure, 'BLEPeripheral', 'setCharacteristicValueChangedListener', []);
 }
-registerWriteRequestCallback();
+// registerWriteRequestCallback();
 
 function registerReadRequestCallback() {
 
     var didReceiveReadRequest = function(dictionaryObject) {
         console.log('didReceiveReadRequest', dictionaryObject);
-        
+
         const contextID = dictionaryObject.contextID;
         const characteristic = dictionaryObject.characteristic;
         const service = dictionaryObject.service;
-        
+
         if (!(contextID && characteristic && service)) {
             console.log('didReceiveReadRequest', 'malformed reqeust');
             return
         }
-        
+
         if (onReadRequestCallback && typeof onReadRequestCallback === 'function') {
             let result = onReadRequestCallback(service, characteristic);
-            
+
             if(result) {
                 if (result instanceof ArrayBuffer) {
-                    var base64String = btoa([].reduce.call(new Uint8Array(result),function(p,c){return p+String.fromCharCode(c)},''));
+                    var base64String = stringToBase64([].reduce.call(new Uint8Array(result),function(p,c){return p+String.fromCharCode(c)},''));
                     cordova.exec(() => { }, () => { }, 'BLEPeripheral', 'receiveRequestedCharacteristicValue', [contextID, base64String]);
-                    
+
                 } else if (typeof result === 'string') {
-                    var base64String = btoa(result);
+                    var base64String = stringToBase64(result);
                     cordova.exec(() => { }, () => { }, 'BLEPeripheral', 'receiveRequestedCharacteristicValue', [contextID, base64String]);
                 }
-
             }
         }
     };
-    
+
     var failure = function () {
         // this should never happen
         console.log("Failed to add setCharacteristicValueRequestedListener");
     };
-    
+
     cordova.exec(didReceiveReadRequest, failure, 'BLEPeripheral', 'setCharacteristicValueRequestedListener');
 }
 
@@ -286,6 +311,7 @@ module.exports = {
     // }
     onWriteRequest: function (callback) {
         onWriteRequestCallback = callback;
+        registerWriteRequestCallback();
     },
     
     onReadRequest: function (callback) {
