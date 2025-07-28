@@ -39,6 +39,7 @@ import android.os.ParcelUuid
 import android.provider.Settings
 import android.util.Base64
 import android.util.Log
+import androidx.annotation.RequiresApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -59,16 +60,77 @@ import org.json.JSONObject
 import java.util.Arrays
 import java.util.Hashtable
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 
-data class BLECharacteristicReadRequest(
-    var contextID: UUID,
-    var timeoutJob: Job,
-    var device: BluetoothDevice,
-    var requestId: Int,
-    var offset: Int,
-    var characteristic: BluetoothGattCharacteristic
-)
+private data class BLECharacteristicReadRequest(
+    val contextID: UUID,
+    val device: BluetoothDevice,
+    val requestId: Int,
+    val offset: Int,
+    val characteristic: BluetoothGattCharacteristic,
+    val timeoutAction: suspend () -> Unit,
+    val timeoutDelay: Long,
+    val scope : CoroutineScope
+) {
+    private val timeoutJob: Job
+
+    init {
+        timeoutJob = scope.launch {
+            delay(timeoutDelay)
+            timeoutAction.invoke()
+        }
+    }
+
+    fun doFallbackActionNow() {
+        if (timeoutJob.isActive) {
+            timeoutJob.cancel()
+            scope.launch {
+                timeoutAction.invoke()
+            }
+        }
+    }
+
+    fun cancelJob() {
+        timeoutJob.cancel()
+    }
+
+}
+
+private data class BLECharacteristicWriteRequest(
+    val contextID: UUID,
+    val device: BluetoothDevice,
+    val requestId: Int,
+    val offset: Int,
+    val characteristic: BluetoothGattCharacteristic,
+    val responseNeeded: Boolean,
+    val timeoutAction: suspend () -> Unit,
+    val timeoutDelay: Long,
+    val scope: CoroutineScope
+) {
+    private val timeoutJob: Job
+    val isCancelledJob get() = timeoutJob.isCancelled
+    init {
+        timeoutJob = scope.launch {
+            delay(timeoutDelay)
+            timeoutAction.invoke()
+        }
+    }
+
+    fun doFallbackActionNow() {
+        if (timeoutJob.isActive) {
+            timeoutJob.cancel()
+            scope.launch {
+                timeoutAction.invoke()
+            }
+        }
+    }
+
+    fun cancelJob() {
+        timeoutJob.cancel()
+    }
+
+}
 
 @SuppressLint("MissingPermission,LogNotTimber")
 class BLEPeripheralPlugin : CordovaPlugin() {
@@ -102,7 +164,8 @@ class BLEPeripheralPlugin : CordovaPlugin() {
     protected fun finalize() {
         scope.cancel()
     }
-    private var bLECharacteristicReadRequestMap = mutableMapOf<UUID, BLECharacteristicReadRequest>()
+    private var bLECharacteristicReadRequestMap = ConcurrentHashMap<UUID, BLECharacteristicReadRequest>()
+    private var bLECharacteristicWriteRequestMap = ConcurrentHashMap<UUID, BLECharacteristicWriteRequest>()
     override fun initialize(cordova: CordovaInterface, webView: CordovaWebView) {
         super.initialize(cordova, webView)
     }
@@ -151,9 +214,14 @@ class BLEPeripheralPlugin : CordovaPlugin() {
         } else if (action == RECEIVE_REQUESTED_CHARACTERISTIC_VALUE) {
             val uniqueUUID = args.optString(0)
 
-            val result = args.optString(1)?.let { Base64.decode(it, Base64.DEFAULT) }
+            val result = try {
+                args.getString(1).let {
+                    Base64.decode(it, Base64.DEFAULT)
+                }
+            } catch (_: Exception) { null }
+
             Log.v(TAG, "receiveRequestedCharacteristicValue: $result")
-            if (uniqueUUID == null || result == null) {
+            if (uniqueUUID == null) {
                 callbackContext.error("uniqueUUID or result is null")
                 return true
             }
@@ -163,8 +231,14 @@ class BLEPeripheralPlugin : CordovaPlugin() {
                 //timeout
                 return true
             }
+
+            if (result == null) {
+                requestContext.doFallbackActionNow()
+                return true
+            }
+
             bLECharacteristicReadRequestMap.remove(contextID)
-            requestContext.timeoutJob.cancel()
+            requestContext.cancelJob()
             val cbuuid = requestContext.characteristic.uuid
             val service = requestContext.characteristic.service
             if (service == null) {
@@ -185,6 +259,62 @@ class BLEPeripheralPlugin : CordovaPlugin() {
 
             callbackContext.success()
 
+
+        } else if (action == RECEIVE_CHANGED_CHARACTERISTIC_VALUE) {
+            val uniqueUUID = args.optString(0)
+            logD(TAG) { "receiveChangedCharacteristicValue;     uniqueUUID: $uniqueUUID" }
+
+            val contextID = UUIDHelper.uuidFromString(uniqueUUID)
+            val requestContext = bLECharacteristicWriteRequestMap[contextID]
+            if (requestContext == null || requestContext.isCancelledJob) {
+                //timeout
+                return true
+            }
+
+            val resultToChange = try {
+                args.optString(1).let {
+                    Base64.decode(it, Base64.DEFAULT).drop(requestContext.offset).toByteArray()
+                }
+            } catch (_: Exception) { null }
+
+            if (resultToChange == null) {
+                callbackContext.error("resultToChange not found")
+                requestContext.doFallbackActionNow()
+                return true
+            }
+
+            val resultToChangeStr = String(resultToChange)
+
+            logD(TAG) { "receiveChangedCharacteristicValue;     resultToChangeStr: $resultToChangeStr" }
+
+            if (uniqueUUID == null) {
+                callbackContext.error("uniqueUUID is null")
+                return true
+            }
+
+            bLECharacteristicWriteRequestMap.remove(contextID)
+            requestContext.cancelJob()
+            val service  = requestContext.characteristic.service
+            if (service == null) {
+                callbackContext.error("service is null")
+                return true
+            }
+
+            val characteristic = requestContext.characteristic
+            characteristic.value = resultToChange
+            logD(TAG) { "characteristic.value.size = ${characteristic.value.size}" }
+
+            notifyRegisteredDevices(characteristic, resultToChange)
+
+            gattServer?.sendResponse(
+                requestContext.device,
+                requestContext.requestId,
+                BluetoothGatt.GATT_SUCCESS,
+                requestContext.offset,
+                characteristic.value
+            )
+            logD(TAG) { "send response" }
+            logD(TAG) { "characteristic.value.size = ${characteristic.value.size}" }
 
         } else if (action == SET_BLUETOOTH_STATE_CHANGED_LISTENER) {
             if (stateCallback != null) {
@@ -275,7 +405,7 @@ class BLEPeripheralPlugin : CordovaPlugin() {
 
             // If notify or indicate, we need to add the 2902 descriptor
             if (isNotify(characteristic) || isIndicate(characteristic)) {
-                characteristic.addDescriptor(createClientCharacteristicConfigurationDescriptor())
+                characteristic.addDescriptor(createClientCharacteristicConfigurationDescriptor(characteristic))
             }
             callbackContext.success()
             true
@@ -302,20 +432,25 @@ class BLEPeripheralPlugin : CordovaPlugin() {
                     // If notify or indicate, add the 2902 descriptor
                     if (isNotify(characteristic) || isIndicate(characteristic)) {
                         characteristic.addDescriptor(
-                            createClientCharacteristicConfigurationDescriptor()
+                            createClientCharacteristicConfigurationDescriptor(characteristic)
                         )
                     }
 
                     // TODO handle JSON without descriptors
-                    val descriptorsArray = jsonObject.getJSONArray("descriptors")
+                    val descriptorsArray = jsonObject.optJSONArray("descriptors") ?: JSONArray()
                     for (j in 0 until descriptorsArray.length()) {
                         val jsonDescriptor = descriptorsArray.getJSONObject(j)
                         val descriptorUUID = uuidFromString(jsonDescriptor.getString("uuid"))
 
+                        if (descriptorUUID == CLIENT_CHARACTERISTIC_CONFIGURATION_UUID) continue
+
                         // TODO descriptor permissions should be optional in the JSON
                         //int descriptorPermissions = jsonDescriptor.getInt("permissions");
-                        val descriptorPermissions =
-                            BluetoothGattDescriptor.PERMISSION_READ // | BluetoothGattDescriptor.PERMISSION_WRITE;
+                        val descriptorPermissions =  if (jsonDescriptor.has("permissions")) {
+                            jsonDescriptor.getInt("permissions")
+                        } else {
+                            BluetoothGattDescriptor.PERMISSION_READ
+                        }
 
                         // future versions need to handle more than Strings
                         val descriptorValue = jsonDescriptor.getString("value")
@@ -323,8 +458,7 @@ class BLEPeripheralPlugin : CordovaPlugin() {
                             TAG,
                             "Adding descriptor $descriptorUUID permissions=$permissions value=$descriptorValue"
                         )
-                        val descriptor =
-                            BluetoothGattDescriptor(descriptorUUID, descriptorPermissions)
+                        val descriptor = BluetoothGattDescriptor(descriptorUUID, descriptorPermissions)
                         if (!characteristic.addDescriptor(descriptor)) {
                             callbackContext.error("Failed to add descriptor $descriptorValue")
                             return  /*valid action */true // stop processing because of error
@@ -376,18 +510,23 @@ class BLEPeripheralPlugin : CordovaPlugin() {
                 )
                 return true
             }
+            advertisingStartedCallback = callbackContext
+
             val advertisedName = args.getString(1)
             val serviceUUID = uuidFromString(args.getString(0))
             bluetoothAdapter!!.name = advertisedName
             val bluetoothLeAdvertiser = bluetoothAdapter!!.bluetoothLeAdvertiser
-            val advertisementData = getAdvertisementData(serviceUUID)
-            val advertiseSettings = advertiseSettings
-            bluetoothLeAdvertiser.startAdvertising(
-                advertiseSettings,
-                advertisementData,
-                advertiseCallback
-            )
-            advertisingStartedCallback = callbackContext
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || !startModernAdvertising(serviceUUID)) {
+                val advertiseSettings = advertiseSettings
+                val advertisementData = getAdvertisementData(serviceUUID)
+                bluetoothLeAdvertiser.startAdvertising(
+                    advertiseSettings,
+                    advertisementData,
+                    advertiseCallback
+                )
+            }
+
             true
         } else if (action == STOP_ADVERTISING) {
             val hasAdvertisingPermission = PermissionHelper.hasPermission(this, BLUETOOTH_ADVERTISE)
@@ -422,7 +561,7 @@ class BLEPeripheralPlugin : CordovaPlugin() {
             }
             characteristic.value = value
             if (isNotify(characteristic) || isIndicate(characteristic)) {
-                notifyRegisteredDevices(characteristic)
+                notifyRegisteredDevices(characteristic, value)
             }
             callbackContext.success()
             true
@@ -568,8 +707,8 @@ class BLEPeripheralPlugin : CordovaPlugin() {
                         requestId = requestId,
                         offset = offset,
                         characteristic = characteristic,
-                        timeoutJob = scope.launch {
-                            delay(3000)
+                        timeoutDelay = 3000L,
+                        timeoutAction = {
                             bLECharacteristicReadRequestMap.remove(contextID)
                             logD { "onCharacteristicReadRequest fallback requestId=$requestId offset=$offset" }
                             gattServer!!.sendResponse(
@@ -579,7 +718,8 @@ class BLEPeripheralPlugin : CordovaPlugin() {
                                 offset,
                                 characteristic.value
                             )
-                        }
+                        },
+                        scope = scope,
                     )
                     val map = mapOf(
                         "contextID" to contextID.toString(),
@@ -629,25 +769,57 @@ class BLEPeripheralPlugin : CordovaPlugin() {
                 )
                 if (characteristicValueChangedCallback != null) {
                     try {
+                        val contextID = UUID.randomUUID()
+                        bLECharacteristicWriteRequestMap[contextID] = BLECharacteristicWriteRequest(
+                            contextID = contextID,
+                            device = device,
+                            requestId = requestId,
+                            responseNeeded = responseNeeded,
+                            characteristic = characteristic,
+                            offset = offset,
+                            timeoutAction = {
+                                bLECharacteristicWriteRequestMap.remove(contextID)
+                                logD(TAG) { "onCharacteristicReadRequest fallback requestId=$requestId offset=$offset" }
+                                if (responseNeeded) {
+                                    characteristic.value = value
+                                    gattServer?.sendResponse(
+                                        device,
+                                        requestId,
+                                        BluetoothGatt.GATT_SUCCESS,
+                                        offset,
+                                        value
+                                    )
+                                }
+                            },
+                            timeoutDelay = 3000L,
+                            scope = scope
+                        )
+
                         val message = JSONObject()
                         message.put("service", characteristic.service.uuid.toString())
                         message.put("characteristic", characteristic.uuid.toString())
                         message.put("value", byteArrayToJSON(value))
+                        message.put("requestId", requestId)
+                        message.put("responseNeeded", responseNeeded)
+                        message.put("offset", offset)
+                        message.put("contextID", contextID.toString())
+
                         val result = PluginResult(PluginResult.Status.OK, message)
                         result.keepCallback = true
                         characteristicValueChangedCallback!!.sendPluginResult(result)
                     } catch (e: JSONException) {
                         LOG.e(TAG, "JSON encoding failed in onCharacteristicWriteRequest", e)
                     }
-                }
-                if (responseNeeded) {
-                    gattServer!!.sendResponse(
-                        device,
-                        requestId,
-                        BluetoothGatt.GATT_SUCCESS,
-                        offset,
-                        value
-                    )
+                } else {
+                    if (responseNeeded) {
+                        gattServer?.sendResponse(
+                            device,
+                            requestId,
+                            BluetoothGatt.GATT_SUCCESS,
+                            offset,
+                            value
+                        )
+                    }
                 }
             }
 
@@ -775,10 +947,40 @@ class BLEPeripheralPlugin : CordovaPlugin() {
         }
     }
 
-    private fun notifyRegisteredDevices(characteristic: BluetoothGattCharacteristic) {
+    @RequiresApi(Build.VERSION_CODES.O)
+    val advertisingSetcallback = object : android.bluetooth.le.AdvertisingSetCallback() {
+        override fun onAdvertisingSetStarted(
+            advertisingSet: android.bluetooth.le.AdvertisingSet?,
+            txPower: Int,
+            status: Int
+        ) {
+            if (status == ADVERTISE_SUCCESS) {
+                Log.d("BLEPeripheral", "Modern API advertising started successfully, txPower=$txPower")
+                if (advertisingStartedCallback != null) {
+                    advertisingStartedCallback!!.success()
+                }
+            } else {
+                val errorMessage = "Modern API advertising failed, code: $status"
+                Log.e("BLEPeripheral", errorMessage)
+
+                if (advertisingStartedCallback != null) {
+                    advertisingStartedCallback!!.error(errorMessage)
+                }
+            }
+        }
+    }
+
+    private fun notifyRegisteredDevices(
+        characteristic: BluetoothGattCharacteristic,
+        value: ByteArray
+    ) {
         val confirm = isIndicate(characteristic)
         for (device in registeredDevices) {
-            gattServer!!.notifyCharacteristicChanged(device, characteristic, confirm)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                gattServer?.notifyCharacteristicChanged(device, characteristic, confirm, value)
+            } else {
+                gattServer?.notifyCharacteristicChanged(device, characteristic, confirm)
+            }
         }
     }
 
@@ -803,13 +1005,42 @@ class BLEPeripheralPlugin : CordovaPlugin() {
         return `object`
     }
 
-    private fun createClientCharacteristicConfigurationDescriptor(): BluetoothGattDescriptor {
+    private fun createClientCharacteristicConfigurationDescriptor(characteristic: BluetoothGattCharacteristic): BluetoothGattDescriptor {
+        val permissions = when {
+            // Rule 1: If the characteristic has READ permission, the descriptor must have WRITE permission
+            (characteristic.permissions and BluetoothGattCharacteristic.PERMISSION_READ) != 0 -> {
+                Log.d("BLEPeripheral", "Characteristic has READ permission, setting WRITE for the descriptor")
+                BluetoothGattDescriptor.PERMISSION_WRITE
+            }
+            // Rule 2: If the characteristic has WRITE permission, the descriptor must have READ permission
+            (characteristic.permissions and BluetoothGattCharacteristic.PERMISSION_WRITE) != 0 -> {
+                Log.d("BLEPeripheral", "Characteristic has WRITE permission, setting READ for the descriptor")
+                BluetoothGattDescriptor.PERMISSION_READ
+            }
+            // By default, allow both read and write for maximum compatibility
+            else -> {
+                Log.d("BLEPeripheral", "For characteristics without explicit permissions, setting READ|WRITE for the descriptor")
+                BluetoothGattDescriptor.PERMISSION_READ or BluetoothGattDescriptor.PERMISSION_WRITE
+            }
+        }
+
+        // If the characteristic has notify or indicate properties, the descriptor must always be writable
+        if ((characteristic.properties and BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0 ||
+            (characteristic.properties and BluetoothGattCharacteristic.PROPERTY_INDICATE) != 0) {
+            Log.d("BLEPeripheral", "Characteristic has NOTIFY/INDICATE properties, adding WRITE permission")
+            return BluetoothGattDescriptor(
+                CLIENT_CHARACTERISTIC_CONFIGURATION_UUID,
+                BluetoothGattDescriptor.PERMISSION_WRITE or BluetoothGattDescriptor.PERMISSION_READ
+            )
+        }
+
+        Log.d("BLEPeripheral", "Created descriptor with permissions: $permissions")
+
         return BluetoothGattDescriptor(
             CLIENT_CHARACTERISTIC_CONFIGURATION_UUID,
-            BluetoothGattDescriptor.PERMISSION_READ or BluetoothGattDescriptor.PERMISSION_WRITE
+            permissions
         )
     }
-
     //TODO: Update permission handling when cdv-android platform is updated
     override fun onRequestPermissionResult(
         requestCode: Int,
@@ -856,6 +1087,51 @@ class BLEPeripheralPlugin : CordovaPlugin() {
         return callback
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    @SuppressLint("MissingPermission")
+    private fun startModernAdvertising(serviceUUID: UUID): Boolean {
+        if (Build.VERSION.SDK_INT < 26) {
+            Log.d("BLEPeripheral", "API version < 26, using old advertisement method")
+            return false
+        }
+
+        try {
+            val bluetoothLeAdvertiser = bluetoothAdapter!!.bluetoothLeAdvertiser
+
+            // Create a compact advertising data package
+            val advertisementData = AdvertiseData.Builder()
+                .addServiceUuid(ParcelUuid(serviceUUID))
+                .setIncludeDeviceName(false) // Remove device name to save space
+                .setIncludeTxPowerLevel(false) // Remove power level to save space
+                .build()
+
+            Log.d("BLEPeripheral", "Created compact advertising data for service UUID: $serviceUUID")
+
+            val parameters = android.bluetooth.le.AdvertisingSetParameters.Builder()
+                .setLegacyMode(true) // Ensures compatibility with older scanners
+                .setInterval(android.bluetooth.le.AdvertisingSetParameters.INTERVAL_MEDIUM)
+                .setTxPowerLevel(android.bluetooth.le.AdvertisingSetParameters.TX_POWER_HIGH)
+                .setConnectable(true)
+                .setScannable(true)
+                .build()
+
+            bluetoothLeAdvertiser.startAdvertisingSet(
+                parameters,
+                advertisementData,
+                null, // scanResponse
+                null, // periodicParameters
+                null, // periodicData
+                advertisingSetcallback
+            )
+
+            Log.d("BLEPeripheral", "Requested modern API advertising start")
+            return true
+        } catch (e: Exception) {
+            Log.e("BLEPeripheral", "Modern API advertising failed", e)
+            return false
+        }
+    }
+
     companion object {
         // actions
         private const val CREATE_SERVICE = "createService"
@@ -873,6 +1149,7 @@ class BLEPeripheralPlugin : CordovaPlugin() {
             "setCharacteristicValueRequestedListener"
         private const val RECEIVE_REQUESTED_CHARACTERISTIC_VALUE =
             "receiveRequestedCharacteristicValue"
+        private const val RECEIVE_CHANGED_CHARACTERISTIC_VALUE = "receiveChangedCharacteristicValue"
         private const val GET_BLUETOOTH_SYSTEM_STATE = "getBluetoothSystemState"
         private const val START_SENDING_STASHED_READ_WRITE_EVENTS = "startSendingStashedReadWriteEvents"
 
