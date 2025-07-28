@@ -26,30 +26,36 @@ function stringToBase64(str) {
     return btoa(binary); // Binary -> Base64
 }
 
-function base64ToString(base64) {
-    const binary = atob(base64); // Base64 -> binary string
-    const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
-    return new TextDecoder().decode(bytes); // UTF-8 decode
-}
-
-var stringToArrayBuffer = function (str) {
-    var ret = new Uint8Array(str.length);
-    for (var i = 0; i < str.length; i++) {
-        ret[i] = str.charCodeAt(i);
-    }
-    // TODO would it be better to return Uint8Array?
-    return ret.buffer;
-};
-
-var base64ToArrayBuffer = function (b64) {
-    return stringToArrayBuffer(atob(b64));
-};
+//    function base64ToString(base64) {
+//        const binary = atob(base64); // Base64 -> binary string
+//        const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+//        return new TextDecoder().decode(bytes); // UTF-8 decode
+//    }
+//
+//    var stringToArrayBuffer = function (str) {
+//        var ret = new Uint8Array(str.length);
+//        for (var i = 0; i < str.length; i++) {
+//            ret[i] = str.charCodeAt(i);
+//        }
+//        // TODO would it be better to return Uint8Array?
+//        return ret.buffer;
+//    };
+//
+//    var base64ToArrayBuffer = function (b64) {
+//        return stringToArrayBuffer(atob(b64));
+//    };
 
 function massageMessageNativeToJs(message) {
-    if (message.CDVType == 'ArrayBuffer') {
-        message = base64ToArrayBuffer(message.data);
-    }
-    return message;
+      if (message && message.CDVType === "ArrayBuffer") {
+        const binary = atob(message.data);
+        const len = binary.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binary.charCodeAt(i);
+        }
+        return bytes;
+      }
+      return message;
 }
 
 // Cordova 3.6 doesn't unwrap ArrayBuffers in nested data structures
@@ -72,18 +78,31 @@ var onBluetoothStateChangeCallback;
 
 function registerWriteRequestCallback() {
 
-    var didReceiveWriteRequest = function (json) {
+    var didReceiveWriteRequest = async function (json) {
         console.log('didReceiveWriteRequest');
         console.log(json);
         convertToNativeJS(json);
         const contextID = json.contextID;
 
         if (onWriteRequestCallback && typeof onWriteRequestCallback === 'function') {
-            let result = onWriteRequestCallback(json);
+            let result = await onWriteRequestCallback(json);
 
             if (result instanceof ArrayBuffer) {
                 var base64String = stringToBase64([].reduce.call(new Uint8Array(result),function(p,c){return p+String.fromCharCode(c)},''));
                 cordova.exec(() => { }, () => { }, 'BLEPeripheral', 'receiveChangedCharacteristicValue', [contextID, base64String]);
+            } else if (result instanceof Uint8Array) {
+                let binaryString = "";
+                for (let i = 0; i < result.length; i++) {
+                  binaryString += String.fromCharCode(result[i]);
+                }
+                let base64String = btoa(binaryString);
+                cordova.exec(
+                  () => {},
+                  () => {},
+                  "BLEPeripheral",
+                  "receiveChangedCharacteristicValue",
+                  [contextID, base64String]
+                );
             } else if (typeof result === 'string' && result.length > 0) {
                 var base64String = stringToBase64(result);
                 cordova.exec(() => { }, () => { }, 'BLEPeripheral', 'receiveChangedCharacteristicValue', [contextID, base64String]);
@@ -100,7 +119,7 @@ function registerWriteRequestCallback() {
 
     cordova.exec(didReceiveWriteRequest, failure, 'BLEPeripheral', 'setCharacteristicValueChangedListener', []);
 }
-// registerWriteRequestCallback();
+//registerWriteRequestCallback();
 
 function registerReadRequestCallback() {
 
@@ -119,16 +138,16 @@ function registerReadRequestCallback() {
         if (onReadRequestCallback && typeof onReadRequestCallback === 'function') {
             let result = onReadRequestCallback(service, characteristic);
 
-            if(result) {
-                if (result instanceof ArrayBuffer) {
-                    var base64String = stringToBase64([].reduce.call(new Uint8Array(result),function(p,c){return p+String.fromCharCode(c)},''));
-                    cordova.exec(() => { }, () => { }, 'BLEPeripheral', 'receiveRequestedCharacteristicValue', [contextID, base64String]);
-
-                } else if (typeof result === 'string') {
-                    var base64String = stringToBase64(result);
-                    cordova.exec(() => { }, () => { }, 'BLEPeripheral', 'receiveRequestedCharacteristicValue', [contextID, base64String]);
-                }
+            if (result instanceof ArrayBuffer) {
+                var base64String = stringToBase64([].reduce.call(new Uint8Array(result),function(p,c){return p+String.fromCharCode(c)},''));
+                cordova.exec(() => { }, () => { }, 'BLEPeripheral', 'receiveRequestedCharacteristicValue', [contextID, base64String]);
+            } else if (typeof result === 'string' && result.length > 0) {
+                var base64String = stringToBase64(result);
+                cordova.exec(() => { }, () => { }, 'BLEPeripheral', 'receiveRequestedCharacteristicValue', [contextID, base64String]);
+            } else {
+                cordova.exec(() => { }, () => { }, 'BLEPeripheral', 'receiveRequestedCharacteristicValue', [contextID]);
             }
+
         }
     };
 
@@ -313,7 +332,7 @@ module.exports = {
         onWriteRequestCallback = callback;
         registerWriteRequestCallback();
     },
-    
+
     onReadRequest: function (callback) {
         onReadRequestCallback = callback;
         registerReadRequestCallback();
