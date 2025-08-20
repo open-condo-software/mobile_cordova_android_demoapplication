@@ -86,6 +86,7 @@ android {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/NOTICE'
     }
+    namespace 'org.apache.cordova'
 }
 
 dependencies {

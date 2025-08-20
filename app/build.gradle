@@ -40,6 +40,7 @@ android {
         checkReleaseBuilds false
         abortOnError false
     }
+    namespace 'ai.doma.miniappdemo'
 }
 
 dependencies {
@@ -64,62 +65,54 @@ dependencies {
     api "com.google.dagger:dagger-android:2.40.5"
     kapt "com.google.dagger:dagger-android-processor:2.40.5"
     implementation 'com.github.franmontiel:PersistentCookieJar:v1.0.1'
-    implementation "androidx.navigation:navigation-fragment-ktx:2.4.1"
-    implementation "androidx.navigation:navigation-ui-ktx:2.4.1"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.4.2"
+    implementation "androidx.navigation:navigation-ui-ktx:2.4.2"
     implementation "com.dmitryborodin:pdfview-android:1.1.0"
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     kapt 'com.github.bumptech.glide:compiler:4.11.0'
 }
 
-task updateCordovaProjectToDemo {
-    doFirst {
-        println "updateCordovaProjectToDemo start!"
+def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
+def npxPath = isWindows
+        ? "C:/Program Files/nodejs/npx.cmd"
+        : ["/opt/homebrew/bin/npx", "/usr/local/bin/npx", "/usr/bin/npx"]
+        .find { new File(it).exists() } ?: "npx" // fallback
 
-        //update platforms/ios entirely
-        exec {
-            workingDir "../MainCordovaApplication"
-            if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine "cmd", "/c", 'cordova', 'platform' ,'remove', 'android'
-            } else {
-                commandLine 'cordova', 'platform' , 'remove', 'android'
-            }
-        }
-        exec {
-            workingDir "../MainCordovaApplication"
-            if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine "cmd", "/c", 'cordova', 'platform', 'add', 'android'
-            } else {
-                commandLine 'cordova', 'platform', 'add', 'android'
-            }
-        }
-        exec {
-            workingDir "../MainCordovaApplication"
-            if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine "cmd", "/c", 'cordova', 'prepare', 'android'
-            } else {
-                commandLine 'cordova', 'prepare', 'android'
-            }
-        }
-        exec {
-            workingDir "../MainCordovaApplication/platforms/android/app/src/main/assets"
-            if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine "cmd", "/c", 'tar', '-a', '-c', '-f', 'www.zip', 'www'
-            } else {
-                commandLine 'zip', '-r', 'www.zip', 'www'
-            }
-        }
 
-        exec {
-            workingDir "../MainCordovaApplication/platforms/android/app/src/main/assets"
-            if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-                commandLine "cmd", "/c", 'copy', '/y', 'www.zip', '..\\..\\..\\..\\..\\..\\..\\app\\src\\main\\res\\raw\\www.zip'
-            } else {
-                commandLine 'cp', 'www.zip', '../../../../../../../app/src/main/res/raw/www.zip'
-            }
-        }
-        println "updateCordovaProjectToDemo"
-    }
+tasks.register('updateCordovaProjectToDemo') {
+    dependsOn 'cordovaRemove', 'cordovaAdd', 'cordovaPrepare', 'zipWww', 'copyWww'
+}
 
+tasks.register('cordovaRemove', Exec) {
+    println("cordovaRemove")
+    workingDir = file('../MainCordovaApplication')
+    executable = npxPath
+    args 'cordova', 'platform', 'remove', 'android'
+    println("cordovaRemove finish")
+}
+tasks.register('cordovaAdd', Exec) {
+    println("cordovaAdd")
+    workingDir = file('../MainCordovaApplication')
+    executable = npxPath
+    args 'cordova', 'platform', 'add', 'android'
+    println("cordovaAdd finish")
+}
+tasks.register('cordovaPrepare', Exec) {
+    println("cordovaPrepare")
+    workingDir = file('../MainCordovaApplication')
+    executable = npxPath
+    args 'cordova', 'prepare', 'android'
+    println("cordovaPrepare finish")
+}
+tasks.register('zipWww', Zip) {
+    from('../MainCordovaApplication/platforms/android/app/src/main/assets/www')
+    destinationDirectory = file('../MainCordovaApplication/platforms/android/app/src/main/assets')
+    archiveFileName = 'www.zip'
+}
+tasks.register('copyWww', Copy) {
+    dependsOn 'zipWww'
+    from('../MainCordovaApplication/platforms/android/app/src/main/assets/www.zip')
+    into('app/src/main/res/raw')
 }
 
 preBuild.dependsOn updateCordovaProjectToDemo
