@@ -36,6 +36,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -200,7 +201,7 @@ class SimplePDFViewActivity : AppCompatActivity() {
                             override fun onLoadFailed(
                                 e: GlideException?,
                                 model: Any?,
-                                target: com.bumptech.glide.request.target.Target<File>?,
+                                target: Target<File?>,
                                 isFirstResource: Boolean
                             ): Boolean {
                                 vb.pbWait.isVisible = false
@@ -208,10 +209,10 @@ class SimplePDFViewActivity : AppCompatActivity() {
                             }
 
                             override fun onResourceReady(
-                                resource: File?,
-                                model: Any?,
-                                target: com.bumptech.glide.request.target.Target<File>?,
-                                dataSource: DataSource?,
+                                resource: File,
+                                model: Any,
+                                target: Target<File?>?,
+                                dataSource: DataSource,
                                 isFirstResource: Boolean
                             ): Boolean {
                                 vb.pbWait.isVisible = false
